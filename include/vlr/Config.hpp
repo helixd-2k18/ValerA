@@ -1,5 +1,9 @@
 #pragma once
 
+// 
+#define VKT_CORE_ENABLE_VMA
+#define VKT_CORE_ENABLE_XVK
+
 //
 #include <memory>
 #include <vector>
