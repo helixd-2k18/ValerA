@@ -3,15 +3,11 @@
 
 namespace vlr {
 
-    class MaterialSet : public std::enable_shared_from_this<MaterialSet> { protected: 
-    public: 
-        MaterialSet() { this->constructor(); };
-        MaterialSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
-
-        virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver) {
-            
-        };
+    struct MaterialUnit {
+        glm::vec4 diffuse = glm::vec4(1.f);
+        glm::vec4 specular = glm::vec4(1.f);
     };
+
+    using MaterialSet = SetBase_T<MaterialUnit>;
 
 };

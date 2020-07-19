@@ -11,7 +11,7 @@ namespace vlr {
     };
 
     class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: 
-    RenderPass rasterFBO = {}, resampleFBO = {};
+        RenderPass rasterFBO = {}, resampleFBO = {};
         vkt::ImageRegion depthStencilImage = {};
         std::vector<vkt::ImageRegion> currentsImages = {};  // Current Frame
         std::vector<vkt::ImageRegion> previousImages = {};  // Previous Frame
@@ -19,6 +19,7 @@ namespace vlr {
         std::vector<vkt::ImageRegion> rasterImages = {};    // Rasterized Frame
         VkRect2D scissor = {}; VkViewport viewport = {};    // 
         uint32_t width = 1920u, height = 1200u;
+        std::shared_ptr<Driver> driver = {};
 
     public: 
         Framebuffer() { this->constructor(); };
