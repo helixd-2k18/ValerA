@@ -1,10 +1,14 @@
 #pragma once
 
-//#include <vulkan/vulkan.h>
+//
 #include <memory>
 #include <vector>
 #include <string>
 
+// 
+#include <vkh/core.hpp>
+
+// 
 namespace vlr {
     class Acceleration;
     class AttributeSet;
@@ -12,11 +16,13 @@ namespace vlr {
     class MaterialSet;
     class BufferViewSet;
     class TextureSet;
+    class SamplerSet;
     class BuildCommand;
     class RenderCommand;
     class OthersCommand;
     class Interpolation;
     class Rasterization;
     class Geometry;
-    
+    class Background;
+    class Framebuffer;
 };

@@ -3,9 +3,13 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/../include",
+                "${workspaceFolder}/src"
             ],
             "defines": [
+                "USE_VULKAN",
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
