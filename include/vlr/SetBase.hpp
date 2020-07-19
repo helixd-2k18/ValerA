@@ -8,8 +8,10 @@ namespace vlr {
 
     public: 
         SetBase() { this->constructor(); };
+        SetBase(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
 
-        void constructor() {
+        void constructor() {};
+        void constructor(vkt::uni_ptr<Driver> driver) {
             
         };
     };

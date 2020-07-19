@@ -10,8 +10,10 @@ namespace vlr {
 
     public: 
         PipelineLayout() { this->constructor(); };
+        PipelineLayout(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
 
-        void constructor() {
+        void constructor() {};
+        void constructor(vkt::uni_ptr<Driver> driver) {
             
         };
     };

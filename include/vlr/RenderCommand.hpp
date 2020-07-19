@@ -6,8 +6,10 @@ namespace vlr {
     class RenderCommand : public std::enable_shared_from_this<RenderCommand> { protected: 
     public: 
         RenderCommand() { this->constructor(); };
+        RenderCommand(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
 
-        void constructor() {
+        void constructor() {};
+        void constructor(vkt::uni_ptr<Driver> driver) {
             
         };
     };
