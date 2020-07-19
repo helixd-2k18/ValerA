@@ -3,10 +3,13 @@
 
 namespace vlr {
 
-
-    class MaterialSet { protected: 
+    class MaterialSet : public std::enable_shared_from_this<MaterialSet> { protected: 
     public: 
-    
+        MaterialSet() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };

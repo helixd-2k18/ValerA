@@ -1,6 +1,9 @@
 #pragma once
 
 //#include <vulkan/vulkan.h>
+#include <memory>
+#include <vector>
+#include <string>
 
 namespace vlr {
     class Acceleration;

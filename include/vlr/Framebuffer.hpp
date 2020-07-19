@@ -3,9 +3,13 @@
 
 namespace vlr {
 
-    class Framebuffer { protected: 
+    class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: 
     public: 
-    
+        Framebuffer() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };

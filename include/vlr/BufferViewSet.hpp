@@ -3,9 +3,13 @@
 
 namespace vlr {
 
-    class BufferViewSet { protected: 
+    class BufferViewSet : public std::enable_shared_from_this<BufferViewSet> { protected: 
     public: 
-    
+        BufferViewSet() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };

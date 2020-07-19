@@ -12,9 +12,13 @@ namespace vlr {
         //uint32_t material = 0u;
     };
 
-    class GeometryClass { protected: 
+    class GeometrySet : public std::enable_shared_from_this<GeometrySet> { protected: 
     public: 
-    
+        GeometrySet() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };

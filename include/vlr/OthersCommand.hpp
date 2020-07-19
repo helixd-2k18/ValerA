@@ -3,9 +3,13 @@
 
 namespace vlr {
 
-    class OthersCommand { protected: 
+    class OthersCommand : public std::enable_shared_from_this<OthersCommand> { protected: 
     public: 
-    
+        OthersCommand() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };

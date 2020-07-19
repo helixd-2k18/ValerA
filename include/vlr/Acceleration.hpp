@@ -3,9 +3,13 @@
 
 namespace vlr {
 
-    class Acceleration { protected: 
+    class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: 
     public: 
-    
+        Acceleration() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };

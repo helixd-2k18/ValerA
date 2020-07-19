@@ -3,9 +3,13 @@
 
 namespace vlr {
 
-    class SamplerSet { protected: 
+    class SamplerSet : public std::enable_shared_from_this<SamplerSet> { protected: 
     public: 
-    
+        SamplerSet() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };

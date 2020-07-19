@@ -3,9 +3,13 @@
 
 namespace vlr {
 
-    class AttributeSet { protected: 
+    class AttributeSet : public std::enable_shared_from_this<AttributeSet> { protected: 
     public: 
-    
+        AttributeSet() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };

@@ -3,9 +3,13 @@
 
 namespace vlr {
 
-    class Geometry { protected: 
+    class Geometry : public std::enable_shared_from_this<Geometry> { protected: 
     public: 
-    
+        Geometry() { this->constructor(); };
+
+        void constructor() {
+            
+        };
     };
 
 };
