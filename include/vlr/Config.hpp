@@ -7,6 +7,10 @@
 
 // 
 #include <vkh/core.hpp>
+#include <vkh/helpers.hpp>
+#include <vkt2/utils.hpp>
+#include <vkt2/vector.hpp>
+#include <vkt2/image.hpp>
 
 // 
 namespace vlr {
@@ -25,4 +29,5 @@ namespace vlr {
     class Geometry;
     class Background;
     class Framebuffer;
+    class Resampling;
 };
