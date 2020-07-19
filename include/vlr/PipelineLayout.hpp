@@ -91,9 +91,10 @@ namespace vlr {
         VkPipelineCache getPipelineCache() const { return cache; };
         VkPipelineLayout getBindingPipelineLayout() const { return bindings; };
         VkPipelineLayout getTransformPipelineLayout() const { return transform; };
+        VkDescriptorPool getDescriptorPool() const { return pool; };
+
         VkDescriptorSetLayout getDescriptorSetLayout(const uint32_t& I) const { return layouts[I]; };
         VkDescriptorSetLayout getSetLayout() const { return layouts[0u]; };
-        VkDescriptorSetLayout getDescriptorPool() const { return layouts[3u]; };
         VkDescriptorSetLayout getTextureSetLayout() const { return layouts[1u]; };
         VkDescriptorSetLayout getSamplerSetLayout() const { return layouts[2u]; };
         VkDescriptorSetLayout getUniformSetLayout() const { return layouts[4u]; };
