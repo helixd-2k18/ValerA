@@ -8,8 +8,8 @@ namespace vlr {
         OthersCommand() { this->constructor(); };
         OthersCommand(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
 
-        void constructor() {};
-        void constructor(vkt::uni_ptr<Driver> driver) {
+        virtual void constructor() {};
+        virtual void constructor(vkt::uni_ptr<Driver> driver) {
             
         };
     };

@@ -8,9 +8,9 @@
 // 
 #include <vkh/core.hpp>
 #include <vkh/helpers.hpp>
-#include <vkt2/utils.hpp>
-#include <vkt2/vector.hpp>
-#include <vkt2/image.hpp>
+#include <vkt3/utils.hpp>
+#include <vkt3/vector.hpp>
+#include <vkt3/image.hpp>
 
 // 
 namespace vlr {
@@ -18,10 +18,10 @@ namespace vlr {
     class AttributeSet;
     class BindingSet;
     class MaterialSet;
-    class BufferViewSet;
     class TextureSet;
     class SamplerSet;
     class BuildCommand;
+    class BufferViewSet;
     class RenderCommand;
     class OthersCommand;
     class Interpolation;
@@ -30,4 +30,8 @@ namespace vlr {
     class Background;
     class Framebuffer;
     class Resampling;
+    class PipelineLayout;
+    class Driver;
+    template<class T = uint8_t> class SetBase_T;
+    class SetBase;
 };
