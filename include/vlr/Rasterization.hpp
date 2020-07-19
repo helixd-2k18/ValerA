@@ -3,4 +3,9 @@
 
 namespace vlr {
 
+    class Rasterization { protected: 
+    public: 
+    
+    };
+
 };

@@ -3,4 +3,9 @@
 
 namespace vlr {
 
+    class TextureSet { protected: 
+    public: 
+    
+    };
+
 };

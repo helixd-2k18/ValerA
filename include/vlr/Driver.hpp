@@ -3,4 +3,9 @@
 
 namespace vlr {
 
+    class Driver { protected: 
+    public: 
+    
+    };
+
 };

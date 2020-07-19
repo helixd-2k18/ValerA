@@ -3,4 +3,9 @@
 
 namespace vlr {
 
+    class Geometry { protected: 
+    public: 
+    
+    };
+
 };

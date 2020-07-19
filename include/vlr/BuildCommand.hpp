@@ -3,4 +3,9 @@
 
 namespace vlr {
 
+    class BuildCommand { protected: 
+    public: 
+    
+    };
+
 };

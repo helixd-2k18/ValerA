@@ -3,8 +3,7 @@
 
 namespace vlr {
 
-
-    class MaterialSet { protected: 
+    class SamplerSet { protected: 
     public: 
     
     };

@@ -3,8 +3,7 @@
 
 namespace vlr {
 
-
-    class MaterialSet { protected: 
+    class GeometryAdd { protected: 
     public: 
     
     };
