@@ -54,7 +54,6 @@ namespace vlr {
         { // 6. Construct Background Image Descriptor Layout
             auto helper = vkh::VsDescriptorSetLayoutCreateInfoHelper{};
             helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, .descriptorCount = 1u, .stageFlags = pipusage }, indexedf);
-            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 1u, .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER      , .descriptorCount = 8u, .stageFlags = pipusage }, indexedf);
 
             layouts.push_back({});
             vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
@@ -66,7 +65,8 @@ namespace vlr {
             helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 1u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, .descriptorCount = 12u, .stageFlags = pipusage }, indexedf); // Currents Frame
             helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 2u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, .descriptorCount =  8u, .stageFlags = pipusage }, indexedf); // Resampled
             helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 3u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, .descriptorCount =  8u, .stageFlags = pipusage }, indexedf); // Rasterized 
-            
+            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 4u, .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER      , .descriptorCount =  8u, .stageFlags = pipusage }, indexedf);
+
             layouts.push_back({});
             vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
         };

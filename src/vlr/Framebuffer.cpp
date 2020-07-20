@@ -4,10 +4,12 @@
 
 namespace vlr {
 
+    // 
     void Framebuffer::constructor(vkt::uni_ptr<Driver> driver) {
         this->driver = driver;
     };
 
+    // 
     void Framebuffer::createRenderPass() {
         auto device = this->driver->getDeviceDispatch();
 
@@ -65,6 +67,7 @@ namespace vlr {
 
     };
 
+    // 
     void Framebuffer::createFramebuffer(uint32_t width = 1920u, uint32_t height = 1200u) { //
         auto fbusage = vkh::VkImageUsageFlags{.eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
         auto aspect = vkh::VkImageAspectFlags{.eColor = 1};
@@ -114,7 +117,6 @@ namespace vlr {
                 .width = width,
                 .height = height
             }, nullptr, &fbo.framebuffer));
-            fbo.complete = true;
         };
 
         // 
@@ -132,6 +134,42 @@ namespace vlr {
         };
 
         // 
+        {
+            this->samplers.push_back(VK_NULL_HANDLE);
+            this->driver->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+                .magFilter = VK_FILTER_LINEAR,
+                .minFilter = VK_FILTER_LINEAR,
+                .addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+                .addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+                .unnormalizedCoordinates = true,
+            }, nullptr, &this->samplers.back());
+
+            this->samplers.push_back(VK_NULL_HANDLE);
+            this->driver->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+                .magFilter = VK_FILTER_LINEAR,
+                .minFilter = VK_FILTER_LINEAR,
+                .addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+                .addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+            }, nullptr, &this->samplers.back());
+
+            this->samplers.push_back(VK_NULL_HANDLE);
+            this->driver->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+                .magFilter = VK_FILTER_LINEAR,
+                .minFilter = VK_FILTER_LINEAR,
+                .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+                .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+            }, nullptr, &this->samplers.back());
+
+            this->samplers.push_back(VK_NULL_HANDLE);
+            this->driver->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+                .magFilter = VK_FILTER_LINEAR,
+                .minFilter = VK_FILTER_LINEAR,
+                .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+                .addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+            }, nullptr, &this->samplers.back());
+        };
+
+        // 
         resampleAttachments.push_back(depthStencilImage);
         rasterAttachments.push_back(depthStencilImage);
 
@@ -140,10 +178,12 @@ namespace vlr {
         createFramebuffer(rasterFBO, rasterAttachments);
     };
 
+    // 
     void Framebuffer::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
         auto device = this->driver->getDeviceDispatch();
-        auto createDescriptorSetFBO = [=,this](RenderPass& fbo, const std::vector<vkt::ImageRegion>& images, const uint32_t& binding = 0u) {
-            auto& handle = (fbo.descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getBufferViewSetLayout(), pipelineLayout->getDescriptorPool())).pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
+        auto descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getBufferViewSetLayout(), pipelineLayout->getDescriptorPool());
+        auto createDescriptorSetImages = [&,this](const std::vector<vkt::ImageRegion>& images, const uint32_t& binding = 0u) {
+            auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
                 .dstBinding = binding,
                 .dstArrayElement = 0u,
                 .descriptorCount = uint32_t(images.size()),
@@ -152,14 +192,28 @@ namespace vlr {
             for (uintptr_t i = 0; i < images.size(); i++) {
                 handle.offset<VkDescriptorImageInfo>(i) = images[i];
             };
-            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(device, fbo.descriptorSetInfo, fbo.set, fbo.updated));
+        };
+
+        {   // Samplers
+            auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
+                .dstBinding = 4u,
+                .dstArrayElement = 0u,
+                .descriptorCount = uint32_t(samplers.size()),
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER
+            });
+            for (uintptr_t i = 0; i < samplers.size(); i++) {
+                handle.offset<VkDescriptorImageInfo>(i)->sampler = samplers[i];
+            };
         };
 
         // 
-        createDescriptorSetFBO(currentsFBO,currentsImages,0u);
-        createDescriptorSetFBO(previousFBO,previousImages,1u);
-        createDescriptorSetFBO(resampleFBO,resampleImages,2u);
-        createDescriptorSetFBO(resampleFBO,rasterImages,3u);
+        createDescriptorSetImages(currentsImages,0u);
+        createDescriptorSetImages(previousImages,1u);
+        createDescriptorSetImages(resampleImages,2u);
+        createDescriptorSetImages(rasterImages,3u);
+
+        // 
+        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(device, descriptorSetInfo, this->set, this->updated));
     };
 
 };

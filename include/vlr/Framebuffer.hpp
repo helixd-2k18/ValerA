@@ -4,18 +4,18 @@
 namespace vlr {
 
     struct RenderPass {
-        bool updated = false, complete = false;
         VkFramebuffer framebuffer = {};
         VkRenderPass renderPass = {};
-        VkDescriptorSet set = {};
+        
         std::vector<vkh::VkPipelineColorBlendAttachmentState> blendStates = {};
         std::vector<vkh::VkClearValue> clearValues = {};
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
     };
 
     class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: 
-        RenderPass rasterFBO = {}, resampleFBO = {}, currentsFBO = {}, previousFBO = {};
+        RenderPass rasterFBO = {}, resampleFBO = {}; VkDescriptorSet set = {};
         vkt::ImageRegion depthStencilImage = {};
+        std::vector<VkSampler> samplers = {};
         std::vector<vkt::ImageRegion> currentsImages = {};  // Current Frame
         std::vector<vkt::ImageRegion> previousImages = {};  // Previous Frame
         std::vector<vkt::ImageRegion> resampleImages = {}; // Resampled Previous Frame
@@ -23,6 +23,7 @@ namespace vlr {
         VkRect2D scissor = {}; VkViewport viewport = {};    // 
         uint32_t width = 1920u, height = 1200u;
         std::shared_ptr<Driver> driver = {};
+        bool updated = false;
 
     public: 
         Framebuffer() { this->constructor(); };
