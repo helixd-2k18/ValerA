@@ -16,6 +16,7 @@ namespace vlr {
     class GeometrySet : public SetBase_T<GeometryDesc> { protected: 
         std::vector<vkt::uni_ptr<Geometry>> geometries = {};
         std::vector<vkt::uni_ptr<Interpolation>> interpolations = {};
+        vkt::uni_ptr<VertexSet> vertexSet = {};
         vkt::uni_ptr<Driver> driver = {};
 
     public: 
