@@ -23,6 +23,10 @@ namespace vlr {
         virtual void resetBufferViews(){
             this->buffers.resize(0ull);
         };
+
+        // 
+        vkt::Vector<uint8_t>& operator[](const uint32_t& I) { return buffers[I]; };
+        const vkt::Vector<uint8_t>& operator[](const uint32_t& I) const { return buffers[I]; };
     };
 
 };

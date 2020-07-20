@@ -23,6 +23,10 @@ namespace vlr {
         virtual void resetSampler(){
             this->samplers.resize(0ull);
         };
+
+        // 
+        VkSampler& operator[](const uint32_t& I) { return samplers[I]; };
+        const VkSampler& operator[](const uint32_t& I) const { return samplers[I]; };
     };
 
 };

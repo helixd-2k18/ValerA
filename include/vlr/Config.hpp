@@ -31,8 +31,9 @@ namespace vlr {
     class Interpolation;
     class Rasterization;
     class Geometry;
-    class Background;
+    class GeometrySet;
     class Framebuffer;
+    class Background;
     class Resampling;
     class PipelineLayout;
     class Driver;

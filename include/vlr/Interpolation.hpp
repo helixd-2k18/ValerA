@@ -4,6 +4,8 @@
 namespace vlr {
 
     class Interpolation : public std::enable_shared_from_this<Interpolation> { protected: 
+        std::vector<uint32_t> bindings = {};
+
     public: 
         Interpolation() { this->constructor(); };
         Interpolation(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };

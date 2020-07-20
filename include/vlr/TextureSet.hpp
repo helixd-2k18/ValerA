@@ -23,6 +23,10 @@ namespace vlr {
         virtual void resetImages(){
             this->images.resize(0ull);
         };
+
+        // 
+        vkt::ImageRegion& operator[](const uint32_t& I) { return images[I]; };
+        const vkt::ImageRegion& operator[](const uint32_t& I) const { return images[I]; };
     };
 
 };
