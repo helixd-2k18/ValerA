@@ -39,6 +39,7 @@ namespace vlr {
     class Driver;
     template<class T = uint8_t> class SetBase_T;
     class SetBase;
+    class VertexSet;
 
 
     struct DataSetCreateInfo {
