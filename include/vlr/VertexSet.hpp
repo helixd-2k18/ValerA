@@ -1,9 +1,9 @@
 #pragma once
 #include "./Config.hpp"
 #include "./Driver.hpp"
-#include "./vlr/AttributeSet.hpp"
-#include "./vlr/BindingSet.hpp"
-#include "./vlr/BufferViewSet.hpp"
+#include "./AttributeSet.hpp"
+#include "./BindingSet.hpp"
+#include "./BufferViewSet.hpp"
 
 // 
 namespace vlr {

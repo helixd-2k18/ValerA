@@ -19,11 +19,13 @@ namespace vlr {
         SetBase() { this->constructor(); };
         SetBase(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) { this->constructor(driver, 1u, info); };
 
-        virtual vkt::VectorBase getCpuBuffer() const { return cpuBuffer; };
-        virtual vkt::VectorBase getGpuBuffer() const { return gpuBuffer; };
+        // 
+        virtual const vkt::VectorBase& getCpuBuffer() const { return cpuBuffer; };
+        virtual const vkt::VectorBase& getGpuBuffer() const { return gpuBuffer; };
         virtual vkt::VectorBase& getCpuBuffer() { return cpuBuffer; };
         virtual vkt::VectorBase& getGpuBuffer() { return gpuBuffer; };
 
+        // 
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
     };
@@ -38,8 +40,9 @@ namespace vlr {
         SetBase_T() : SetBase() { this->constructor(); };
         SetBase_T(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) { this->constructor(driver, sizeof(T), info); };
 
-        virtual vkt::VectorBase getCpuBuffer() const override { return cpuBuffer; };
-        virtual vkt::VectorBase getGpuBuffer() const override { return gpuBuffer; };
+        // 
+        virtual const vkt::VectorBase& getCpuBuffer() const override { return reinterpret_cast<const vkt::VectorBase&>(cpuBuffer); };
+        virtual const vkt::VectorBase& getGpuBuffer() const override { return reinterpret_cast<const vkt::VectorBase&>(gpuBuffer); };
         virtual vkt::VectorBase& getCpuBuffer() override { return reinterpret_cast<vkt::VectorBase&>(cpuBuffer); };
         virtual vkt::VectorBase& getGpuBuffer() override { return reinterpret_cast<vkt::VectorBase&>(gpuBuffer); };
 

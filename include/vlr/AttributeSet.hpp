@@ -3,6 +3,6 @@
 
 namespace vlr {
 
-    using BindingSet = SetBase_T<VkVertexInputAttributeDescription>;
+    using AttributeSet = SetBase_T<VkVertexInputAttributeDescription>;
 
 };
