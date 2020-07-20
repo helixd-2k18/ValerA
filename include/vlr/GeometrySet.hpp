@@ -7,8 +7,10 @@ namespace vlr {
 
     struct GeometryDesc {
         glm::mat3x4 transform = glm::mat3x4(1.f);
-        uint32_t offset = 0u;
+        uint32_t firstVertex = 0u;
+        uint32_t primitiveCount = 0u;
         uint32_t material = 0u;
+        uint32_t flags = 0u;
     };
 
     class GeometrySet : public SetBase_T<GeometryDesc> { protected: 
