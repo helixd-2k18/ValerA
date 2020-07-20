@@ -3,7 +3,6 @@
 #include "./Driver.hpp"
 #include "./VertexSet.hpp"
 
-
 namespace vlr {
 
     class Interpolation : public std::enable_shared_from_this<Interpolation> { protected: //using T = uint8_t;
