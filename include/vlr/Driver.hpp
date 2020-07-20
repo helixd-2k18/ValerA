@@ -6,6 +6,7 @@ namespace vlr {
     class Driver : public std::enable_shared_from_this<Driver> { protected: 
         vkt::uni_ptr<xvk::Device> device = {};
         VmaAllocator allocator = {};
+        vkt::MemoryAllocationInfo memoryAllocInfo = {};
 
     public: 
         Driver(vkt::uni_ptr<xvk::Device> device) { this->constructor(device); };
@@ -22,6 +23,10 @@ namespace vlr {
 
         VmaAllocator getAllocator() const {
             return allocator;
+        };
+
+        vkt::MemoryAllocationInfo memoryAllocationInfo() const {
+            return memoryAllocInfo;
         };
     };
 

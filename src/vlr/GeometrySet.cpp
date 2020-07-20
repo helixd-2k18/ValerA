@@ -1,9 +1,7 @@
 #include "./vlr/GeometrySet.hpp"
-#include "./vlr/SetBase.hpp"
 #include "./vlr/Geometry.hpp"
-#include "./vlr/BindingSet.hpp"
-#include "./vlr/BufferViewSet.hpp"
 #include "./vlr/Interpolation.hpp"
+#include "./vlr/VertexSet.hpp"
 
 namespace vlr {
 
