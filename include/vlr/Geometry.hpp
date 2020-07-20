@@ -4,7 +4,7 @@
 namespace vlr {
 
     class Geometry : public std::enable_shared_from_this<Geometry> { protected: friend GeometrySet;
-        uint32_t vertexBinding = 0u, indexBufferView = ~0u;
+        uint32_t vertexAttribute = 0u, indexBufferView = ~0u;
         VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
 
     public: 

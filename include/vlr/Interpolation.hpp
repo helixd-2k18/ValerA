@@ -9,7 +9,7 @@
 namespace vlr {
 
     class Interpolation : public std::enable_shared_from_this<Interpolation> { protected: //using T = uint8_t;
-        std::vector<uint32_t> bindingIDs = {};
+        std::vector<uint32_t> attributeIDs = {};
         vkt::uni_ptr<BufferViewSet> bufferViewSet = {};
         vkt::uni_ptr<BindingSet> bindings = {};
         vkt::uni_ptr<AttributeSet> attribute = {};
@@ -24,9 +24,9 @@ namespace vlr {
             
         };
 
-        virtual vkt::Vector<uint8_t> getBuffer(const uint32_t& I = 0u) {
-            const uint32_t bindingID = bindingIDs[I];
-            const vkh::VkVertexInputBindingDescription binding = dynamic_cast<const vkt::Vector<vkh::VkVertexInputBindingDescription>&>(*this->bindings)[bindingID];
+        virtual vkt::Vector<uint8_t> getBuffer(const uint32_t& I = 0u) const {
+            const vkh::VkVertexInputAttributeDescription attribute = dynamic_cast<const vkt::Vector<vkh::VkVertexInputAttributeDescription>&>(*this->bindings)[attributeIDs[I]];
+            const vkh::VkVertexInputBindingDescription binding = dynamic_cast<const vkt::Vector<vkh::VkVertexInputBindingDescription>&>(*this->bindings)[attribute.binding];
             return (*this->bufferViewSet)[binding.binding];
         };
 
