@@ -6,8 +6,8 @@ namespace vlr {
     class SamplerSet : public std::enable_shared_from_this<SamplerSet> { protected: 
         VkDescriptorSet set = {}; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
-        std::shared_ptr<Driver> driver = {};
         std::vector<VkSampler> samplers = {};
+        std::shared_ptr<Driver> driver = {};
         
     public: 
         SamplerSet() { this->constructor(); };

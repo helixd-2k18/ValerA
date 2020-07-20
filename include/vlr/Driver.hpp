@@ -3,6 +3,9 @@
 
 namespace vlr {
 
+    using Driver = vkt::GPUFramework;
+
+/*
     class Driver : public std::enable_shared_from_this<Driver> { protected: 
         vkt::uni_ptr<xvk::Device> device = {};
         VmaAllocator allocator = {};
@@ -29,5 +32,6 @@ namespace vlr {
             return memoryAllocInfo;
         };
     };
+*/
 
 };

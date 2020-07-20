@@ -9,7 +9,8 @@ namespace vlr {
     };
 
     void Framebuffer::createRenderPass() {
-        
+        auto device = this->driver->getDeviceDispatch();
+
         //
         auto colAttachment = vkh::VkAttachmentDescription{
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
@@ -58,8 +59,8 @@ namespace vlr {
             rpsInfo.setDepthStencilAttachment(depAttachment);
             rpsInfo.addSubpassDependency(dep0);
             rpsInfo.addSubpassDependency(dep1);
-            vkh::handleVk(this->driver->getDevice()->CreateRenderPass(rpsInfo, nullptr, &rasterFBO.renderPass));
-            vkh::handleVk(this->driver->getDevice()->CreateRenderPass(rpsInfo, nullptr, &resampleFBO.renderPass));
+            vkh::handleVk(device->CreateRenderPass(rpsInfo, nullptr, &rasterFBO.renderPass));
+            vkh::handleVk(device->CreateRenderPass(rpsInfo, nullptr, &resampleFBO.renderPass));
         };
 
     };
@@ -68,6 +69,7 @@ namespace vlr {
         auto fbusage = vkh::VkImageUsageFlags{.eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
         auto aspect = vkh::VkImageAspectFlags{.eColor = 1};
         auto apres = vkh::VkImageSubresourceRange{.aspectMask = aspect};
+        auto device = this->driver->getDeviceDispatch();
         auto& allocInfo = driver->memoryAllocationInfo();
 
         // 
@@ -104,8 +106,8 @@ namespace vlr {
         };
 
         // 
-        auto createFramebuffer = [=,this](RenderPass& fbo, const std::vector<VkImageView>& attachments){
-            vkh::handleVk(this->driver->getDevice()->CreateFramebuffer(vkh::VkFramebufferCreateInfo{
+        auto createFramebuffer = [&,this](RenderPass& fbo, const std::vector<VkImageView>& attachments){
+            vkh::handleVk(device->CreateFramebuffer(vkh::VkFramebufferCreateInfo{
                 .renderPass = fbo.renderPass,
                 .attachmentCount = static_cast<uint32_t>(attachments.size()),
                 .pAttachments = attachments.data(),
@@ -139,6 +141,7 @@ namespace vlr {
     };
 
     void Framebuffer::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
+        auto device = this->driver->getDeviceDispatch();
         auto createDescriptorSetFBO = [=,this](RenderPass& fbo, const std::vector<vkt::ImageRegion>& images, const uint32_t& binding = 0u) {
             auto& handle = (fbo.descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getBufferViewSetLayout(), pipelineLayout->getDescriptorPool())).pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
                 .dstBinding = binding,
@@ -149,7 +152,7 @@ namespace vlr {
             for (uintptr_t i = 0; i < images.size(); i++) {
                 handle.offset<VkDescriptorImageInfo>(i) = images[i];
             };
-            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDevice(), fbo.descriptorSetInfo, fbo.set, fbo.updated));
+            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(device, fbo.descriptorSetInfo, fbo.set, fbo.updated));
         };
 
         // 

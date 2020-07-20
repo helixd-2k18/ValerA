@@ -6,8 +6,8 @@ namespace vlr {
     class TextureSet : public std::enable_shared_from_this<TextureSet> { protected: 
         VkDescriptorSet set = {}; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
-        std::shared_ptr<Driver> driver = {};
         std::vector<vkt::ImageRegion> images = {};
+        std::shared_ptr<Driver> driver = {};
 
     public: 
         TextureSet() { this->constructor(); };

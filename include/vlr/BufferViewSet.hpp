@@ -1,13 +1,14 @@
 #pragma once
 #include "./Config.hpp"
+#include "./Driver.hpp"
 
 namespace vlr {
 
     class BufferViewSet : public std::enable_shared_from_this<BufferViewSet> { protected: 
         VkDescriptorSet set = {}; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
-        std::shared_ptr<Driver> driver = {};
         std::vector<vkt::Vector<uint8_t>> buffers = {};
+        vkt::uni_ptr<Driver> driver = {};
 
     public: 
         BufferViewSet() { this->constructor(); };

@@ -1,5 +1,6 @@
 #pragma once
 #include "./Config.hpp"
+#include "./Driver.hpp"
 
 namespace vlr {
 
@@ -7,7 +8,7 @@ namespace vlr {
     protected: using T = uint8_t;
         VkDescriptorSet set = {}; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
-        std::shared_ptr<Driver> driver = {};
+        vkt::uni_ptr<Driver> driver = {};
         
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, const uint32_t& stride = 1u, vkt::uni_arg<DataSetCreateInfo> info = {});
