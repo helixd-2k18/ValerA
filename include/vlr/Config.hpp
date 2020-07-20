@@ -38,4 +38,11 @@ namespace vlr {
     class Driver;
     template<class T = uint8_t> class SetBase_T;
     class SetBase;
+
+
+    struct DataSetCreateInfo {
+        VkDeviceSize count = 1u;
+        
+    };
+
 };

@@ -1,8 +1,7 @@
 #pragma once
 #include "./Config.hpp"
+#include "./SetBase.hpp"
 
-// 
-// 
 // 
 namespace vlr {
 
@@ -12,13 +11,15 @@ namespace vlr {
         uint32_t material = 0u;
     };
 
-    class GeometrySet : public std::enable_shared_from_this<GeometrySet> { protected: 
-    public: 
-        GeometrySet() { this->constructor(); };
-        GeometrySet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+    class GeometrySet : public SetBase_T<GeometryDesc> { protected: 
+        std::vector<Geometry> geometries = {};
 
-        virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver) {
+    public: 
+        GeometrySet() : SetBase_T<GeometryDesc>() { this->constructorExtend0(); };
+        GeometrySet(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info) : SetBase_T<GeometryDesc>(driver, info) { this->constructorExtend0(driver); };
+
+        virtual void constructorExtend0() {};
+        virtual void constructorExtend0(vkt::uni_ptr<Driver> driver) {
             
         };
     };
