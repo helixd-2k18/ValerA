@@ -1,5 +1,6 @@
 #pragma once
 #include "./Config.hpp"
+#include "./Driver.hpp"
 #include "./SetBase.hpp"
 #include "./Geometry.hpp"
 #include "./BindingSet.hpp"
@@ -21,6 +22,7 @@ namespace vlr {
         vkt::uni_ptr<BufferViewSet> bufferViewSet = {};
         vkt::uni_ptr<BindingSet> bindings = {};
         vkt::uni_ptr<AttributeSet> attribute = {};
+        vkt::uni_ptr<Driver> driver = {};
 
     public: 
         GeometrySet() : SetBase_T<GeometryDesc>() { this->constructorExtend0(); };
