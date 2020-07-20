@@ -14,12 +14,15 @@ namespace vlr {
         SamplerSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver) {
-            
-        };
-
+        virtual void constructor(vkt::uni_ptr<Driver> driver) {};
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
+        virtual void pushSampler(const VkSampler& sampler) {
+            this->samplers.push_back(sampler);
+        };
+        virtual void resetSampler(){
+            this->samplers.resize(0ull);
+        };
     };
 
 };
