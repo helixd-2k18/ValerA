@@ -19,8 +19,9 @@ namespace vlr {
         vkt::uni_ptr<Driver> driver = {};
 
         // FOR CREATE (Acceleration Structure)
-        vkh::VkAccelerationStructureCreateInfoKHR                          bottomCreate = {};
-        std::vector<vkh::VkAccelerationStructureCreateGeometryTypeInfoKHR> bottomDataCreate = { {} };
+        vkt::uni_arg<AccelerationCreateInfo>                               info = {};
+        vkh::VkAccelerationStructureCreateInfoKHR                          create = {};
+        std::vector<vkh::VkAccelerationStructureCreateGeometryTypeInfoKHR> dataCreate = {};
 
         // FOR BUILD! BUT ONLY SINGLE! (Contain Multiple-Instanced)
         vkh::VkAccelerationStructureBuildGeometryInfoKHR              bdHeadInfo = {};
@@ -39,7 +40,9 @@ namespace vlr {
         Acceleration(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, AccelerationCreateInfo info = {});
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = {});
+        virtual void updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build = false);
+        virtual void buildAccelerationStructureCmd(const VkCommandBuffer& cmd = VK_NULL_HANDLE);
     };
 
 };
