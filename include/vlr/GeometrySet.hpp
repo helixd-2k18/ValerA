@@ -31,6 +31,20 @@ namespace vlr {
             interpolations.resize(0u);
             geometries.resize(0u);
         };
+
+        // 
+        virtual const vkt::VectorBase& getCpuBuffer() const override { return SetBase_T<GeometryDesc>::getCpuBuffer(); };
+        virtual const vkt::VectorBase& getGpuBuffer() const override { return SetBase_T<GeometryDesc>::getGpuBuffer(); };
+        virtual vkt::VectorBase& getCpuBuffer() override { return SetBase_T<GeometryDesc>::getCpuBuffer(); };
+        virtual vkt::VectorBase& getGpuBuffer() override { return SetBase_T<GeometryDesc>::getGpuBuffer(); };
+        
+        // 
+        virtual T& get(const uint32_t& I = 0u) override { return SetBase_T<GeometryDesc>::get(I); };
+        virtual const T& get(const uint32_t& I = 0u) const override { return SetBase_T<GeometryDesc>::get(I); };
+
+        // 
+        T& operator[](const uint32_t& I) { return this->get(I); };
+        const T& operator[](const uint32_t& I) const { return this->get(I); };
     };
 
 };

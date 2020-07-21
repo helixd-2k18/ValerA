@@ -49,10 +49,12 @@ namespace vlr {
         
     };
 
-    struct AccelerationCreateInfo {
-        vkt::uni_ptr<GeometrySet> geometrySet = {};
-        vkt::uni_ptr<InstanceSet> instanceSet = {};
-        std::vector<VkDeviceSize> initials = {};
-    };
+    struct AccelerationCreateInfo;
+
+    //struct AccelerationCreateInfo {
+    //    vkt::uni_ptr<GeometrySet> geometrySet = {};
+    //    vkt::uni_ptr<InstanceSet> instanceSet = {};
+    //    std::vector<VkDeviceSize> initials = {};
+    //};
 
 };

@@ -48,12 +48,12 @@ namespace vlr {
         virtual vkt::VectorBase& getGpuBuffer() override { return reinterpret_cast<vkt::VectorBase&>(gpuBuffer); };
 
         // 
-        virtual vkt::Vector<T>& get(const uint32_t& I = 0u) { return cpuBuffer[I]; };
-        virtual const vkt::Vector<T>& get(const uint32_t& I = 0u) const { return cpuBuffer[I]; };
+        virtual T& get(const uint32_t& I = 0u) { return this->getCpuBuffer()[I]; };
+        virtual const T& get(const uint32_t& I = 0u) const { return this->getCpuBuffer()[I]; };
 
         // 
-        vkt::Vector<T>& operator[](const uint32_t& I) { return cpuBuffer[I]; };
-        const vkt::Vector<T>& operator[](const uint32_t& I) const { return cpuBuffer[I]; };
+        T& operator[](const uint32_t& I) { return this->get(I); };
+        const T& operator[](const uint32_t& I) const { return this->get(I); };
     };
 
 };

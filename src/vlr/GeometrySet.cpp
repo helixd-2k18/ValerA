@@ -2,6 +2,7 @@
 #include "./vlr/Geometry.hpp"
 #include "./vlr/Interpolation.hpp"
 #include "./vlr/VertexSet.hpp"
+#include "./vlr/SetBase.hpp"
 
 namespace vlr {
 
@@ -12,7 +13,7 @@ namespace vlr {
 
         vkt::Vector<uint8_t> buffer = this->vertexSet->getBuffer_T(geometry->vertexAttribute);
         {
-            auto& geometryDesc = dynamic_cast<vkt::Vector<GeometryDesc>&>(this->getCpuBuffer());
+            vkt::Vector<GeometryDesc>& geometryDesc = dynamic_cast<vkt::Vector<GeometryDesc>&>(this->getCpuBuffer());
             geometryDesc[I] = desc;
             geometryDesc[I].firstVertex += buffer.offset() / buffer.stride();
             geometryDesc[I].primitiveCount = std::min(geometryDesc[I].primitiveCount, uint32_t(buffer.range() / (buffer.stride() * 3ull))); // Make Bit Safer
