@@ -13,7 +13,7 @@ namespace vlr {
         uint32_t flags = 0u;
     };
 
-    class GeometrySet : public SetBase_T<GeometryDesc> { protected: 
+    class GeometrySet : public SetBase_T<GeometryDesc> { protected: friend Acceleration;
         std::vector<vkt::uni_ptr<Geometry>> geometries = {};
         std::vector<vkt::uni_ptr<Interpolation>> interpolations = {};
         vkt::uni_ptr<VertexSet> vertexSet = {};
@@ -23,6 +23,7 @@ namespace vlr {
         GeometrySet() : SetBase_T<GeometryDesc>() { this->constructorExtend0(); };
         GeometrySet(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info) : SetBase_T<GeometryDesc>(driver, info) { this->constructorExtend0(driver); };
 
+        // 
         virtual void constructorExtend0() {};
         virtual void constructorExtend0(vkt::uni_ptr<Driver> driver) {};
         virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry, vkt::uni_ptr<Interpolation> interpolation, vkt::uni_ptr<GeometryDesc> desc);

@@ -32,7 +32,7 @@ namespace vlr {
     };
 
     template<class T>
-    class SetBase_T : public SetBase { protected:
+    class SetBase_T : public SetBase { protected: friend Acceleration;
         
     private: 
         vkt::Vector<T> cpuBuffer = {}, gpuBuffer = {};
@@ -46,6 +46,10 @@ namespace vlr {
         virtual const vkt::VectorBase& getGpuBuffer() const override { return reinterpret_cast<const vkt::VectorBase&>(gpuBuffer); };
         virtual vkt::VectorBase& getCpuBuffer() override { return reinterpret_cast<vkt::VectorBase&>(cpuBuffer); };
         virtual vkt::VectorBase& getGpuBuffer() override { return reinterpret_cast<vkt::VectorBase&>(gpuBuffer); };
+
+        // 
+        virtual vkt::Vector<T>& get(const uint32_t& I = 0u) { return cpuBuffer[I]; };
+        virtual const vkt::Vector<T>& get(const uint32_t& I = 0u) const { return cpuBuffer[I]; };
 
         // 
         vkt::Vector<T>& operator[](const uint32_t& I) { return cpuBuffer[I]; };

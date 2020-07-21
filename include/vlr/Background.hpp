@@ -19,6 +19,7 @@ namespace vlr {
 
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
+        virtual void setImage(vkt::ImageRegion image) { this->background = image; };
     };
 
 };

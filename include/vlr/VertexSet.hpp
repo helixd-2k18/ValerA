@@ -27,6 +27,9 @@ namespace vlr {
         virtual vkh::VkVertexInputAttributeDescription& getAttribute(const uint32_t& I) { return dynamic_cast<vkt::Vector<vkh::VkVertexInputAttributeDescription>&>(this->attributes->getCpuBuffer())[I]; };
         virtual const vkh::VkVertexInputAttributeDescription& getAttribute(const uint32_t& I) const { return dynamic_cast<const vkt::Vector<vkh::VkVertexInputAttributeDescription>&>(this->attributes->getCpuBuffer())[I]; };
 
+        virtual vkh::VkVertexInputBindingDescription& getBinding(const uint32_t& I) { return dynamic_cast<vkt::Vector<vkh::VkVertexInputBindingDescription>&>(this->bindings->getCpuBuffer())[I]; };
+        virtual const vkh::VkVertexInputBindingDescription& getBinding(const uint32_t& I) const { return dynamic_cast<const vkt::Vector<vkh::VkVertexInputBindingDescription>&>(this->bindings->getCpuBuffer())[I]; };
+
         virtual const vkt::Vector<uint8_t>& operator[](const uint32_t& I) const { return this->getBuffer_T(I); };
         virtual vkt::Vector<uint8_t>& operator[](const uint32_t& I) { return this->getBuffer_T(I); };
 

@@ -3,6 +3,7 @@
 // 
 #define VKT_CORE_ENABLE_VMA
 #define VKT_CORE_ENABLE_XVK
+#define VK_ENABLE_BETA_EXTENSIONS
 
 //
 #include <memory>
@@ -46,6 +47,12 @@ namespace vlr {
     struct DataSetCreateInfo {
         VkDeviceSize count = 1u;
         
+    };
+
+    struct AccelerationCreateInfo {
+        vkt::uni_ptr<GeometrySet> geometrySet = {};
+        vkt::uni_ptr<InstanceSet> instanceSet = {};
+        std::vector<VkDeviceSize> initials = {};
     };
 
 };
