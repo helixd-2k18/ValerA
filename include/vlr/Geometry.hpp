@@ -17,6 +17,13 @@ namespace vlr {
         virtual void constructor(vkt::uni_ptr<Driver> driver) {
             
         };
+
+        virtual void setIndexBuffer(uint32_t indexBufferView = ~0u, VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR) {
+            this->indexBufferView = indexBufferView, this->indexType = indexType;
+        };
+        virtual void setVertexBuffer(uint32_t vertexAttribute = 0u){
+            this->vertexAttribute = vertexAttribute;
+        };
     };
 
 };

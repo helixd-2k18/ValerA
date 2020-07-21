@@ -18,7 +18,7 @@ namespace vlr {
         virtual void constructor(vkt::uni_ptr<Driver> driver) {};
 
         // Call a Virtual Method
-        virtual vkt::Vector<uint8_t> getBuffer_T(const uint32_t& I = 0u) const { return (*vertexSet)[attributeIDs[I]]; };
+        virtual vkt::Vector<uint8_t> getBuffer_T(const uint32_t& I = 0u) const { return vertexSet->getAttributeBuffer(attributeIDs[I]); };
         virtual vkt::Vector<uint8_t> operator[](const uint32_t& I) const { return this->getBuffer_T(I); };
         
         // 
