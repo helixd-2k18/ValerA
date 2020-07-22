@@ -21,12 +21,12 @@ namespace vlr {
         virtual vkt::VectorBase& getGpuBuffer() override { return SetBase_T<vkh::VsGeometryInstance>::getGpuBuffer(); };
         
         // 
-        virtual T& get(const uint32_t& I = 0u) override { return SetBase_T<vkh::VsGeometryInstance>::get(I); };
-        virtual const T& get(const uint32_t& I = 0u) const override { return SetBase_T<vkh::VsGeometryInstance>::get(I); };
+        virtual vkh::VsGeometryInstance& get(const uint32_t& I = 0u) override { return SetBase_T<vkh::VsGeometryInstance>::get(I); };
+        virtual const vkh::VsGeometryInstance& get(const uint32_t& I = 0u) const override { return SetBase_T<vkh::VsGeometryInstance>::get(I); };
 
         // 
-        T& operator[](const uint32_t& I) { return this->get(I); };
-        const T& operator[](const uint32_t& I) const { return this->get(I); };
+        vkh::VsGeometryInstance& operator[](const uint32_t& I) { return this->get(I); };
+        const vkh::VsGeometryInstance& operator[](const uint32_t& I) const { return this->get(I); };
     };
 
 };
