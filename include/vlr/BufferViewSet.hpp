@@ -4,7 +4,7 @@
 
 namespace vlr {
 
-    class BufferViewSet : public std::enable_shared_from_this<BufferViewSet> { protected: 
+    class BufferViewSet : public std::enable_shared_from_this<BufferViewSet> { protected: friend RayTracing; friend Rasterization; friend Resampling;
         VkDescriptorSet set = {}; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         std::vector<vkt::Vector<uint8_t>> buffers = {};

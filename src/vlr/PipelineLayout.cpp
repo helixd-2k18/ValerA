@@ -97,7 +97,7 @@ namespace vlr {
         layouts.push_back(this->getBufferViewSetLayout());  // Interpolation Attributes
         layouts.push_back(this->getAccelerationSetLayout());// Acceleration Structure
         layouts.push_back(this->getSetLayout());            // Counters
-        layouts.push_back(this->getSetLayout());            // Ray Data
+        layouts.push_back(this->getBufferViewSetLayout());  // Ray Data (FLIP)
 
         // 
         this->bound.resize(layouts.size());
