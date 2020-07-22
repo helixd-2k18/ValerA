@@ -13,15 +13,16 @@ namespace vlr {
         auto allocator = this->driver->getAllocator();
         this->getCpuBuffer() = vkt::VectorBase(std::make_shared<vkt::VmaBufferAllocation>(allocator, vkh::VkBufferCreateInfo{ .size = sizeof(T) * info->count, .usage = hostUsage }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU }), 0ull, sizeof(T) * info->count, stride);
         this->getGpuBuffer() = vkt::VectorBase(std::make_shared<vkt::VmaBufferAllocation>(allocator, vkh::VkBufferCreateInfo{ .size = sizeof(T) * info->count, .usage =  gpuUsage }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }), 0ull, sizeof(T) * info->count, stride);
+        this->uniform = info->uniform;
     };
 
     void SetBase::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
-        this->descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getSetLayout(), pipelineLayout->getDescriptorPool());
+        this->descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(uniform ? pipelineLayout->getUniformSetLayout() : pipelineLayout->getSetLayout(), pipelineLayout->getDescriptorPool());
         auto& handle = this->descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
             .dstBinding = 0u,
             .dstArrayElement = 0u,
             .descriptorCount = 1u,
-            .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+            .descriptorType = uniform ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER : VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
         });
         handle.offset<VkDescriptorBufferInfo>(0) = this->gpuBuffer;
         vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));

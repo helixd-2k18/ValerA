@@ -5,10 +5,11 @@
 namespace vlr {
 
     class SetBase : public std::enable_shared_from_this<SetBase> { 
-    protected: using T = uint8_t;
+    protected: //using T = uint8_t;
         VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         vkt::uni_ptr<Driver> driver = {};
+        bool uniform = false;
         
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, const uint32_t& stride = 1u, vkt::uni_arg<DataSetCreateInfo> info = {});

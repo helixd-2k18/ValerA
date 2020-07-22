@@ -79,13 +79,30 @@ namespace vlr {
             vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
         };
 
-        { // 9. Acceleration Structure Layout
-            auto helper = vkh::VsDescriptorSetLayoutCreateInfoHelper{};
-            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, .descriptorCount = 1u, .stageFlags = pipusage }, indexedf);
+        //
+        auto pipusage = vkh::VkShaderStageFlags{.eVertex = 1, .eGeometry = 1, .eFragment = 1, .eCompute = 1, .eRaygen = 1, .eAnyHit = 1, .eClosestHit = 1, .eMiss = 1 };
+        auto indexedf = vkh::VkDescriptorBindingFlags{ .eUpdateAfterBind = 1, .eUpdateUnusedWhilePending = 1, .ePartiallyBound = 1 };
 
-            layouts.push_back({});
-            vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
-        };
+        // 
+        std::vector<VkDescriptorSetLayout> layouts = {};
+        layouts.push_back(this->getUniformSetLayout());     // Firstly always constants
+        layouts.push_back(this->getBufferViewSetLayout());  // Vertex Data buffers
+        layouts.push_back(this->getSetLayout());            // Bindings
+        layouts.push_back(this->getSetLayout());            // Attributes (Accessors)
+        layouts.push_back(this->getFramebufferSetLayout()); // Framebuffers (666 in 1)
+        layouts.push_back(this->getSetLayout());            // Materials
+        layouts.push_back(this->getTextureSetLayout());     // Textures
+        layouts.push_back(this->getSamplerSetLayout());     // Samplers
+        layouts.push_back(this->getBufferViewSetLayout());  // Multiple Geometries Data
+        layouts.push_back(this->getBufferViewSetLayout());  // Interpolation Attributes
+        layouts.push_back(this->getAccelerationSetLayout());// Acceleration Structure
+
+        // 
+        this->bound.resize(layouts.size());
+
+        // 
+        std::vector<vkh::VkPushConstantRange> ranges = { vkh::VkPushConstantRange{.stageFlags = pipusage, .offset = 0u, .size = 16u } };
+        vkh::handleVk(this->driver->getDeviceDispatch()->CreatePipelineLayout(vkh::VkPipelineLayoutCreateInfo{}.setSetLayouts(layouts).setPushConstantRanges(ranges), nullptr, &this->pipelineLayout));
     };
 
 };

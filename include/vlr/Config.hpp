@@ -47,7 +47,7 @@ namespace vlr {
 
     struct DataSetCreateInfo {
         VkDeviceSize count = 1u;
-        
+        bool uniform = false;
     };
 
     struct AccelerationCreateInfo;

@@ -5,8 +5,9 @@ namespace vlr {
 
     class PipelineLayout : public std::enable_shared_from_this<PipelineLayout> { protected: 
         VkPipelineCache cache = {};
-        VkPipelineLayout bindings = {}, transform = {}; // Unified Bindings, Transform Feedback 
-        VkDescriptorPool pool = {};
+        VkPipelineLayout pipelineLayout = {}, transform = {}; // Unified Bindings, Transform Feedback 
+        //VkDescriptorPool pool = {};
+        std::vector<VkDescriptorSet> bound = {};
         
         // 
         std::vector<VkDescriptorSetLayout> layouts = {};
@@ -22,9 +23,9 @@ namespace vlr {
 
         // 
         VkPipelineCache getPipelineCache() const { return cache; };
-        VkPipelineLayout getBindingPipelineLayout() const { return bindings; };
+        VkPipelineLayout getBindingPipelineLayout() const { return pipelineLayout; };
         VkPipelineLayout getTransformPipelineLayout() const { return transform; };
-        VkDescriptorPool getDescriptorPool() const { return pool; };
+        VkDescriptorPool getDescriptorPool() const { return driver->getDescriptorPool(); };
 
         VkDescriptorSetLayout getDescriptorSetLayout(const uint32_t& I) const { return layouts[I]; };
         VkDescriptorSetLayout getSetLayout() const { return layouts[0u]; };

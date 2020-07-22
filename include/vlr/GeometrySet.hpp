@@ -39,12 +39,12 @@ namespace vlr {
         virtual vkt::VectorBase& getGpuBuffer() override { return SetBase_T<GeometryDesc>::getGpuBuffer(); };
         
         // 
-        virtual T& get(const uint32_t& I = 0u) override { return SetBase_T<GeometryDesc>::get(I); };
-        virtual const T& get(const uint32_t& I = 0u) const override { return SetBase_T<GeometryDesc>::get(I); };
+        virtual GeometryDesc& get(const uint32_t& I = 0u) override { return SetBase_T<GeometryDesc>::get(I); };
+        virtual const GeometryDesc& get(const uint32_t& I = 0u) const override { return SetBase_T<GeometryDesc>::get(I); };
 
         // 
-        T& operator[](const uint32_t& I) { return this->get(I); };
-        const T& operator[](const uint32_t& I) const { return this->get(I); };
+        GeometryDesc& operator[](const uint32_t& I) { return this->get(I); };
+        const GeometryDesc& operator[](const uint32_t& I) const { return this->get(I); };
     };
 
 };
