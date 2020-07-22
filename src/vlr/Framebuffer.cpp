@@ -57,14 +57,25 @@ namespace vlr {
 
         {
             vkh::VsRenderPassCreateInfoHelper rpsInfo = {};
-            for (uint32_t b = 0u; b < 8u; b++) { rpsInfo.addColorAttachment(colAttachment); };
+            for (uint32_t b = 0u; b < 8u; b++) { 
+                rpsInfo.addColorAttachment(colAttachment);
+                rasterFBO.blendStates.push_back(vkh::VkPipelineColorBlendAttachmentState{ .blendEnable = true });
+                rasterFBO.clearValues.push_back(vkh::VkClearColorValue{}); rasterFBO.clearValues.back().color.float32 = glm::vec4(0.f, 0.f, 0.f, 0.f);
+                resampleFBO.blendStates.push_back(vkh::VkPipelineColorBlendAttachmentState{ .blendEnable = true });
+                resampleFBO.clearValues.push_back(vkh::VkClearColorValue{}); resampleFBO.clearValues.back().color.float32 = glm::vec4(0.f, 0.f, 0.f, 0.f);
+            };
+
+            // 
+            rasterFBO.clearValues.push_back(vkh::VkClearColorValue{}); rasterFBO.clearValues.back().depthStencil = VkClearDepthStencilValue{ 1.0f, 0 };
+            resampleFBO.clearValues.push_back(vkh::VkClearColorValue{}); resampleFBO.clearValues.back().depthStencil = VkClearDepthStencilValue{ 1.0f, 0 };
+
+            // 
             rpsInfo.setDepthStencilAttachment(depAttachment);
             rpsInfo.addSubpassDependency(dep0);
             rpsInfo.addSubpassDependency(dep1);
             vkh::handleVk(device->CreateRenderPass(rpsInfo, nullptr, &rasterFBO.renderPass));
             vkh::handleVk(device->CreateRenderPass(rpsInfo, nullptr, &resampleFBO.renderPass));
         };
-
     };
 
     // 
@@ -73,7 +84,7 @@ namespace vlr {
         auto aspect = vkh::VkImageAspectFlags{.eColor = 1};
         auto apres = vkh::VkImageSubresourceRange{.aspectMask = aspect};
         auto device = this->driver->getDeviceDispatch();
-        auto& allocInfo = driver->memoryAllocationInfo();
+        auto& allocInfo = this->driver->memoryAllocationInfo();
 
         // 
         std::vector<VkImageView> rasterAttachments = {};
@@ -176,6 +187,10 @@ namespace vlr {
         // 
         createFramebuffer(resampleFBO, resampleAttachments);
         createFramebuffer(rasterFBO, rasterAttachments);
+
+        // 
+        scissor = vkh::VkRect2D{ vkh::VkOffset2D{0, 0}, vkh::VkExtent2D{width, height} };
+        viewport = vkh::VkViewport{ 0.0f, static_cast<float>(scissor.extent.height), static_cast<float>(scissor.extent.width), -static_cast<float>(scissor.extent.height), 0.f, 1.f };
     };
 
     // 

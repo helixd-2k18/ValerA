@@ -1,17 +1,10 @@
 #pragma once
 #include "./Config.hpp"
 #include "./Driver.hpp"
+#include "./Geometry.hpp"
 
 // 
 namespace vlr {
-
-    struct GeometryDesc {
-        glm::mat3x4 transform = glm::mat3x4(1.f);
-        uint32_t firstVertex = 0u;
-        uint32_t primitiveCount = 0u;
-        uint32_t material = 0u;
-        uint32_t flags = 0u;
-    };
 
     class GeometrySet : public SetBase_T<GeometryDesc> { protected: friend Acceleration; friend RayTracing; friend Rasterization;
         std::vector<vkt::uni_ptr<Geometry>> geometries = {};
@@ -26,7 +19,7 @@ namespace vlr {
         // 
         virtual void constructorExtend0() {};
         virtual void constructorExtend0(vkt::uni_ptr<Driver> driver) {};
-        virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry, vkt::uni_ptr<Interpolation> interpolation, vkt::uni_ptr<GeometryDesc> desc);
+        virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry, vkt::uni_ptr<Interpolation> interpolation);
         virtual void resetGeometries() {
             interpolations.resize(0u);
             geometries.resize(0u);

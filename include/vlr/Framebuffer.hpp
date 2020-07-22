@@ -1,5 +1,6 @@
 #pragma once
 #include "./Config.hpp"
+#include "./Driver.hpp"
 
 namespace vlr {
 
@@ -12,7 +13,7 @@ namespace vlr {
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
     };
 
-    class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: 
+    class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: friend Rasterization; friend Resampling; friend RayTracing;
         RenderPass rasterFBO = {}, resampleFBO = {}; VkDescriptorSet set = {};
         vkt::ImageRegion depthStencilImage = {};
         std::vector<VkSampler> samplers = {};

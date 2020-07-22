@@ -1,17 +1,19 @@
 #pragma once
 #include "./Config.hpp"
+#include "./Driver.hpp"
 
 namespace vlr {
 
-    class PipelineLayout : public std::enable_shared_from_this<PipelineLayout> { protected: 
+    class PipelineLayout : public std::enable_shared_from_this<PipelineLayout> { protected: friend Rasterization; friend Resampling; friend RayTracing;
         VkPipelineCache cache = {};
-        VkPipelineLayout pipelineLayout = {}, transform = {}; // Unified Bindings, Transform Feedback 
+        VkPipelineLayout pipelineLayout = {}, transformLayout = {}; // Unified Bindings, Transform Feedback 
         //VkDescriptorPool pool = {};
         std::vector<VkDescriptorSet> bound = {};
         
         // 
         std::vector<VkDescriptorSetLayout> layouts = {};
         std::shared_ptr<Driver> driver = {};
+        vkh::VkShaderStageFlags stages = {};
         
     public: 
         PipelineLayout() { this->constructor(); };
@@ -22,9 +24,9 @@ namespace vlr {
         virtual void constructor(vkt::uni_ptr<Driver> driver);
 
         // 
-        VkPipelineCache getPipelineCache() const { return cache; };
+        VkPipelineCache getPipelineCache() const { return driver->getPipelineCache(); };
         VkPipelineLayout getBindingPipelineLayout() const { return pipelineLayout; };
-        VkPipelineLayout getTransformPipelineLayout() const { return transform; };
+        VkPipelineLayout getTransformPipelineLayout() const { return transformLayout; };
         VkDescriptorPool getDescriptorPool() const { return driver->getDescriptorPool(); };
 
         VkDescriptorSetLayout getDescriptorSetLayout(const uint32_t& I) const { return layouts[I]; };

@@ -51,6 +51,7 @@ namespace vlr {
     };
 
     struct AccelerationCreateInfo;
+    struct PipelineCreateInfo;
 
     //struct AccelerationCreateInfo {
     //    vkt::uni_ptr<GeometrySet> geometrySet = {};

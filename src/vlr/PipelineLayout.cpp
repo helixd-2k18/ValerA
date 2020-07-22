@@ -101,7 +101,7 @@ namespace vlr {
         this->bound.resize(layouts.size());
 
         // 
-        std::vector<vkh::VkPushConstantRange> ranges = { vkh::VkPushConstantRange{.stageFlags = pipusage, .offset = 0u, .size = 16u } };
+        std::vector<vkh::VkPushConstantRange> ranges = { vkh::VkPushConstantRange{.stageFlags = (stages = pipusage), .offset = 0u, .size = 16u } };
         vkh::handleVk(this->driver->getDeviceDispatch()->CreatePipelineLayout(vkh::VkPipelineLayoutCreateInfo{}.setSetLayouts(layouts).setPushConstantRanges(ranges), nullptr, &this->pipelineLayout));
     };
 
