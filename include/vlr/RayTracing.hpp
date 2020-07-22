@@ -14,7 +14,7 @@ namespace vlr {
         vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<Driver> driver = {};
 
-        std::vector<vkt::uni_ptr<GeometrySet>> geometries = {};
+        //std::vector<vkt::uni_ptr<GeometrySet>> geometries = {}; // Not Necessary, inbound with `vkt::uni_ptr<Acceleration>`
         std::vector<vkt::uni_ptr<Acceleration>> accelerations = {};
         VkPipeline generation = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE;
 
