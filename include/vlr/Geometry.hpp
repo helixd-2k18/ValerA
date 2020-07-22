@@ -25,9 +25,10 @@ namespace vlr {
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<GeometryDesc> desc = {}) {
+            vkt::Vector<uint8_t> buffer = this->vertexSet->getBuffer_T(this->vertexAttribute);
             this->desc = desc;
+            this->desc->primitiveCount = std::min(this->desc->primitiveCount, uint32_t(buffer.range() / (buffer.stride() * 3ull))); // Make Bit Safer
         };
-
         virtual void setIndexBuffer(uint32_t indexBufferView = ~0u, VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR) {
             this->indexBufferView = indexBufferView, this->indexType = indexType;
         };

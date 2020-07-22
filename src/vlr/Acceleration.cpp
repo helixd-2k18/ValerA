@@ -121,6 +121,7 @@ namespace vlr {
 
     void Acceleration::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info) {
         this->driver = driver, this->info = info;
+        auto device = this->driver->getDeviceDispatch();
 
         // FOR CREATE!
         this->dataCreate.resize(info->initials.size()); uintptr_t I = 0ull;
@@ -144,11 +145,11 @@ namespace vlr {
         
         // 
         if (!this->structure) { // create acceleration structure fastly...
-            vkh::handleVk(driver->getDeviceDispatch()->CreateAccelerationStructureKHR(this->create, nullptr, &this->structure));
+            vkh::handleVk(device->CreateAccelerationStructureKHR(this->create, nullptr, &this->structure));
 
             //
             vkh::VkMemoryRequirements2 requirements = {};
-            driver->getDeviceDispatch()->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
+            device->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
                 .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_KHR,
                 .buildType = VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
                 .accelerationStructure = this->structure
@@ -162,7 +163,7 @@ namespace vlr {
             }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
 
             // 
-            vkh::handleVk(driver->getDeviceDispatch()->BindAccelerationStructureMemoryKHR(1u, vkh::VkBindAccelerationStructureMemoryInfoKHR{
+            vkh::handleVk(device->BindAccelerationStructureMemoryKHR(1u, vkh::VkBindAccelerationStructureMemoryInfoKHR{
                 .accelerationStructure = this->structure,
                 .memory = TempBuffer->getAllocationInfo().memory,
                 .memoryOffset = TempBuffer->getAllocationInfo().offset,
@@ -172,7 +173,7 @@ namespace vlr {
         // 
         if (!this->gpuScratchBuffer.has()) { // 
             vkh::VkMemoryRequirements2 requirements = {};
-            driver->getDeviceDispatch()->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
+            device->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
                 .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_KHR,
                 .buildType = VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
                 .accelerationStructure = this->structure

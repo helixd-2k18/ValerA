@@ -6,18 +6,17 @@
 
 namespace vlr {
 
-    struct PipelineCreateInfo {
-        vkt::uni_ptr<PipelineLayout> pipelineLayout = {};
-        vkt::uni_ptr<Framebuffer> framebuffer = {};
-    };
-
     class Rasterization : public std::enable_shared_from_this<Rasterization> { protected: friend RayTracing;
         vkt::uni_ptr<VertexSet> vertexSet = {};
         vkt::uni_ptr<Geometry> geometry = {};
         vkt::uni_ptr<Interpolation> interpolation = {};
         vkt::uni_ptr<PipelineLayout> layout = {};
+        //vkt::uni_arg<PipelineCreateInfo> info = {};
+        vkt::uni_ptr<TextureSet> textureSet = {};
+        vkt::uni_ptr<SamplerSet> samplerSet = {};
+        vkt::uni_ptr<MaterialSet> materialSet = {};
+        vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<Driver> driver = {};
-        vkt::uni_arg<PipelineCreateInfo> info = {};
         VkPipeline pipeline = VK_NULL_HANDLE;
 
         // 
@@ -32,7 +31,7 @@ namespace vlr {
         // 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info);
-        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, glm::uvec4 meta = glm::uvec4(0u));
+        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         
     };
 

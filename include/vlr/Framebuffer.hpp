@@ -1,8 +1,14 @@
 #pragma once
 #include "./Config.hpp"
 #include "./Driver.hpp"
+#include "./PipelineLayout.hpp"
 
 namespace vlr {
+
+    struct PipelineCreateInfo {
+        vkt::uni_ptr<PipelineLayout> layout = {};
+        vkt::uni_ptr<Framebuffer> framebuffer = {};
+    };
 
     struct RenderPass {
         VkFramebuffer framebuffer = {};

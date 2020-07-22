@@ -147,7 +147,7 @@ namespace vlr {
         // 
         {
             this->samplers.push_back(VK_NULL_HANDLE);
-            this->driver->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+            device->CreateSampler(vkh::VkSamplerCreateInfo{
                 .magFilter = VK_FILTER_LINEAR,
                 .minFilter = VK_FILTER_LINEAR,
                 .addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
@@ -156,7 +156,7 @@ namespace vlr {
             }, nullptr, &this->samplers.back());
 
             this->samplers.push_back(VK_NULL_HANDLE);
-            this->driver->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+            device->CreateSampler(vkh::VkSamplerCreateInfo{
                 .magFilter = VK_FILTER_LINEAR,
                 .minFilter = VK_FILTER_LINEAR,
                 .addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
@@ -164,7 +164,7 @@ namespace vlr {
             }, nullptr, &this->samplers.back());
 
             this->samplers.push_back(VK_NULL_HANDLE);
-            this->driver->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+            device->CreateSampler(vkh::VkSamplerCreateInfo{
                 .magFilter = VK_FILTER_LINEAR,
                 .minFilter = VK_FILTER_LINEAR,
                 .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
@@ -172,7 +172,7 @@ namespace vlr {
             }, nullptr, &this->samplers.back());
 
             this->samplers.push_back(VK_NULL_HANDLE);
-            this->driver->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+            device->CreateSampler(vkh::VkSamplerCreateInfo{
                 .magFilter = VK_FILTER_LINEAR,
                 .minFilter = VK_FILTER_LINEAR,
                 .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
