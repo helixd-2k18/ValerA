@@ -34,6 +34,7 @@ namespace vlr {
         VkDescriptorSetLayout getBufferViewSetLayout() const { return layouts[3u]; };
         VkDescriptorSetLayout getBackgroundSetLayout() const { return layouts[5u]; };
         VkDescriptorSetLayout getFramebufferSetLayout() const { return layouts[6u]; };
+        VkDescriptorSetLayout getAccelerationSetLayout() const { return layouts[7u]; };
     };
 
 };

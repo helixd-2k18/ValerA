@@ -13,7 +13,7 @@ namespace vlr {
         uint32_t flags = 0u;
     };
 
-    class GeometrySet : public SetBase_T<GeometryDesc> { protected: friend Acceleration;
+    class GeometrySet : public SetBase_T<GeometryDesc> { protected: friend Acceleration; friend RayTracing; friend Rasterization;
         std::vector<vkt::uni_ptr<Geometry>> geometries = {};
         std::vector<vkt::uni_ptr<Interpolation>> interpolations = {};
         vkt::uni_ptr<VertexSet> vertexSet = {};

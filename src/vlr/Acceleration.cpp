@@ -1,10 +1,23 @@
 #include "./vlr/Acceleration.hpp"
+#include "./vlr/PipelineLayout.hpp"
 #include "./vlr/SetBase.hpp"
 #include "./vlr/GeometrySet.hpp"
 #include "./vlr/InstanceSet.hpp"
 #include "./vlr/Geometry.hpp"
 
 namespace vlr {
+
+    void Acceleration::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
+        this->descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getAccelerationSetLayout(), pipelineLayout->getDescriptorPool());
+        auto& handle = this->descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
+            .dstBinding = 0u,
+            .dstArrayElement = 0u,
+            .descriptorCount = 1u,
+            .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR
+        });
+        handle.offset<VkAccelerationStructureKHR>(0) = this->structure;
+        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));
+    };
 
     void Acceleration::updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build) {
         offsetInfo.resize(0u);
@@ -98,6 +111,7 @@ namespace vlr {
         this->bdHeadInfo.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
         this->bdHeadInfo.flags = bdHeadFlags;
         this->bdHeadInfo.geometryArrayOfPointers = true;
+        this->bdHeadInfo.dstAccelerationStructure = this->structure;
 
         // Only For Supported GPU's
         if (build) {
@@ -125,6 +139,51 @@ namespace vlr {
         this->create.pGeometryInfos = this->dataCreate.data();
         this->create.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
         this->create.flags = bdHeadFlags;
+        
+        {   // 
+            if (!this->structure) { // create acceleration structure fastly...
+                vkh::handleVk(driver->getDeviceDispatch()->CreateAccelerationStructureKHR(this->create, nullptr, &this->structure));
+
+                //
+                vkh::VkMemoryRequirements2 requirements = {};
+                driver->getDeviceDispatch()->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
+                    .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_KHR,
+                    .buildType = VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+                    .accelerationStructure = this->structure
+                }, requirements);
+
+                // TODO: fix memoryProperties issue
+                auto usage = vkh::VkBufferUsageFlags{.eTransferDst = 1, .eStorageTexelBuffer = 1, .eStorageBuffer = 1, .eVertexBuffer = 1, .eSharedDeviceAddress = 1 };
+                TempBuffer = vkt::Vector<uint8_t>(std::make_shared<vkt::VmaBufferAllocation>(this->driver->getAllocator(), vkh::VkBufferCreateInfo{
+                    .size = requirements.memoryRequirements.size,
+                    .usage = usage,
+                }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
+
+                // 
+                vkh::handleVk(driver->getDeviceDispatch()->BindAccelerationStructureMemoryKHR(1u, vkh::VkBindAccelerationStructureMemoryInfoKHR{
+                    .accelerationStructure = this->structure,
+                    .memory = TempBuffer->getAllocationInfo().memory,
+                    .memoryOffset = TempBuffer->getAllocationInfo().offset,
+                }));
+            };
+
+            // 
+            if (!this->gpuScratchBuffer.has()) { // 
+                vkh::VkMemoryRequirements2 requirements = {};
+                driver->getDeviceDispatch()->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
+                    .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_KHR,
+                    .buildType = VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+                    .accelerationStructure = this->structure
+                }, requirements);
+
+                //
+                auto usage = vkh::VkBufferUsageFlags{.eStorageBuffer = 1, .eRayTracing = 1, .eSharedDeviceAddress = 1 };
+                this->gpuScratchBuffer = vkt::Vector<uint8_t>(std::make_shared<vkt::VmaBufferAllocation>(driver->getAllocator(), vkh::VkBufferCreateInfo{
+                    .size = requirements.memoryRequirements.size,
+                    .usage = usage
+                }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
+            };
+        };
 
         //
         this->updateAccelerationStructure(info, false);
@@ -134,5 +193,6 @@ namespace vlr {
         this->updateAccelerationStructure(info, false);
         driver->getDeviceDispatch()->CmdBuildAccelerationStructureKHR(cmd, 1u, this->bdHeadInfo, reinterpret_cast<VkAccelerationStructureBuildOffsetInfoKHR**>(this->offsetPtr.data()));
     };
+
 
 };

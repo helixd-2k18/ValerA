@@ -6,7 +6,7 @@ namespace vlr {
 
     class SetBase : public std::enable_shared_from_this<SetBase> { 
     protected: using T = uint8_t;
-        VkDescriptorSet set = {}; bool updated = false;
+        VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         vkt::uni_ptr<Driver> driver = {};
         

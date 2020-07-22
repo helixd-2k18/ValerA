@@ -42,6 +42,7 @@ namespace vlr {
     template<class T = uint8_t> class SetBase_T;
     class SetBase;
     class VertexSet;
+    class RayTracing;
 
 
     struct DataSetCreateInfo {

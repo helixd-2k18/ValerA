@@ -70,6 +70,22 @@ namespace vlr {
             layouts.push_back({});
             vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
         };
+
+        { // 8. Acceleration Structure Layout
+            auto helper = vkh::VsDescriptorSetLayoutCreateInfoHelper{};
+            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR, .descriptorCount = 1u, .stageFlags = pipusage }, indexedf);
+
+            layouts.push_back({});
+            vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
+        };
+
+        { // 9. Acceleration Structure Layout
+            auto helper = vkh::VsDescriptorSetLayoutCreateInfoHelper{};
+            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, .descriptorCount = 1u, .stageFlags = pipusage }, indexedf);
+
+            layouts.push_back({});
+            vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
+        };
     };
 
 };

@@ -34,6 +34,12 @@ namespace vlr {
         std::vector<vkh::VkAccelerationStructureGeometryKHR*>  buildGPtr  = {};
         vkh::VkAccelerationStructureGeometryKHR                buildGTemp = {}; // INSTANCE TEMPLATE, CAN'T BE ARRAY!
 
+        //
+        VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
+        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
+        VkAccelerationStructureKHR structure = VK_NULL_HANDLE;
+        vkt::Vector<uint8_t> gpuScratchBuffer = {};
+        vkt::Vector<uint8_t> TempBuffer = {};
 
     public: 
         Acceleration() { this->constructor(); };
@@ -43,6 +49,7 @@ namespace vlr {
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = {});
         virtual void updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build = false);
         virtual void buildAccelerationStructureCmd(const VkCommandBuffer& cmd = VK_NULL_HANDLE);
+        virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
     };
 
 };
