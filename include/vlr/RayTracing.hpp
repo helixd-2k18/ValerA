@@ -6,12 +6,24 @@
 
 namespace vlr {
 
+    // i.e. extended float3x4
     struct RayData {
-
+        glm::vec3 origin = glm::vec3(0.f); uint32_t reserved = 0u;
+        glm::vec3 direct = glm::vec3(0.f); glm::u8vec4 meta = glm::u8vec4(0u); // 0u - flags, 1u - lifetime
+        glm::uvec2 color = glm::uvec2(0u); glm::uvec2 emission = glm::uvec2(0u); // Packed FP16
     };
 
+    // i.e. float2x4
     struct HitData {
-        
+        glm::uvec3 indices = glm::uvec3(0u); uint32_t rayID = 0u; // 
+        glm::vec2 barycentric = glm::vec2(0.f); float extra = 0.f;
+        glm::u8vec4 meta = glm::u8vec4(0u); // 0u - flags, reserved
+    };
+
+    // i.e. vec4 
+    struct ColorData {
+        glm::vec3 emission = glm::vec3(0.f); // Packed FP16
+        uint32_t next = ~0u;
     };
 
     class RayTracing : public std::enable_shared_from_this<RayTracing> { protected: 
@@ -28,14 +40,16 @@ namespace vlr {
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};
         std::vector<vkt::uni_ptr<Acceleration>> accelerations = {};
         VkPipeline generation = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE, finalize = VK_NULL_HANDLE;
-        
-        //
+        // TODO: Accumulation Shader (pick up all hits)
+
+        // 
+        vkt::uni_ptr<SetBase_T<uint32_t>> counters = {};
+        vkt::uni_ptr<SetBase_T<ColorData>> colorChainData = {};
         vkt::uni_ptr<SetBase_T<HitData>> hitData = {};
         vkt::uni_ptr<SetBase_T<RayData>> rayDataFlip0 = {};
         vkt::uni_ptr<SetBase_T<RayData>> rayDataFlip1 = {};
         vkt::uni_ptr<BufferViewSet> rayDataSetFlip0 = {};
         vkt::uni_ptr<BufferViewSet> rayDataSetFlip1 = {};
-        vkt::uni_ptr<SetBase_T<uint32_t>> counters = {};
 
     public: 
         RayTracing() { this->constructor(); };

@@ -25,6 +25,8 @@ namespace vlr {
         // 
         this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
         this->rayDataFlip1 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
+        this->hitData  = std::make_shared<SetBase_T<HitData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
+        this->colorChainData = std::make_shared<SetBase_T<ColorData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
         this->counters = std::make_shared<SetBase_T<uint32_t>>(driver, DataSetCreateInfo{ .count = 4 }); // Ray Write, Ray Read, Hit Write, Hit Read counters
 
         // 
@@ -40,6 +42,8 @@ namespace vlr {
         // 
         this->rayDataSetFlip0->createDescriptorSet(layout);
         this->rayDataSetFlip1->createDescriptorSet(layout);
+        this->colorChainData->createDescriptorSet(layout);
+        this->hitData->createDescriptorSet(layout);
         this->counters->createDescriptorSet(layout);
 
         // 

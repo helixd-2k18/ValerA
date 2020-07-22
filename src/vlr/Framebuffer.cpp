@@ -119,6 +119,9 @@ namespace vlr {
             });
         };
 
+        //
+        this->atomicMapping = createImage(VK_FORMAT_R32_UINT);
+
         // 
         auto createFramebuffer = [&,this](RenderPass& fbo, const std::vector<VkImageView>& attachments){
             vkh::handleVk(device->CreateFramebuffer(vkh::VkFramebufferCreateInfo{
@@ -197,7 +200,8 @@ namespace vlr {
     void Framebuffer::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
         auto device = this->driver->getDeviceDispatch();
         auto descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getBufferViewSetLayout(), pipelineLayout->getDescriptorPool());
-        auto createDescriptorSetImages = [&,this](const std::vector<vkt::ImageRegion>& images, const uint32_t& binding = 0u) {
+        auto createDescriptorSetImages = [&,this](const std::vector<vkt::ImageRegion>& images, const uint32_t& binding = 0u) 
+        {   // 
             auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
                 .dstBinding = binding,
                 .dstArrayElement = 0u,
@@ -219,6 +223,16 @@ namespace vlr {
             for (uintptr_t i = 0; i < samplers.size(); i++) {
                 handle.offset<VkDescriptorImageInfo>(i)->sampler = samplers[i];
             };
+        };
+
+        {   // 
+            auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
+                .dstBinding = 5u,
+                .dstArrayElement = 0u,
+                .descriptorCount = 1u,
+                .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE
+            });
+            handle.offset<VkDescriptorImageInfo>(0u) = this->atomicMapping;
         };
 
         // 

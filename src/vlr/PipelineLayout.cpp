@@ -66,6 +66,7 @@ namespace vlr {
             helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 2u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, .descriptorCount =  8u, .stageFlags = pipusage }, indexedf); // Resampled
             helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 3u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, .descriptorCount =  8u, .stageFlags = pipusage }, indexedf); // Rasterized 
             helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 4u, .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER      , .descriptorCount =  8u, .stageFlags = pipusage }, indexedf);
+            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 5u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, .descriptorCount =  1u, .stageFlags = pipusage }, indexedf); // Atomic Mapping
 
             layouts.push_back({});
             vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
@@ -98,6 +99,8 @@ namespace vlr {
         layouts.push_back(this->getAccelerationSetLayout());// Acceleration Structure
         layouts.push_back(this->getSetLayout());            // Counters
         layouts.push_back(this->getBufferViewSetLayout());  // Ray Data (FLIP)
+        layouts.push_back(this->getSetLayout());            // Hit Data
+        layouts.push_back(this->getSetLayout());            // Color-chain Data
 
         // 
         this->bound.resize(layouts.size());
