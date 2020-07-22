@@ -15,7 +15,6 @@ namespace vlr {
         {
             vkt::Vector<GeometryDesc>& geometryDesc = dynamic_cast<vkt::Vector<GeometryDesc>&>(this->getCpuBuffer());
             geometryDesc[I] = desc;
-            geometryDesc[I].firstVertex += buffer.offset() / buffer.stride();
             geometryDesc[I].primitiveCount = std::min(geometryDesc[I].primitiveCount, uint32_t(buffer.range() / (buffer.stride() * 3ull))); // Make Bit Safer
         };
     };

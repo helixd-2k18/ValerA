@@ -14,11 +14,35 @@ namespace vlr {
 
         // 
         if (instanceSet.has()) {
-            
+            uint32_t i = 0u;
+            {   // 
+                auto geometry = info->geometrySet->geometries[i];
+                auto attribute = geometry->vertexSet->getAttribute(geometry->vertexAttribute);
+                auto binding = geometry->vertexSet->getBinding(attribute.binding);
+                auto offsetDesc = vkh::VkAccelerationStructureBuildOffsetInfoKHR{};
+                auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eNoDuplicateAnyHitInvocation = 1 };
+                auto geometryDesc = vkh::VkAccelerationStructureGeometryKHR{ .flags = buildGeometryFlags };
+                auto instanceDesc = vkh::VkAccelerationStructureGeometryInstancesDataKHR{};
+
+                // 
+                instanceDesc.data = info->instanceSet->getCpuBuffer();
+                geometryDesc.geometry.instances = instanceDesc;
+
+                // 
+                offsetDesc.primitiveCount = info->instanceSet->getCpuBuffer().size();
+                offsetDesc.transformOffset = info->instanceSet->getCpuBuffer().offset();
+                offsetDesc.primitiveOffset = 0u;
+                offsetDesc.firstVertex = 0u;
+
+                // 
+                buildGInfo.push_back(geometryDesc);
+                offsetInfo.push_back(offsetDesc);
+            };
         } else 
         if (geometrySet.has()) {
             // Generate Building Info
-            for (uint32_t i=0u;i<info->geometrySet->geometries.size();i++) {
+            for (uint32_t i=0u;i<info->geometrySet->geometries.size();i++) 
+            {   // 
                 auto geometry = info->geometrySet->geometries[i];
                 auto attribute = geometry->vertexSet->getAttribute(geometry->vertexAttribute);
                 auto binding = geometry->vertexSet->getBinding(attribute.binding);
@@ -26,23 +50,33 @@ namespace vlr {
                 auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eNoDuplicateAnyHitInvocation = 1 };
                 auto geometryDesc = vkh::VkAccelerationStructureGeometryKHR{ .flags = buildGeometryFlags };
                 auto triangleDesc = vkh::VkAccelerationStructureGeometryTrianglesDataKHR{};
+                auto buffer = geometry->vertexSet->getAttributeBuffer(geometry->vertexAttribute);
 
                 // 
                 triangleDesc.transformData = info->geometrySet->getGpuBuffer();
                 triangleDesc.vertexFormat = attribute.format;
                 triangleDesc.vertexStride = binding.stride;
                 triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->vertexAttribute);
-                triangleDesc.indexType = geometry->indexType;
-                if (geometry->indexBufferView != ~0u && geometry->indexBufferView != -1) {
+                
+                // 
+                if (geometry->indexBufferView != ~0u && geometry->indexBufferView != -1 && geometry->indexType != VK_INDEX_TYPE_NONE_KHR) {
                     triangleDesc.indexData = geometry->vertexSet->getBuffer(geometry->indexBufferView);
+                    triangleDesc.indexType = geometry->indexType;
+                } else {
+                    triangleDesc.indexType = VK_INDEX_TYPE_NONE_KHR;
+                    triangleDesc.indexData = VK_NULL_HANDLE;
                 };
+
+                // Fix vec4 formats into vec3, without alpha (but still can be passed by stride value)
+                if (triangleDesc.vertexFormat == VK_FORMAT_R32G32B32A32_SFLOAT) triangleDesc.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
+                if (triangleDesc.vertexFormat == VK_FORMAT_R16G16B16A16_SFLOAT) triangleDesc.vertexFormat = VK_FORMAT_R16G16B16_SFLOAT;
                 geometryDesc.geometry.triangles = triangleDesc;
 
                 // 
                 offsetDesc.firstVertex = (info->geometrySet)->get(i).firstVertex;
                 offsetDesc.primitiveCount = (info->geometrySet)->get(i).primitiveCount;
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
-                offsetDesc.primitiveOffset = 0u;
+                offsetDesc.primitiveOffset = buffer.offset();
 
                 // 
                 buildGInfo.push_back(geometryDesc);
