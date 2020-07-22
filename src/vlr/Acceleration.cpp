@@ -134,55 +134,56 @@ namespace vlr {
         };
 
         // FOR CREATE! 
-        auto bdHeadFlags = vkh::VkBuildAccelerationStructureFlagsKHR{ .eAllowUpdate = 1, .ePreferFastTrace = 1 };
-        this->create.maxGeometryCount = this->dataCreate.size();
-        this->create.pGeometryInfos = this->dataCreate.data();
-        this->create.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
-        this->create.flags = bdHeadFlags;
+        {
+            auto bdHeadFlags = vkh::VkBuildAccelerationStructureFlagsKHR{ .eAllowUpdate = 1, .ePreferFastTrace = 1 };
+            this->create.maxGeometryCount = this->dataCreate.size();
+            this->create.pGeometryInfos = this->dataCreate.data();
+            this->create.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+            this->create.flags = bdHeadFlags;
+        };
         
-        {   // 
-            if (!this->structure) { // create acceleration structure fastly...
-                vkh::handleVk(driver->getDeviceDispatch()->CreateAccelerationStructureKHR(this->create, nullptr, &this->structure));
+        // 
+        if (!this->structure) { // create acceleration structure fastly...
+            vkh::handleVk(driver->getDeviceDispatch()->CreateAccelerationStructureKHR(this->create, nullptr, &this->structure));
 
-                //
-                vkh::VkMemoryRequirements2 requirements = {};
-                driver->getDeviceDispatch()->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
-                    .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_KHR,
-                    .buildType = VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
-                    .accelerationStructure = this->structure
-                }, requirements);
+            //
+            vkh::VkMemoryRequirements2 requirements = {};
+            driver->getDeviceDispatch()->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
+                .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_KHR,
+                .buildType = VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+                .accelerationStructure = this->structure
+            }, requirements);
 
-                // TODO: fix memoryProperties issue
-                auto usage = vkh::VkBufferUsageFlags{.eTransferDst = 1, .eStorageTexelBuffer = 1, .eStorageBuffer = 1, .eVertexBuffer = 1, .eSharedDeviceAddress = 1 };
-                TempBuffer = vkt::Vector<uint8_t>(std::make_shared<vkt::VmaBufferAllocation>(this->driver->getAllocator(), vkh::VkBufferCreateInfo{
-                    .size = requirements.memoryRequirements.size,
-                    .usage = usage,
-                }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
-
-                // 
-                vkh::handleVk(driver->getDeviceDispatch()->BindAccelerationStructureMemoryKHR(1u, vkh::VkBindAccelerationStructureMemoryInfoKHR{
-                    .accelerationStructure = this->structure,
-                    .memory = TempBuffer->getAllocationInfo().memory,
-                    .memoryOffset = TempBuffer->getAllocationInfo().offset,
-                }));
-            };
+            // TODO: fix memoryProperties issue
+            auto usage = vkh::VkBufferUsageFlags{.eTransferDst = 1, .eStorageTexelBuffer = 1, .eStorageBuffer = 1, .eVertexBuffer = 1, .eSharedDeviceAddress = 1 };
+            TempBuffer = vkt::Vector<uint8_t>(std::make_shared<vkt::VmaBufferAllocation>(this->driver->getAllocator(), vkh::VkBufferCreateInfo{
+                .size = requirements.memoryRequirements.size,
+                .usage = usage,
+            }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
 
             // 
-            if (!this->gpuScratchBuffer.has()) { // 
-                vkh::VkMemoryRequirements2 requirements = {};
-                driver->getDeviceDispatch()->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
-                    .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_KHR,
-                    .buildType = VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
-                    .accelerationStructure = this->structure
-                }, requirements);
+            vkh::handleVk(driver->getDeviceDispatch()->BindAccelerationStructureMemoryKHR(1u, vkh::VkBindAccelerationStructureMemoryInfoKHR{
+                .accelerationStructure = this->structure,
+                .memory = TempBuffer->getAllocationInfo().memory,
+                .memoryOffset = TempBuffer->getAllocationInfo().offset,
+            }));
+        };
 
-                //
-                auto usage = vkh::VkBufferUsageFlags{.eStorageBuffer = 1, .eRayTracing = 1, .eSharedDeviceAddress = 1 };
-                this->gpuScratchBuffer = vkt::Vector<uint8_t>(std::make_shared<vkt::VmaBufferAllocation>(driver->getAllocator(), vkh::VkBufferCreateInfo{
-                    .size = requirements.memoryRequirements.size,
-                    .usage = usage
-                }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
-            };
+        // 
+        if (!this->gpuScratchBuffer.has()) { // 
+            vkh::VkMemoryRequirements2 requirements = {};
+            driver->getDeviceDispatch()->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
+                .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_KHR,
+                .buildType = VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+                .accelerationStructure = this->structure
+            }, requirements);
+
+            //
+            auto usage = vkh::VkBufferUsageFlags{.eStorageBuffer = 1, .eRayTracing = 1, .eSharedDeviceAddress = 1 };
+            this->gpuScratchBuffer = vkt::Vector<uint8_t>(std::make_shared<vkt::VmaBufferAllocation>(driver->getAllocator(), vkh::VkBufferCreateInfo{
+                .size = requirements.memoryRequirements.size,
+                .usage = usage
+            }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
         };
 
         //
