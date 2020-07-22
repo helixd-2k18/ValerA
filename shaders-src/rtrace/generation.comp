@@ -1,0 +1,11 @@
+#version 460 core
+#extension GL_GOOGLE_include_directive : require
+#define GLSL
+
+#include "../include/driver.glsl"
+#include "../include/bindings.glsl"
+
+layout ( local_size_x = 32u, local_size_y = 12u ) in; 
+void main(){
+    
+};
