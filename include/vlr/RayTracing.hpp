@@ -22,11 +22,11 @@ namespace vlr {
 
     // i.e. vec4 
     struct ColorData {
-        glm::vec3 emission = glm::vec3(0.f); // Packed FP16
-        uint32_t next = ~0u;
+        glm::vec3 emission = glm::vec3(0.f); // RGB Color by RGB32F, Sample Always 1S
+        uint32_t next = ~0u; // Also, can be replaced by Pixel ID when used Accumulation Shader
     };
 
-    class RayTracing : public std::enable_shared_from_this<RayTracing> { protected: 
+    class RayTracing : public std::enable_shared_from_this<RayTracing> { protected: friend RayTracing;
         vkt::uni_ptr<Acceleration> accelerationTop = {}; // Top Level Acceleration Structure
         vkt::uni_ptr<VertexSet> vertexSet = {}; // Vertex Set 
         vkt::uni_ptr<PipelineLayout> layout = {};

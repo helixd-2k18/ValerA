@@ -2,6 +2,7 @@
 #include "./vlr/Framebuffer.hpp"
 #include "./vlr/SetBase.hpp"
 #include "./vlr/BufferViewSet.hpp"
+#include "./vlr/Acceleration.hpp"
 
 // 
 namespace vlr {
@@ -27,7 +28,7 @@ namespace vlr {
         this->rayDataFlip1 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
         this->hitData  = std::make_shared<SetBase_T<HitData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
         this->colorChainData = std::make_shared<SetBase_T<ColorData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
-        this->counters = std::make_shared<SetBase_T<uint32_t>>(driver, DataSetCreateInfo{ .count = 4 }); // Ray Write, Ray Read, Hit Write, Hit Read counters
+        this->counters = std::make_shared<SetBase_T<uint32_t>>(driver, DataSetCreateInfo{ .count = 5 }); // Ray Write, Ray Read, Hit Write, Hit Read, Color Chain counters
 
         // 
         this->rayDataSetFlip0 = std::make_shared<BufferViewSet>(driver);
@@ -47,7 +48,13 @@ namespace vlr {
         this->counters->createDescriptorSet(layout);
 
         // 
+        if (this->accelerationTop.has()) {
+            this->layout->bound[10u] = this->accelerationTop->set;
+        };
+        this->layout->bound[11u] = this->counters->set;
         this->layout->bound[12u] = this->rayDataSetFlip0->set;
+        this->layout->bound[13u] = this->hitData->set;
+        this->layout->bound[14u] = this->colorChainData->set;
     };
 
     void RayTracing::setCommand(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0) {
@@ -55,6 +62,17 @@ namespace vlr {
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
         auto device = this->driver->getDeviceDispatch();
         glm::uvec4 meta = vect0;
+        const uint32_t zero = 0u;
+
+        // 
+        for (uint32_t i=0;i<5;i++) {
+            (*this->counters)[i] = zero;
+            this->counters->setCommand(currentCmd);
+        };
+
+        //
+        //device->CmdUpdateBuffer(currentCmd, this->counters->getGpuBuffer(), 5ull * sizeof(uint32_t), sizeof(uint32_t), &zero);
+        vkt::commandBarrier(device, currentCmd);
 
         {   // Denoise diffuse data
             device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->generation);
@@ -62,7 +80,6 @@ namespace vlr {
             device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
             device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 12u), 1u);
             vkt::commandBarrier(device, currentCmd);
-            //this->swapRayData();
         };
 
         // 
@@ -71,13 +88,12 @@ namespace vlr {
                 device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->intersection);
                 device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
                 device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
-                device->CmdDispatch(currentCmd, 256u, 1u, 1u);
+                device->CmdDispatch(currentCmd, 256u, 1u, 1u); // Planned Indirect
                 vkt::commandBarrier(device, currentCmd);
                 this->swapRayData(); // After intersection, needs prepare for newer rays
             };
 
-            {   // 
-                const uint32_t zero = 0u;
+            {   // Re-Setting Counters
                 std::vector<vkh::VkBufferCopy> regions = {
                     { .srcOffset = 0ull                   , .dstOffset = 1ull * sizeof(uint32_t), .size = sizeof(uint32_t) },
                     { .srcOffset = 2ull * sizeof(uint32_t), .dstOffset = 3ull * sizeof(uint32_t), .size = sizeof(uint32_t) }
@@ -93,7 +109,7 @@ namespace vlr {
                 device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->interpolation);
                 device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
                 device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
-                device->CmdDispatch(currentCmd, 256u, 1u, 1u);
+                device->CmdDispatch(currentCmd, 256u, 1u, 1u); // Planned Indirect
                 vkt::commandBarrier(device, currentCmd);
             };
         };
@@ -102,7 +118,7 @@ namespace vlr {
             device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->finalize);
             device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
             device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
-            device->CmdDispatch(currentCmd, 256u, 1u, 1u);
+            device->CmdDispatch(currentCmd, 256u, 1u, 1u); // Planned Indirect
             vkt::commandBarrier(device, currentCmd);
         };
     };

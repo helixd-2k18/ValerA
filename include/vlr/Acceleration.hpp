@@ -13,7 +13,7 @@ namespace vlr {
     };
 
 
-    class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: 
+    class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing;
         vkt::uni_ptr<InstanceSet> instanceSet = {};
         vkt::uni_ptr<GeometrySet> geometrySet = {};
         vkt::uni_ptr<Driver> driver = {};

@@ -4,7 +4,7 @@
 
 namespace vlr {
 
-    class SetBase : public std::enable_shared_from_this<SetBase> { 
+    class SetBase : public std::enable_shared_from_this<SetBase> { friend RayTracing; friend Rasterization;
     protected: //using T = uint8_t;
         VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};

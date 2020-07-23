@@ -10,7 +10,10 @@ namespace vlr {
         uint32_t firstVertex = 0u;
         uint32_t primitiveCount = 0u;
         uint32_t material = 0u;
-        uint32_t flags = 0u;
+        
+        // 
+        vkh::uint24_t meshID = 0u;
+        uint8_t flags = 0u;
     };
 
     class Geometry : public std::enable_shared_from_this<Geometry> { protected: friend GeometrySet; friend Acceleration; friend Rasterization;
