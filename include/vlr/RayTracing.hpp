@@ -6,6 +6,7 @@
 
 namespace vlr {
 
+#pragma pack(push, 1)
     // i.e. extended float3x4
     struct RayData {
         glm::vec3 origin = glm::vec3(0.f); uint32_t reserved = 0u;
@@ -17,7 +18,7 @@ namespace vlr {
     struct HitData {
         glm::uvec3 indices = glm::uvec3(0u); uint32_t rayID = 0u; // 
         glm::vec2 barycentric = glm::vec2(0.f); float extra = 0.f;
-        glm::u8vec4 meta = glm::u8vec4(0u); // 0u - flags, reserved
+        vkh::uint24_t meshID = 0u; uint8_t meta = uint8_t(0u);
     };
 
     // i.e. vec4 
@@ -25,6 +26,7 @@ namespace vlr {
         glm::vec3 emission = glm::vec3(0.f); // RGB Color by RGB32F, Sample Always 1S
         uint32_t next = ~0u; // Also, can be replaced by Pixel ID when used Accumulation Shader
     };
+#pragma pack(pop)
 
     class RayTracing : public std::enable_shared_from_this<RayTracing> { protected: friend RayTracing;
         vkt::uni_ptr<Acceleration> accelerationTop = {}; // Top Level Acceleration Structure

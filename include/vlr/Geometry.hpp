@@ -4,7 +4,7 @@
 
 namespace vlr {
 
-    
+#pragma pack(push, 1)
     struct GeometryDesc {
         glm::mat3x4 transform = glm::mat3x4(1.f);
         uint32_t firstVertex = 0u;
@@ -15,6 +15,7 @@ namespace vlr {
         vkh::uint24_t meshID = 0u;
         uint8_t flags = 0u;
     };
+#pragma pack(pop)
 
     class Geometry : public std::enable_shared_from_this<Geometry> { protected: friend GeometrySet; friend Acceleration; friend Rasterization;
         uint32_t vertexAttribute = 0u, indexBufferView = ~0u;

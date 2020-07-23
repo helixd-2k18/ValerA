@@ -5,9 +5,11 @@
 
 namespace vlr {
 
+#pragma pack(push, 1)
     struct InterpData {
         uint32_t data[8u];
     };
+#pragma pack(pop)
 
     // Now contains multiple geometries
     class Interpolation : public SetBase_T<InterpData>  { protected: //using T = uint8_t;

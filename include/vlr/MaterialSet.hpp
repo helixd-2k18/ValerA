@@ -3,6 +3,7 @@
 
 namespace vlr {
 
+
     struct MaterialUnit {
         glm::vec4 diffuse = glm::vec4(1.f);
         glm::vec4 pbrAGM = glm::vec4(0.f);
@@ -14,6 +15,7 @@ namespace vlr {
         int emissionTexture = -1;
         int normalTexture = -1;
     };
+#pragma pack(pop)
 
     using MaterialSet = SetBase_T<MaterialUnit>;
 

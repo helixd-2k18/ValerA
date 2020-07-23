@@ -9,8 +9,9 @@
 
 //
 #include "./VertexSet.hpp"
+#include "./Framebuffer.hpp"
 
-
+// 
 namespace vlr {
 
     void PipelineLayout::constructor(vkt::uni_ptr<Driver> driver) {
@@ -104,14 +105,14 @@ namespace vlr {
         layouts.push_back(this->getSetLayout());            // [x] Materials
         layouts.push_back(this->getTextureSetLayout());     // [x] Textures 
         layouts.push_back(this->getSamplerSetLayout());     // [x] Samplers 
-        layouts.push_back(this->getBufferViewSetLayout());  // [W] Multiple Geometries Data 
+        layouts.push_back(this->getBufferViewSetLayout());  // [x] Multiple Geometries Data 
         layouts.push_back(this->getBufferViewSetLayout());  // [x] Interpolation Attributes 
         layouts.push_back(this->getAccelerationSetLayout());// [x] Acceleration Structure
         layouts.push_back(this->getSetLayout());            // [x] Counters
         layouts.push_back(this->getBufferViewSetLayout());  // [x] Ray Data (FLIP)
         layouts.push_back(this->getSetLayout());            // [x] Hit Data
         layouts.push_back(this->getSetLayout());            // [x] Color-chain Data
-        layouts.push_back(this->getBufferViewSetLayout());  // [W] Per-Mesh (Geometry) Attribute Indices
+        layouts.push_back(this->getBufferViewSetLayout());  // [x] Per-Mesh (Geometry) Attribute Indices
 
         // 
         this->bound.resize(layouts.size());

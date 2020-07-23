@@ -1,8 +1,9 @@
 #include "./vlr/RayTracing.hpp"
 #include "./vlr/Framebuffer.hpp"
 #include "./vlr/SetBase.hpp"
-#include "./vlr/BufferViewSet.hpp"
 #include "./vlr/Acceleration.hpp"
+#include "./vlr/BufferViewSet.hpp"
+#include "./vlr/Interpolation.hpp"
 
 // 
 namespace vlr {
@@ -65,7 +66,7 @@ namespace vlr {
         this->interpolations->createDescriptorSet(layout);
         this->geometriesDescs->createDescriptorSet(layout);
 
-        //
+        // TODO: Decise by PipelineLayout class
         this->layout->bound[8u] = this->geometriesDescs->set;
         this->layout->bound[9u] = this->interpolations->set;
 
@@ -73,6 +74,8 @@ namespace vlr {
         if (this->accelerationTop.has()) {
             this->layout->bound[10u] = this->accelerationTop->set;
         };
+
+        // 
         this->layout->bound[11u] = this->counters->set;
         this->layout->bound[12u] = this->rayDataSetFlip0->set;
         this->layout->bound[13u] = this->hitData->set;
@@ -116,6 +119,7 @@ namespace vlr {
             };
 
             {   // Re-Setting Counters
+                // TODO: Using Compute Shader for Indirect Operations
                 std::vector<vkh::VkBufferCopy> regions = {
                     { .srcOffset = 0ull                   , .dstOffset = 1ull * sizeof(uint32_t), .size = sizeof(uint32_t) },
                     { .srcOffset = 2ull * sizeof(uint32_t), .dstOffset = 3ull * sizeof(uint32_t), .size = sizeof(uint32_t) }
