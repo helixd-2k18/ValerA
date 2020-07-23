@@ -3,7 +3,7 @@
 
 namespace vlr {
 
-
+#pragma pack(push, 1)
     struct MaterialUnit {
         glm::vec4 diffuse = glm::vec4(1.f);
         glm::vec4 pbrAGM = glm::vec4(0.f);
