@@ -19,7 +19,7 @@ namespace vlr {
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
     };
 
-    class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: friend Rasterization; friend Resampling; friend RayTracing;
+    class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: friend Rasterization; friend Resampling; friend RayTracing; friend PipelineLayout;
         RenderPass rasterFBO = {}, resampleFBO = {}; VkDescriptorSet set = {};
         vkt::ImageRegion depthStencilImage = {}, atomicMapping = {};
         std::vector<VkSampler> samplers = {};

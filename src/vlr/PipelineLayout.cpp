@@ -1,6 +1,16 @@
 #include "./vlr/Driver.hpp"
 #include "./vlr/PipelineLayout.hpp"
 
+// 
+#include "./BufferViewSet.hpp"
+#include "./MaterialSet.hpp"
+#include "./TextureSet.hpp"
+#include "./SamplerSet.hpp"
+
+//
+#include "./VertexSet.hpp"
+
+
 namespace vlr {
 
     void PipelineLayout::constructor(vkt::uni_ptr<Driver> driver) {
@@ -86,21 +96,22 @@ namespace vlr {
 
         // 
         std::vector<VkDescriptorSetLayout> layouts = {};
-        layouts.push_back(this->getUniformSetLayout());     // Firstly always constants
-        layouts.push_back(this->getBufferViewSetLayout());  // Vertex Data buffers
-        layouts.push_back(this->getSetLayout());            // Bindings
-        layouts.push_back(this->getSetLayout());            // Attributes (Accessors)
-        layouts.push_back(this->getFramebufferSetLayout()); // Framebuffers (666 in 1)
-        layouts.push_back(this->getSetLayout());            // Materials
-        layouts.push_back(this->getTextureSetLayout());     // Textures
-        layouts.push_back(this->getSamplerSetLayout());     // Samplers
-        layouts.push_back(this->getBufferViewSetLayout());  // Multiple Geometries Data
-        layouts.push_back(this->getBufferViewSetLayout());  // Interpolation Attributes
-        layouts.push_back(this->getAccelerationSetLayout());// Acceleration Structure
-        layouts.push_back(this->getSetLayout());            // Counters
-        layouts.push_back(this->getBufferViewSetLayout());  // Ray Data (FLIP)
-        layouts.push_back(this->getSetLayout());            // Hit Data
-        layouts.push_back(this->getSetLayout());            // Color-chain Data
+        layouts.push_back(this->getUniformSetLayout());     // [ ] Firstly always constants
+        layouts.push_back(this->getBufferViewSetLayout());  // [x] Vertex Data buffers
+        layouts.push_back(this->getSetLayout());            // [x] Bindings
+        layouts.push_back(this->getSetLayout());            // [x] Attributes (Accessors)
+        layouts.push_back(this->getFramebufferSetLayout()); // [x] Framebuffers (666 in 1)
+        layouts.push_back(this->getSetLayout());            // [x] Materials
+        layouts.push_back(this->getTextureSetLayout());     // [x] Textures 
+        layouts.push_back(this->getSamplerSetLayout());     // [x] Samplers 
+        layouts.push_back(this->getBufferViewSetLayout());  // [W] Multiple Geometries Data 
+        layouts.push_back(this->getBufferViewSetLayout());  // [x] Interpolation Attributes 
+        layouts.push_back(this->getAccelerationSetLayout());// [x] Acceleration Structure
+        layouts.push_back(this->getSetLayout());            // [x] Counters
+        layouts.push_back(this->getBufferViewSetLayout());  // [x] Ray Data (FLIP)
+        layouts.push_back(this->getSetLayout());            // [x] Hit Data
+        layouts.push_back(this->getSetLayout());            // [x] Color-chain Data
+        layouts.push_back(this->getBufferViewSetLayout());  // [W] Per-Mesh (Geometry) Attribute Indices
 
         // 
         this->bound.resize(layouts.size());
@@ -108,6 +119,32 @@ namespace vlr {
         // 
         std::vector<vkh::VkPushConstantRange> ranges = { vkh::VkPushConstantRange{.stageFlags = (stages = pipusage), .offset = 0u, .size = 16u } };
         vkh::handleVk(this->driver->getDeviceDispatch()->CreatePipelineLayout(vkh::VkPipelineLayoutCreateInfo{}.setSetLayouts(layouts).setPushConstantRanges(ranges), nullptr, &this->pipelineLayout));
+    };
+
+    void PipelineLayout::setMaterials(vkt::uni_ptr<MaterialSet> materialSet, vkt::uni_ptr<TextureSet> textureSet, vkt::uni_ptr<SamplerSet> samplerSet) {
+        if (!materialSet->set) { materialSet->createDescriptorSet(this); };
+        if (!textureSet->set) { textureSet->createDescriptorSet(this); };
+        if (!samplerSet->set) { samplerSet->createDescriptorSet(this); };
+
+        this->bound[5u] = materialSet->set;
+        this->bound[6u] = textureSet->set;
+        this->bound[7u] = samplerSet->set;
+    };
+
+    void PipelineLayout::setVertexData(vkt::uni_ptr<VertexSet> vertexData) {
+        if (!vertexData->bufferViews->set) { vertexData->bufferViews->createDescriptorSet(this); };
+        if (!vertexData->bindings->set) { vertexData->bindings->createDescriptorSet(this); };
+        if (!vertexData->attributes->set) { vertexData->attributes->createDescriptorSet(this); };
+
+        this->bound[1u] = vertexData->bufferViews->set;
+        this->bound[2u] = vertexData->bindings->set;
+        this->bound[3u] = vertexData->attributes->set;
+    };
+
+    void PipelineLayout::setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer) {
+        if (!framebuffer->set) { framebuffer->createDescriptorSet(this); };
+
+        this->bound[4u] = framebuffer->set;
     };
 
 };

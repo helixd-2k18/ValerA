@@ -48,6 +48,28 @@ namespace vlr {
         this->counters->createDescriptorSet(layout);
 
         // 
+        this->interpolations->resetBufferViews();
+        this->geometriesDescs->resetBufferViews();
+
+        // 
+        for (uint32_t i=0;i<geometrySets.size();i++) {
+            vkt::uni_ptr<GeometrySet> geometrySet = geometrySets[i];
+            vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
+
+            // 
+            this->interpolations->pushBufferView(interpolation->getGpuBuffer());
+            this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
+        };
+
+        // 
+        this->interpolations->createDescriptorSet(layout);
+        this->geometriesDescs->createDescriptorSet(layout);
+
+        //
+        this->layout->bound[8u] = this->geometriesDescs->set;
+        this->layout->bound[9u] = this->interpolations->set;
+
+        // 
         if (this->accelerationTop.has()) {
             this->layout->bound[10u] = this->accelerationTop->set;
         };

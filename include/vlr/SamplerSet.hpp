@@ -3,7 +3,7 @@
 
 namespace vlr {
 
-    class SamplerSet : public std::enable_shared_from_this<SamplerSet> { protected: 
+    class SamplerSet : public std::enable_shared_from_this<SamplerSet> { protected: friend RayTracing; friend PipelineLayout;
         VkDescriptorSet set = {}; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         std::vector<VkSampler> samplers = {};

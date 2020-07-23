@@ -35,12 +35,18 @@ namespace vlr {
         vkt::uni_ptr<MaterialSet> materialSet = {};
         vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<Driver> driver = {};
+        
 
         //std::vector<vkt::uni_ptr<GeometrySet>> geometries = {}; // Not Necessary, inbound with `vkt::uni_ptr<Acceleration>`
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};
         std::vector<vkt::uni_ptr<Acceleration>> accelerations = {};
         VkPipeline generation = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE, finalize = VK_NULL_HANDLE;
         // TODO: Accumulation Shader (pick up all hits)
+
+        // 
+        std::vector<vkt::uni_ptr<GeometrySet>> geometrySets = {}; // Meshes
+        vkt::uni_ptr<BufferViewSet> geometriesDescs = {}; // Buffers with GeometryDesc
+        vkt::uni_ptr<BufferViewSet> interpolations = {};
 
         // 
         vkt::uni_ptr<SetBase_T<uint32_t>> counters = {};
@@ -50,6 +56,8 @@ namespace vlr {
         vkt::uni_ptr<SetBase_T<RayData>> rayDataFlip1 = {};
         vkt::uni_ptr<BufferViewSet> rayDataSetFlip0 = {};
         vkt::uni_ptr<BufferViewSet> rayDataSetFlip1 = {};
+
+        // 
 
     public: 
         RayTracing() { this->constructor(); };

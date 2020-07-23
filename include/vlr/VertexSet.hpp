@@ -8,7 +8,7 @@
 // 
 namespace vlr {
 
-    class VertexSet : public std::enable_shared_from_this<Interpolation> { protected: 
+    class VertexSet : public std::enable_shared_from_this<Interpolation> { protected: friend RayTracing; friend Rasterization; friend PipelineLayout;
         vkt::uni_ptr<BufferViewSet> bufferViews = {};
         vkt::uni_ptr<BindingSet> bindings = {};
         vkt::uni_ptr<AttributeSet> attributes = {};
@@ -47,6 +47,13 @@ namespace vlr {
 
         template<class T = uint8_t>  // Call a Virtual Method
         const vkt::Vector<T>& getAttributeBuffer(const uint32_t& I = 0u) const { return dynamic_cast<const vkt::Vector<T>&>(this->getAttributeBuffer_T(I)); };
+
+        // 
+        void VertexSet::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
+            this->bindings->createDescriptorSet(pipelineLayout);
+            this->attributes->createDescriptorSet(pipelineLayout);
+            this->bufferViews->createDescriptorSet(pipelineLayout);
+        };
     };
 
 };

@@ -2,6 +2,16 @@
 #include "./Config.hpp"
 #include "./Driver.hpp"
 
+// 
+#include "./BufferViewSet.hpp"
+#include "./MaterialSet.hpp"
+#include "./TextureSet.hpp"
+#include "./SamplerSet.hpp"
+
+//
+#include "./VertexSet.hpp"
+
+// 
 namespace vlr {
 
     class PipelineLayout : public std::enable_shared_from_this<PipelineLayout> { protected: friend Rasterization; friend Resampling; friend RayTracing;
@@ -38,6 +48,12 @@ namespace vlr {
         VkDescriptorSetLayout getBackgroundSetLayout() const { return layouts[5u]; };
         VkDescriptorSetLayout getFramebufferSetLayout() const { return layouts[6u]; };
         VkDescriptorSetLayout getAccelerationSetLayout() const { return layouts[7u]; };
+
+        virtual void setMaterials(vkt::uni_ptr<MaterialSet> materialSet, vkt::uni_ptr<TextureSet> textureSet, vkt::uni_ptr<SamplerSet> samplerSet);
+        virtual void setVertexData(vkt::uni_ptr<VertexSet> vertexData);
+        virtual void setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer);
     };
+
+
 
 };
