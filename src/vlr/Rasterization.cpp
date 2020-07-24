@@ -9,6 +9,7 @@ namespace vlr {
         this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer; auto device = this->driver->getDeviceDispatch();
         this->stages = { // for faster code, pre-initialize
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.vert.spv")), VK_SHADER_STAGE_VERTEX_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.geom.spv")), VK_SHADER_STAGE_GEOMETRY_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.frag.spv")), VK_SHADER_STAGE_FRAGMENT_BIT)
         };
         
