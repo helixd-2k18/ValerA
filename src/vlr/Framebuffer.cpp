@@ -108,10 +108,10 @@ namespace vlr {
         };
 
         // 
-        auto createImage = [=,this](VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT){
+        auto createImage = [=,this](VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT, uint32_t wide = 1u){
             return vkt::ImageRegion(std::make_shared<vkt::ImageAllocation>(vkh::VkImageCreateInfo{
                 .format = format,
-                .extent = {width,height,1u},
+                .extent = {width*wide,height,1u},
                 .usage = fbusage,
             }, allocInfo), vkh::VkImageViewCreateInfo{
                 .format = format,
@@ -135,8 +135,8 @@ namespace vlr {
 
         // 
         for (uint32_t b = 0u; b < 12u; b++) { // 
-            currentsImages.push_back(createImage());
-            previousImages.push_back(createImage());
+            currentsImages.push_back(createImage(VK_FORMAT_R32_SFLOAT, 4u)); // Required for GL_EXT_shader_atomic_float i.e. super-vec4 
+            previousImages.push_back(createImage(VK_FORMAT_R32_SFLOAT, 4u)); // Required for GL_EXT_shader_atomic_float i.e. super-vec4 
         };
 
         // 

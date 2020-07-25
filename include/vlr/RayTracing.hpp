@@ -24,7 +24,7 @@ namespace vlr {
     };
 
     // i.e. vec4 
-    struct ColorData {
+    struct ColorData { // No needs when used `GL_EXT_shader_atomic_float` 
         glm::vec3 emission = glm::vec3(0.f); // RGB Color by RGB32F, Sample Always 1S
         uint32_t next = ~0u; // Also, can be replaced by Pixel ID when used Accumulation Shader
     };

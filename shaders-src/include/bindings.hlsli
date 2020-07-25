@@ -65,10 +65,10 @@ layout (binding = 0, set = 8, scalar) readonly buffer Geometries { GeometryDesc 
 layout (binding = 0, set = 9, scalar) readonly buffer Interpolat { Interpolations data[]; } interpolations[];
 
 // Deferred and Rasterization Set
-layout (binding = 0, set = 4) uniform image2D prevBuffers[12u]; // Used by rasterization
-layout (binding = 1, set = 4) uniform image2D currBuffers[12u];
-layout (binding = 2, set = 4) uniform image2D resampleBuffers[8u];
-layout (binding = 3, set = 4) uniform image2D rasteredBuffers[8u];
+layout (binding = 0, set = 4, r32f) uniform image2D prevBuffers[12u]; // 4x wider
+layout (binding = 1, set = 4, r32f) uniform image2D currBuffers[12u]; // 4x wider
+layout (binding = 2, set = 4, rgba32f) uniform image2D resampleBuffers[8u]; 
+layout (binding = 3, set = 4, rgba32f) uniform image2D rasteredBuffers[8u]; // used by rasterization
 layout (binding = 4, set = 4) uniform sampler samplers[8u];
 
 // Material Set
