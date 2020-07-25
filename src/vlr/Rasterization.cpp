@@ -3,11 +3,12 @@
 #include "./vlr/Framebuffer.hpp"
 #include "./vlr/GeometrySet.hpp"
 #include "./vlr/Geometry.hpp"
+#include "./vlr/Constants.hpp"
 
 namespace vlr {
 
     void Rasterization::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) {
-        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->geometrySet = info->geometrySet, this->geometryID = info->geometryID, this->instanceID = info->instanceID; 
+        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->geometrySet = info->geometrySet, this->geometryID = info->geometryID, this->instanceID = info->instanceID, this->constants = info->constants; 
         auto device = this->driver->getDeviceDispatch();
 
         // 
@@ -43,6 +44,15 @@ namespace vlr {
 
         // 
         vkh::handleVk(device->CreateGraphicsPipelines(driver->getPipelineCache(), 1u, this->pipelineInfo, nullptr, &this->pipeline));
+    };
+
+    void Rasterization::setDescriptorSets() { // 
+        if (this->constants.has()) {
+            if (!this->constants->set) {
+                this->constants->createDescriptorSet(layout);
+            };
+            this->layout->bound[0u] = this->constants->set;
+        };
     };
 
     void Rasterization::setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta){

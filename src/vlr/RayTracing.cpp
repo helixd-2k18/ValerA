@@ -4,12 +4,13 @@
 #include "./vlr/Acceleration.hpp"
 #include "./vlr/BufferViewSet.hpp"
 #include "./vlr/Interpolation.hpp"
+#include "./vlr/Constants.hpp"
 
 // 
 namespace vlr {
 
     void RayTracing::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info) {
-        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->accelerationTop = info->accelerationTop, this->accelerations = info->accelerations; 
+        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->accelerationTop = info->accelerationTop, this->accelerations = info->accelerations, this->constants = info->constants; 
         auto device = this->driver->getDeviceDispatch();
 
         // 
@@ -68,6 +69,14 @@ namespace vlr {
         // 
         this->interpolations->createDescriptorSet(layout);
         this->geometriesDescs->createDescriptorSet(layout);
+
+        // 
+        if (this->constants.has()) {
+            if (!this->constants->set) {
+                this->constants->createDescriptorSet(layout);
+            };
+            this->layout->bound[0u] = this->constants->set;
+        };
 
         // TODO: Decise by PipelineLayout class
         this->layout->bound[8u] = this->geometriesDescs->set;

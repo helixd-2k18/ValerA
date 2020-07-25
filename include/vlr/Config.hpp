@@ -44,6 +44,7 @@ namespace vlr {
     class VertexSet;
     class RayTracing;
     class InstanceSet;
+    class Constants;
 
     struct DataSetCreateInfo {
         VkDeviceSize count = 1u;

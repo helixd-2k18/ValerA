@@ -3,6 +3,7 @@
 #include "./Framebuffer.hpp"
 #include "./SetBase.hpp"
 #include "./BufferViewSet.hpp"
+#include "./Constants.hpp"
 
 namespace vlr {
 
@@ -36,6 +37,7 @@ namespace vlr {
         vkt::uni_ptr<SamplerSet> samplerSet = {};
         vkt::uni_ptr<MaterialSet> materialSet = {};
         vkt::uni_ptr<Framebuffer> framebuffer = {};
+        vkt::uni_ptr<Constants> constants = {};
         vkt::uni_ptr<Driver> driver = {};
         
         // 
