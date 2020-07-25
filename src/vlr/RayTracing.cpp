@@ -45,7 +45,9 @@ namespace vlr {
         this->rayDataSetFlip1->pushBufferView(this->rayDataFlip0->getGpuBuffer()); // Read-only 
     };
 
-    void RayTracing::setDescriptorSets() { // 
+    void RayTracing::setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout) { // 
+        if (layout.has()) { this->layout = ilayout; };
+
         this->rayDataSetFlip0->createDescriptorSet(layout);
         this->rayDataSetFlip1->createDescriptorSet(layout);
         this->colorChainData->createDescriptorSet(layout);

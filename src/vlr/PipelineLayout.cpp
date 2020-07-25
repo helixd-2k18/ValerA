@@ -2,18 +2,19 @@
 #include "./vlr/PipelineLayout.hpp"
 
 // 
-#include "./BufferViewSet.hpp"
-#include "./MaterialSet.hpp"
-#include "./TextureSet.hpp"
-#include "./SamplerSet.hpp"
+#include "./vlr/BufferViewSet.hpp"
+#include "./vlr/MaterialSet.hpp"
+#include "./vlr/TextureSet.hpp"
+#include "./vlr/SamplerSet.hpp"
 
 //
-#include "./VertexSet.hpp"
-#include "./Framebuffer.hpp"
+#include "./vlr/VertexSet.hpp"
+#include "./vlr/Framebuffer.hpp"
 
 // 
-#include "./Constants.hpp"
-#include "./Acceleration.hpp"
+#include "./vlr/Constants.hpp"
+#include "./vlr/Acceleration.hpp"
+#include "./vlr/RayTracing.hpp"
 
 // 
 namespace vlr {
@@ -177,6 +178,10 @@ namespace vlr {
             };
             this->bound[0u] = constants->set;
         };
+    };
+
+    void PipelineLayout::setRayTracing(vkt::uni_ptr<RayTracing> rayTracing) {
+        rayTracing->setDescriptorSets(this);
     };
 
 };
