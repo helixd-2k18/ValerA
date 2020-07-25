@@ -2,8 +2,8 @@
 #extension GL_GOOGLE_include_directive : require
 #define GLSL
 
-#include "../include/driver.glsl"
-#include "../include/bindings.glsl"
+#include "../include/driver.hlsli"
+#include "../include/bindings.hlsli"
 
 layout ( local_size_x = 32u, local_size_y = 12u ) in; 
 void main(){

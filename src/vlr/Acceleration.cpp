@@ -38,12 +38,12 @@ namespace vlr {
                 auto instanceDesc = vkh::VkAccelerationStructureGeometryInstancesDataKHR{};
 
                 // 
-                instanceDesc.data = info->instanceSet->getCpuBuffer();
+                instanceDesc.data = info->instanceSet->getGpuBuffer();
                 geometryDesc.geometry.instances = instanceDesc;
 
                 // 
-                offsetDesc.primitiveCount = info->instanceSet->getCpuBuffer().size();
-                offsetDesc.transformOffset = info->instanceSet->getCpuBuffer().offset();
+                offsetDesc.primitiveCount = info->instanceSet->getGpuBuffer().size();
+                offsetDesc.transformOffset = info->instanceSet->getGpuBuffer().offset();
                 offsetDesc.primitiveOffset = 0u;
                 offsetDesc.firstVertex = 0u;
 
@@ -63,14 +63,14 @@ namespace vlr {
                 auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eNoDuplicateAnyHitInvocation = 1 };
                 auto geometryDesc = vkh::VkAccelerationStructureGeometryKHR{ .flags = buildGeometryFlags };
                 auto triangleDesc = vkh::VkAccelerationStructureGeometryTrianglesDataKHR{};
-                auto buffer = geometry->vertexSet->getAttributeBuffer(geometry->vertexAttribute);
+                auto buffer = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
 
                 // 
                 triangleDesc.transformData = info->geometrySet->getGpuBuffer();
                 triangleDesc.vertexFormat = attribute.format;
                 triangleDesc.vertexStride = binding.stride;
                 triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
-                
+
                 // 
                 if (geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1 && geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR) {
                     triangleDesc.indexData = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
@@ -142,7 +142,7 @@ namespace vlr {
             this->create.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
             this->create.flags = bdHeadFlags;
         };
-        
+
         // 
         if (!this->structure) { // create acceleration structure fastly...
             vkh::handleVk(device->CreateAccelerationStructureKHR(this->create, nullptr, &this->structure));

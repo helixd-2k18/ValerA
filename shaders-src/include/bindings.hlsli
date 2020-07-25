@@ -80,6 +80,9 @@ layout (binding = 0, set = 6) uniform texture2D textures[];
 layout (binding = 0, set = 10 ) uniform accelerationStructureEXT Scene;
 #endif
 
+// TODO: Ray Tracing Structures
+
+
 // 
 layout (binding = 0, set = 16) uniform texture2D background;
 layout (binding = 0, set = 17, scalar) readonly buffer Instances { RTInstance data[]; } instances[];
@@ -135,6 +138,11 @@ SamplerState               samplers[8u] : register(t0, space4);
 // 
 RWStructuredBuffer<MaterialUnit> materials : register(u0, space5);
 Texture2D<float4> textures[] : register(t0, space6);
+
+// TODO: Ray Tracing Structures
+
+
+//
 Texture2D<float4> background : register(t0, space16);
 ConstantBuffer<DrawInfo> drawInfo : register(b0, space20);
 #endif
@@ -200,48 +208,27 @@ float3 refractive(in float3 dir) {
     return dir;
 };
 
-float4 triangulate(in uint3 indices, in uint loc, in uint nodeMeshID, in float3 barycenter){
-    const float3x4 mc = float3x4(
-        get_float4(indices[0],loc,nodeMeshID),
-        get_float4(indices[1],loc,nodeMeshID),
-        get_float4(indices[2],loc,nodeMeshID)
-    );
-    return mul(barycenter, mc);
-};
 
-float3x4 triangled(in uint3 indices, in uint loc, in uint nodeMeshID){
-    return float3x4(
-        get_float4(indices[0],loc,nodeMeshID),
-        get_float4(indices[1],loc,nodeMeshID),
-        get_float4(indices[2],loc,nodeMeshID)
-    );
-};
-
-
-
-// System Specified
+// Per System Specified
 #ifdef GLSL
-uint8_t load_u8(in uint offset, in uint binding, in uint nodeMeshID) {
-    if (binding == 0u) { return mesh0[nonuniformEXT(meshID)].data[offset]; };
+uint8_t load_u8(in uint offset, in uint binding) {
+    if (binding == 0u) { return mesh0[nonuniformEXT(binding)].data[offset]; };
     return uint8_t(0u);
 };
 
-// System Specified
-uint16_t load_u16(in uint offset, in uint binding, in uint nodeMeshID) {
-    return pack16(u8vec2(load_u8(offset,binding,nodeMeshID),load_u8(offset+1u,binding,nodeMeshID)));
+uint16_t load_u16(in uint offset, in uint binding) {
+    return pack16(u8vec2(load_u8(offset,binding),load_u8(offset+1u,binding)));
 };
 
-// System Specified
-uint load_u32(in uint offset, in uint binding, in uint nodeMeshID) {
-    return pack32(u16vec2(load_u16(offset,binding,nodeMeshID),load_u16(offset+2u,binding,nodeMeshID)));
+uint load_u32(in uint offset, in uint binding) {
+    return pack32(u16vec2(load_u16(offset,binding),load_u16(offset+2u,binding)));
 };
 #else
-// System Specified
-uint load_u32(in uint offset, in uint binding, in uint nodeMeshID) {
-    //return pack32(u16float2(load_u16(offset,binding,nodeMeshID),load_u16(offset+2u,binding,nodeMeshID)));
-    return mesh0[nodeMeshID].Load(int(offset)).x;
+uint load_u32(in uint offset, in uint binding) {
+    return mesh0[binding].Load(int(offset)).x;
 };
 #endif
+
 
 // TODO: Add Uint16_t, uint, Float16_t Support
 float4 get_float4(in uint idx, in uint loc, in uint nodeMeshID) {
@@ -253,22 +240,31 @@ float4 get_float4(in uint idx, in uint loc, in uint nodeMeshID) {
     Binding  binding = bindings[nodeMeshID][attrib.binding];
 #endif
 
-    //Attribute attrib = attributes[loc].data[meshID];
-    //Binding  binding = bindings[attrib.binding].data[meshID];
     uint boffset = binding.stride * idx + attrib.offset;
     float4 vec = float4(0.f.xxxx);
     
     // 
-    //if (binding.stride >  0u) vec = float4(0.f,0.f,1.f,0.f);
-    if (binding.stride >  0u) vec[0] = uintBitsToFloat(load_u32(boffset +  0u, attrib.binding, nodeMeshID));
-    if (binding.stride >  4u) vec[1] = uintBitsToFloat(load_u32(boffset +  4u, attrib.binding, nodeMeshID));
-    if (binding.stride >  8u) vec[2] = uintBitsToFloat(load_u32(boffset +  8u, attrib.binding, nodeMeshID));
-    if (binding.stride > 12u) vec[3] = uintBitsToFloat(load_u32(boffset + 12u, attrib.binding, nodeMeshID));
+    if (binding.stride >  0u) vec[0] = uintBitsToFloat(load_u32(boffset +  0u, binding.binding));
+    if (binding.stride >  4u) vec[1] = uintBitsToFloat(load_u32(boffset +  4u, binding.binding));
+    if (binding.stride >  8u) vec[2] = uintBitsToFloat(load_u32(boffset +  8u, binding.binding));
+    if (binding.stride > 12u) vec[3] = uintBitsToFloat(load_u32(boffset + 12u, binding.binding));
     
     // 
     return vec;
 };
 
+
+float3x4 triangled(in uint3 indices, in uint loc, in uint nodeMeshID){
+    return float3x4(
+        get_float4(indices[0],loc,nodeMeshID),
+        get_float4(indices[1],loc,nodeMeshID),
+        get_float4(indices[2],loc,nodeMeshID)
+    );
+};
+
+float4 triangulate(in uint3 indices, in uint loc, in uint nodeMeshID, in float3 barycenter){
+    return mul(barycenter, triangled(indices, loc, nodeMeshID));
+};
 
 float3 world2screen(in float3 origin){
     return divW(mul(pushed.projection, float4(mul(pushed.modelview, float4(origin,1.f)), 1.f)));
@@ -315,11 +311,12 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     const uint nodeMeshID  = hit.gIndices.w;
     const float3 baryCoord = hit.gBarycentric.xyz;
 
+    // 
     GeometryDesc node;
 #ifdef GLSL
-        node = geometries[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
+    node = geometries[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
 #else
-        node = geometries[nonuniformEXT(nodeMeshID)][geometryInstanceID];
+    node = geometries[nonuniformEXT(nodeMeshID)][geometryInstanceID];
 #endif
 
     // By Geometry Data
@@ -333,6 +330,9 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
 
     // 
     uint3 idx3 = uint3(primitiveID*3u+0u+node.offset,primitiveID*3u+1u+node.offset,primitiveID*3u+2u+node.offset);
+    if (node.indexType == 1000265000) { idx3 = uint3(load_u8 (idx3.x<<0, node.indexBufferView),load_u8 (idx3.y<<0, node.indexBufferView),load_u8 (idx3.z<<0, node.indexBufferView)); };
+    if (node.indexType == 0)          { idx3 = uint3(load_u16(idx3.x<<1, node.indexBufferView),load_u16(idx3.y<<1, node.indexBufferView),load_u16(idx3.z<<1, node.indexBufferView)); };
+    if (node.indexType == 1)          { idx3 = uint3(load_u32(idx3.x<<2, node.indexBufferView),load_u32(idx3.y<<2, node.indexBufferView),load_u32(idx3.z<<2, node.indexBufferView)); };
 
     // 
     XTRI geometry;
@@ -400,9 +400,9 @@ XPOL materialize(in XHIT hit, inout XGEO geo) { //
 
     GeometryNode node;
 #ifdef GLSL
-        node = geometryNodes[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
+    node = geometryNodes[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
 #else
-        node = geometryNodes[nonuniformEXT(nodeMeshID)][geometryInstanceID];
+    node = geometryNodes[nonuniformEXT(nodeMeshID)][geometryInstanceID];
 #endif
 
     const MaterialUnit unit = materials[MatID]; // NEW! 20.04.2020
