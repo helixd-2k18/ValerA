@@ -84,8 +84,8 @@ layout (binding = 0, set = 10 ) uniform accelerationStructureEXT Scene;
 
 
 // 
-layout (binding = 0, set = 16) uniform texture2D background;
-layout (binding = 0, set = 17, scalar) readonly buffer Instances { RTInstance data[]; } instances[];
+layout (binding = 0, set = 15) uniform texture2D background;
+layout (binding = 0, set = 16, scalar) readonly buffer Instances { RTInstance data[]; } instances[];
 
 // 
 layout (push_constant) uniform pushConstants { uint4 data; } drawInfo;
@@ -143,7 +143,7 @@ Texture2D<float4> textures[] : register(t0, space6);
 
 
 //
-Texture2D<float4> background : register(t0, space16);
+Texture2D<float4> background : register(t0, space15);
 ConstantBuffer<DrawInfo> drawInfo : register(b0, space20);
 #endif
 

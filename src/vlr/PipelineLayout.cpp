@@ -116,7 +116,6 @@ namespace vlr {
         layouts.push_back(this->getBufferViewSetLayout());  // [x] Ray Data (FLIP)
         layouts.push_back(this->getSetLayout());            // [x] Hit Data
         layouts.push_back(this->getSetLayout());            // [x] Color-chain Data
-        layouts.push_back(this->getBufferViewSetLayout());  // [x] Per-Mesh (Geometry) Attribute Indices
         layouts.push_back(this->getTextureSetLayout());     // [x] Background
         layouts.push_back(this->getSetLayout());            // [x] Instance Data
 
@@ -166,7 +165,7 @@ namespace vlr {
         if (acceleration.has()) {
             this->bound[10u] = acceleration->set;
             if (acceleration->instanceSet.has()) {
-                this->bound[17u] = acceleration->instanceSet->set;
+                this->bound[16u] = acceleration->instanceSet->set;
             };
         };
     };

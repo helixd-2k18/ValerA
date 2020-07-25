@@ -70,39 +70,20 @@ namespace vlr {
         this->interpolations->createDescriptorSet(layout);
         this->geometriesDescs->createDescriptorSet(layout);
 
-        // 
-        if (this->constants.has()) {
-            if (!this->constants->set) {
-                this->constants->createDescriptorSet(layout);
-            };
-            this->layout->bound[0u] = this->constants->set;
-        };
-
         // TODO: Decise by PipelineLayout class
         this->layout->bound[8u] = this->geometriesDescs->set;
         this->layout->bound[9u] = this->interpolations->set;
 
         // 
-        if (this->accelerationTop.has() && !this->accelerationTop->set) {
-            this->accelerationTop->createDescriptorSet(layout);
-            if (this->accelerationTop->instanceSet.has() && !this->accelerationTop->instanceSet->set) {
-                this->accelerationTop->instanceSet->createDescriptorSet(layout);
-            };
-        };
-
-        // 
-        if (this->accelerationTop.has()) {
-            this->layout->bound[10u] = this->accelerationTop->set;
-            if (this->accelerationTop->instanceSet.has()) {
-                this->layout->bound[17u] = this->accelerationTop->instanceSet->set;
-            };
-        };
+        this->layout->setAccelerationTop(this->accelerationTop);
+        this->layout->setConstants(this->constants);
 
         // 
         this->layout->bound[11u] = this->counters->set;
         this->layout->bound[12u] = this->rayDataSetFlip0->set;
         this->layout->bound[13u] = this->hitData->set;
         this->layout->bound[14u] = this->colorChainData->set;
+        
     };
 
     void RayTracing::setCommand(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0) {
