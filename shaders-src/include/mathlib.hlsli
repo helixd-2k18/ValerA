@@ -177,21 +177,20 @@ uint packUint2x16(in highp uint2 up) {
 #endif
 
 // 
-bool hasTransform(in MeshInfo meshInfo){
-    return bool(bitfieldExtract(meshInfo.flags,0,1));
+bool hasTransform(in GeometryDesc desc) {
+    return bool(bitfieldExtract(desc.meshID_flags,24+0,1));
 };
 
-// 
-bool hasNormal(in MeshInfo meshInfo){
-    return bool(bitfieldExtract(meshInfo.flags,1,1));
+bool hasNormal(in GeometryDesc desc) {
+    return bool(bitfieldExtract(desc.meshID_flags,24+1,1));
 };
 
-bool hasTexcoord(in MeshInfo meshInfo){
-    return bool(bitfieldExtract(meshInfo.flags,2,1));
+bool hasTexcoord(in GeometryDesc desc) {
+    return bool(bitfieldExtract(desc.meshID_flags,24+2,1));
 };
 
-bool hasTangent(in MeshInfo meshInfo){
-    return bool(bitfieldExtract(meshInfo.flags,3,1));
+bool hasTangent(in GeometryDesc desc) {
+    return bool(bitfieldExtract(desc.meshID_flags,24+3,1));
 };
 
 // color space utils
@@ -224,6 +223,8 @@ float4 toLinear(in float4 sRGB) { return float4(toLinear(sRGB.xyz), sRGB.w); }
 #define nonuniformEXT(a) a
 
 // 
+#define fimage2D RWTexture2D<float>
+void imageStore(in RWTexture2D<float> b, in int2 c, in float4 f) { b[c] = f; };
 void imageStore(in RWTexture2D<float4> b, in int2 c, in float4 f) { b[c] = f; };
 void imageStore(in RWTexture3D<float4> b, in int3 c, in float4 f) { b[c] = f; };
 uint2 imageSize(in RWTexture2D<float4> tex) { uint2 size = uint2(0,0); tex.GetDimensions(size.x, size.y); return size; };
@@ -232,16 +233,31 @@ uint2 textureSize(in Texture2D<float4> tex, in int lod) { uint2 size = uint2(0,0
 uint3 textureSize(in Texture3D<float4> tex, in int lod) { uint3 size = uint3(0,0,0); tex.GetDimensions(size.x, size.y, size.z); return size; };
 //uint2 textureSize(in Texture2D tex, in int lod) { uint2 size = uint2(0,0); return tex.GetDimensions(uint(lod), size.x, size.y); return size; };
 //uint3 textureSize(in Texture3D tex, in int lod) { uint3 size = uint3(0,0,0); return tex.GetDimensions(uint(lod), size.x, size.y, size.z); return size; };
+
 #else
+#define fimage2D image2D
 //
 #define textureSample(b, s, c) texture(sampler2D(b, s), c)
 #define textureLodSample(b, s, c, m) textureLod(sampler2D(b, s), c, m)
 #endif
 
-// 
-uint getMeshID(in RTXInstance instance){
-    return bitfieldExtract(instance.instance_mask, 0, 24); // only hack method support
+
+uint4 superImageLoad(in fimage2D image, int2 texcoord) {
+    return uint4(
+        imageLoad(image, int2(texcoord.x*4u+0u,texcoord.y)).x,
+        imageLoad(image, int2(texcoord.x*4u+1u,texcoord.y)).x,
+        imageLoad(image, int2(texcoord.x*4u+2u,texcoord.y)).x,
+        imageLoad(image, int2(texcoord.x*4u+3u,texcoord.y)).x
+    );
 };
+
+void superImageStore(in fimage2D image, int2 texcoord, float4 fvalue){
+    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.xxxx);
+    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.yyyy);
+    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.zzzz);
+    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.wwww);
+};
+
 
 // System Specified
 #ifdef GLSL

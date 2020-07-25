@@ -50,36 +50,38 @@ function BuildAllShaders($Pfx = "") {
     new-item -Name $HRDDIR$RDXO -itemtype directory  -Force | Out-Null
 
     # ray-tracing of vector graphics
-    BuildCompute "denoise.comp"         "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "denoise.comp"         "$INDIR$RNDX" "$HRDDIR$RTPU" "-DLATE_STAGE" "reflect.comp" 
-    BuildCompute "render.frag"          "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "render.vert"          "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "denoise.comp"         "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "denoise.comp"         "$INDIR$RNDX" "$HRDDIR$RTPU" "-DLATE_STAGE" "reflect.comp" 
+    #BuildCompute "render.frag"          "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "render.vert"          "$INDIR$RNDX" "$HRDDIR$RTPU"
     
-    BuildCompute "rasterize.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "rasterize.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU"
     #BuildCompute "rasterize.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "rasterize.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "rasterize.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU"
     
-    BuildCompute "rasterize.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE" "covergence.frag"
+    #BuildCompute "rasterize.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE" "covergence.frag"
     #BuildCompute "rasterize.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE" "covergence.geom"
-    BuildCompute "rasterize.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE" "covergence.vert"
+    #BuildCompute "rasterize.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE" "covergence.vert"
     
-    BuildCompute "mapping.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE"
-    BuildCompute "mapping.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE"
-    BuildCompute "mapping.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE"
+    #BuildCompute "mapping.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE"
+    #BuildCompute "mapping.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE"
+    #BuildCompute "mapping.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE"
     
-    BuildCompute "transform.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "transform.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "resample.frag"        "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "resample.geom"        "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "resample.vert"        "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "quad.comp"            "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "transform.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "transform.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "resample.frag"        "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "resample.geom"        "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "resample.vert"        "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "quad.comp"            "$INDIR$RNDX" "$HRDDIR$RTPU"
 
     # 
-    BuildCompute "raytrace.comp"        "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "raytrace.rgen"        "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "raytrace.rchit"       "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "raytrace.rahit"       "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "raytrace.rmiss"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "raytrace.comp"        "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "raytrace.rgen"        "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "raytrace.rchit"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "raytrace.rahit"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "raytrace.rmiss"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    
+    BuildCompute "generation.comp"        "$INDIR$RNDX" "$HRDDIR$RTPU"
 
     # optimize built shaders
     OptimizeMainline $RNDX

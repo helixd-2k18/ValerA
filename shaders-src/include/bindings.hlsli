@@ -85,7 +85,7 @@ layout (binding = 0, set = 10 ) uniform accelerationStructureEXT Scene;
 
 // 
 layout (binding = 0, set = 15) uniform texture2D background;
-layout (binding = 0, set = 16, scalar) readonly buffer Instances { RTInstance data[]; } instances[];
+layout (binding = 0, set = 16, scalar) readonly buffer Instances { RTInstance instances[]; };
 
 // 
 layout (push_constant) uniform pushConstants { uint4 data; } drawInfo;
@@ -199,7 +199,7 @@ STATIC uint2 seed = uint2(0u.xx);
 
 
 // 
-uint getMeshID(in RTXInstance instance){
+uint getMeshID(in RTInstance instance){
     return bitfieldExtract(instance.instance_mask, 0, 24); // only hack method support
 };
 
@@ -253,19 +253,6 @@ float4 get_float4(in uint idx, in uint loc, in uint nodeMeshID) {
     return vec;
 };
 
-
-float3x4 triangled(in uint3 indices, in uint loc, in uint nodeMeshID){
-    return float3x4(
-        get_float4(indices[0],loc,nodeMeshID),
-        get_float4(indices[1],loc,nodeMeshID),
-        get_float4(indices[2],loc,nodeMeshID)
-    );
-};
-
-float4 triangulate(in uint3 indices, in uint loc, in uint nodeMeshID, in float3 barycenter){
-    return mul(barycenter, triangled(indices, loc, nodeMeshID));
-};
-
 float3 world2screen(in float3 origin){
     return divW(mul(pushed.projection, float4(mul(pushed.modelview, float4(origin,1.f)), 1.f)));
 };
@@ -280,6 +267,19 @@ float3 world2screen(in float4 origin){
 
 float3 screen2world(in float4 origin){
     return mul(pushed.modelviewInv, float4(divW(mul(pushed.projectionInv, origin)), 1.f));
+};
+
+
+float3x4 triangled(in uint3 indices, in uint loc, in uint nodeMeshID){
+    return float3x4(
+        get_float4(indices[0],loc,nodeMeshID),
+        get_float4(indices[1],loc,nodeMeshID),
+        get_float4(indices[2],loc,nodeMeshID)
+    );
+};
+
+float4 triangulate(in uint3 indices, in uint loc, in uint nodeMeshID, in float3 barycenter){
+    return mul(barycenter, triangled(indices, loc, nodeMeshID));
 };
 
 
@@ -322,24 +322,24 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
     float3x4 matra4 = instances[globalInstanceID].transform;
-    if (hasTransform(meshInfo[nodeMeshID])) { matras = node.transform; };
+    if (hasTransform(geometries[nodeMeshID].data[geometryInstanceID])) { matras = node.transform; };
 
     // Native Normal Transform
     const float3x3 normalTransform = inverse(transpose(regen3(matras)));
     const float3x3 normInTransform = inverse(transpose(regen3(matra4)));
 
     // 
-    uint3 idx3 = uint3(primitiveID*3u+0u+node.offset,primitiveID*3u+1u+node.offset,primitiveID*3u+2u+node.offset);
+    uint3 idx3 = uint3(primitiveID*3u+0u+node.firstVertex,primitiveID*3u+1u+node.firstVertex,primitiveID*3u+2u+node.firstVertex);
     if (node.indexType == 1000265000) { idx3 = uint3(load_u8 (idx3.x<<0, node.indexBufferView),load_u8 (idx3.y<<0, node.indexBufferView),load_u8 (idx3.z<<0, node.indexBufferView)); };
     if (node.indexType == 0)          { idx3 = uint3(load_u16(idx3.x<<1, node.indexBufferView),load_u16(idx3.y<<1, node.indexBufferView),load_u16(idx3.z<<1, node.indexBufferView)); };
     if (node.indexType == 1)          { idx3 = uint3(load_u32(idx3.x<<2, node.indexBufferView),load_u32(idx3.y<<2, node.indexBufferView),load_u32(idx3.z<<2, node.indexBufferView)); };
 
     // 
     XTRI geometry;
-    geometry.gTexcoord  = triangled(idx3, 1u, nodeMeshID, baryCoord);
-    geometry.gNormal    = triangled(idx3, 2u, nodeMeshID, baryCoord);
-    geometry.gTangent   = triangled(idx3, 3u, nodeMeshID, baryCoord);
-    geometry.gBinormal  = triangled(idx3, 4u, nodeMeshID, baryCoord);
+    geometry.gTexcoord  = triangled(idx3, 0u, nodeMeshID);
+    geometry.gNormal    = triangled(idx3, 1u, nodeMeshID);
+    geometry.gTangent   = triangled(idx3, 2u, nodeMeshID);
+    geometry.gBinormal  = triangled(idx3, 3u, nodeMeshID);
 
     // 
     for (uint32_t i=0u;i<3u;i++) {
@@ -396,13 +396,13 @@ XPOL materialize(in XHIT hit, inout XGEO geo) { //
     const uint geometryInstanceID = hit.gIndices.y;
     const uint globalInstanceID = hit.gIndices.x;
     const uint primitiveID = hit.gIndices.z;
-    const uint nodeMeshID = getMeshID(rtxInstances[globalInstanceID]);
+    const uint nodeMeshID = getMeshID(instances[globalInstanceID]);
 
-    GeometryNode node;
+    GeometryDesc node;
 #ifdef GLSL
-    node = geometryNodes[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
+    node = geometries[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
 #else
-    node = geometryNodes[nonuniformEXT(nodeMeshID)][geometryInstanceID];
+    node = geometries[nonuniformEXT(nodeMeshID)][geometryInstanceID];
 #endif
 
     const MaterialUnit unit = materials[MatID]; // NEW! 20.04.2020
@@ -447,23 +447,23 @@ XHIT rasterize(in float3 origin, in float3 raydir, in float3 normal, float maxT,
 
     // 
     float3 sslr = world2screen(origin);
-    const int2 tsize = textureSize(rasterBuffers[RS_MATERIAL], 0);
-    const int2 samplep = int2((sslr.xy*0.5f+0.5f) * textureSize(rasterBuffers[RS_MATERIAL], 0));
-    const uint4 indices  = floatBitsToUint(texelFetch(rasterBuffers[RS_GEOMETRY], samplep, 0));
-    const uint4 datapass = floatBitsToUint(texelFetch(rasterBuffers[RS_MATERIAL], samplep, 0));
+    const int2 tsize = imageSize(rasteredBuffers[RS_MATERIAL]);
+    const int2 samplep = int2((sslr.xy*0.5f+0.5f) * imageSize(rasteredBuffers[RS_MATERIAL]));
+    const uint4 indices  = floatBitsToUint(imageLoad(rasteredBuffers[RS_GEOMETRY], samplep));
+    const uint4 datapass = floatBitsToUint(imageLoad(rasteredBuffers[RS_MATERIAL], samplep));
 
     // 
-    const float3 baryCoord = texelFetch(rasterBuffers[RS_BARYCENT], samplep, 0).xyz;
+    const float3 baryCoord = imageLoad(rasteredBuffers[RS_BARYCENT], samplep).xyz;
     const bool isSkybox = dot(baryCoord.yz,1.f.xx)<=0.f; //uintBitsToFloat(datapass.z) <= 0.99f;
     const uint primitiveID = indices.z;
     const uint geometryInstanceID = indices.y;
     const uint globalInstanceID = indices.x;
-    const uint nodeMeshID = getMeshID(rtxInstances[globalInstanceID]);
+    const uint nodeMeshID = getMeshID(instances[globalInstanceID]);
 
     // 
     if (!isSkybox) { // Only When Opaque!
         processing.direct = float4(raydir.xyz, 0.f);
-        processing.origin = texelFetch(rasterBuffers[RS_POSITION], samplep, 0);
+        processing.origin = imageLoad(rasteredBuffers[RS_POSITION], samplep);
 
         // Interpolate In Ray-Tracing
         processing.gIndices = indices;
