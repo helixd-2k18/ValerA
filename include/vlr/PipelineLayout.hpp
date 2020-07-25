@@ -49,9 +49,14 @@ namespace vlr {
         VkDescriptorSetLayout getFramebufferSetLayout() const { return layouts[6u]; };
         VkDescriptorSetLayout getAccelerationSetLayout() const { return layouts[7u]; };
 
+        // 
         virtual void setMaterials(vkt::uni_ptr<MaterialSet> materialSet, vkt::uni_ptr<TextureSet> textureSet, vkt::uni_ptr<SamplerSet> samplerSet);
         virtual void setVertexData(vkt::uni_ptr<VertexSet> vertexData);
         virtual void setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer);
+
+        // TODO: ...
+        virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> acceleration);   // TODO: ...
+        virtual void setConstants(vkt::uni_ptr<Constants> Constants);               // TODO: ...
     };
 
 

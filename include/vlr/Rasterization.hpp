@@ -39,6 +39,11 @@ namespace vlr {
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info);
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void setDescriptorSets();
+
+        // Set Constants Buffer
+        virtual void setConstants(vkt::uni_ptr<Constants> constants) {
+            this->constants = constants;
+        };
     };
 
 };

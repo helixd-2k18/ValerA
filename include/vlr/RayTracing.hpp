@@ -4,6 +4,7 @@
 #include "./SetBase.hpp"
 #include "./BufferViewSet.hpp"
 #include "./Constants.hpp"
+#include "./Acceleration.hpp"
 
 namespace vlr {
 
@@ -70,13 +71,27 @@ namespace vlr {
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = {});
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
+        virtual void setDescriptorSets();
         virtual void swapRayData() {
             std::swap(this->rayDataSetFlip0, this->rayDataSetFlip1); // Swap
             this->layout->bound[12u] = this->rayDataSetFlip0->set;
         };
 
-        virtual void setDescriptorSets() {
+        /* Deferred Operations */ 
 
+        // Set Top Level Acceleration
+        virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> accelerationTop) {
+            this->accelerationTop = accelerationTop;
+        };
+
+        // Push Bottom Level Acceleration (with Geometry Set)
+        virtual void pushAcceleration(vkt::uni_ptr<Acceleration> acceleration) {
+            this->accelerations.push_back(acceleration);
+        };
+
+        // Set Constants Buffer
+        virtual void setConstants(vkt::uni_ptr<Constants> constants) {
+            this->constants = constants;
         };
     };
 

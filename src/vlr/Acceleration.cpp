@@ -147,7 +147,7 @@ namespace vlr {
         if (!this->structure) { // create acceleration structure fastly...
             vkh::handleVk(device->CreateAccelerationStructureKHR(this->create, nullptr, &this->structure));
 
-            //
+            // 
             vkh::VkMemoryRequirements2 requirements = {};
             device->GetAccelerationStructureMemoryRequirementsKHR(vkh::VkAccelerationStructureMemoryRequirementsInfoKHR{
                 .type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_KHR,
