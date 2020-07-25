@@ -10,6 +10,7 @@
 
 //
 #include "./VertexSet.hpp"
+#include "./Constants.hpp"
 
 // 
 namespace vlr {
@@ -54,9 +55,9 @@ namespace vlr {
         virtual void setVertexData(vkt::uni_ptr<VertexSet> vertexData);
         virtual void setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer);
 
-        // TODO: ...
-        virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> acceleration);   // TODO: ...
-        virtual void setConstants(vkt::uni_ptr<Constants> Constants);               // TODO: ...
+        // 
+        virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> acceleration);
+        virtual void setConstants(vkt::uni_ptr<Constants> constants);
     };
 
 

@@ -12,7 +12,7 @@ namespace vlr {
         std::vector<VkDeviceSize> initials = {};
     };
 
-    class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing;
+    class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing; friend PipelineLayout;
         vkt::uni_ptr<InstanceSet> instanceSet = {}; // Top Level
         vkt::uni_ptr<GeometrySet> geometrySet = {}; // Bottom Level
         vkt::uni_ptr<Driver> driver = {};

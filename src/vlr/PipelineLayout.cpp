@@ -12,6 +12,10 @@
 #include "./Framebuffer.hpp"
 
 // 
+#include "./Constants.hpp"
+#include "./Acceleration.hpp"
+
+// 
 namespace vlr {
 
     void PipelineLayout::constructor(vkt::uni_ptr<Driver> driver) {
@@ -148,6 +152,32 @@ namespace vlr {
         if (!framebuffer->set) { framebuffer->createDescriptorSet(this); };
 
         this->bound[4u] = framebuffer->set;
+    };
+
+    void PipelineLayout::setAccelerationTop(vkt::uni_ptr<Acceleration> acceleration) {
+        if (acceleration.has() && !acceleration->set) {
+            acceleration->createDescriptorSet(this);
+            if (acceleration->instanceSet.has() && !acceleration->instanceSet->set) {
+                acceleration->instanceSet->createDescriptorSet(this);
+            };
+        };
+
+        // 
+        if (acceleration.has()) {
+            this->bound[10u] = acceleration->set;
+            if (acceleration->instanceSet.has()) {
+                this->bound[17u] = acceleration->instanceSet->set;
+            };
+        };
+    };
+
+    void PipelineLayout::setConstants(vkt::uni_ptr<Constants> constants) { // 
+        if (constants.has()) {
+            if (!constants->set) {
+                constants->createDescriptorSet(this);
+            };
+            this->bound[0u] = constants->set;
+        };
     };
 
 };
