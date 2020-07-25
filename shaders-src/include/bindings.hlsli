@@ -82,6 +82,9 @@ layout (binding = 0, set = 10 ) uniform accelerationStructureEXT Scene;
 
 // 
 layout (binding = 0, set = 16) uniform texture2D background;
+layout (binding = 0, set = 17, scalar) readonly buffer Instances { RTInstance data[]; } instances[];
+
+// 
 layout (push_constant) uniform pushConstants { uint4 data; } drawInfo;
 
 //
@@ -309,19 +312,19 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     const uint geometryInstanceID = hit.gIndices.y;
     const uint globalInstanceID = hit.gIndices.x;
     const uint primitiveID = hit.gIndices.z;
-    const uint nodeMeshID = getMeshID(rtxInstances[globalInstanceID]);
+    const uint nodeMeshID  = hit.gIndices.w;
     const float3 baryCoord = hit.gBarycentric.xyz;
 
-    GeometryNode node;
+    GeometryDesc node;
 #ifdef GLSL
-        node = geometryNodes[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
+        node = geometries[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
 #else
-        node = geometryNodes[nonuniformEXT(nodeMeshID)][geometryInstanceID];
+        node = geometries[nonuniformEXT(nodeMeshID)][geometryInstanceID];
 #endif
 
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
-    float3x4 matra4 = rtxInstances[globalInstanceID].transform;
+    float3x4 matra4 = instances[globalInstanceID].transform;
     if (hasTransform(meshInfo[nodeMeshID])) { matras = node.transform; };
 
     // Native Normal Transform
@@ -329,13 +332,10 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     const float3x3 normInTransform = inverse(transpose(regen3(matra4)));
 
     // 
-    XTRI geometry;
-
-    // 
     uint3 idx3 = uint3(primitiveID*3u+0u+node.offset,primitiveID*3u+1u+node.offset,primitiveID*3u+2u+node.offset);
 
-
-    
+    // 
+    XTRI geometry;
     geometry.gTexcoord  = triangled(idx3, 1u, nodeMeshID, baryCoord);
     geometry.gNormal    = triangled(idx3, 2u, nodeMeshID, baryCoord);
     geometry.gTangent   = triangled(idx3, 3u, nodeMeshID, baryCoord);
@@ -352,7 +352,7 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
         geometry.gTangent[i].xyz = mul(normInTransform, mul(normalTransform, geometry.gTangent[i].xyz));
         geometry.gBinormal[i].xyz = mul(normInTransform, mul(normalTransform, geometry.gBinormal[i].xyz));
 
-        //
+        // 
         geometry.gNormal[i].xyz = normalize(geometry.gNormal[i].xyz);
         geometry.gTangent[i].xyz = normalize(geometry.gTangent[i].xyz);
         geometry.gBinormal[i].xyz = normalize(geometry.gBinormal[i].xyz);

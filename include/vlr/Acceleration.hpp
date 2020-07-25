@@ -7,15 +7,14 @@ namespace vlr {
 
 
     struct AccelerationCreateInfo {
-        vkt::uni_ptr<GeometrySet> geometrySet = {};
-        vkt::uni_ptr<InstanceSet> instanceSet = {};
+        vkt::uni_ptr<InstanceSet> instanceSet = {}; // Top Level
+        vkt::uni_ptr<GeometrySet> geometrySet = {}; // Bottom Level
         std::vector<VkDeviceSize> initials = {};
     };
 
-
     class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing;
-        vkt::uni_ptr<InstanceSet> instanceSet = {};
-        vkt::uni_ptr<GeometrySet> geometrySet = {};
+        vkt::uni_ptr<InstanceSet> instanceSet = {}; // Top Level
+        vkt::uni_ptr<GeometrySet> geometrySet = {}; // Bottom Level
         vkt::uni_ptr<Driver> driver = {};
 
         // FOR CREATE (Acceleration Structure)

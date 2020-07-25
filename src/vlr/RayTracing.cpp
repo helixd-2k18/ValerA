@@ -8,9 +8,11 @@
 // 
 namespace vlr {
 
-    void RayTracing::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) {
-        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->geometrySet = info->geometrySet; auto device = this->driver->getDeviceDispatch();
+    void RayTracing::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info) {
+        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->accelerationTop = info->accelerationTop, this->accelerations = info->accelerations; 
+        auto device = this->driver->getDeviceDispatch();
 
+        // 
         this->stages = { // for faster code, pre-initialize
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/generation.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/intersection.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
@@ -40,8 +42,9 @@ namespace vlr {
         this->rayDataSetFlip0->pushBufferView(this->rayDataFlip1->getGpuBuffer()); // Read-only 
         this->rayDataSetFlip1->pushBufferView(this->rayDataFlip1->getGpuBuffer()); // Write-able
         this->rayDataSetFlip1->pushBufferView(this->rayDataFlip0->getGpuBuffer()); // Read-only 
+    };
 
-        // 
+    void RayTracing::setDescriptorSets() { // 
         this->rayDataSetFlip0->createDescriptorSet(layout);
         this->rayDataSetFlip1->createDescriptorSet(layout);
         this->colorChainData->createDescriptorSet(layout);
@@ -53,8 +56,8 @@ namespace vlr {
         this->geometriesDescs->resetBufferViews();
 
         // 
-        for (uint32_t i=0;i<geometrySets.size();i++) {
-            vkt::uni_ptr<GeometrySet> geometrySet = geometrySets[i];
+        for (uint32_t i=0;i<accelerations.size();i++) {
+            vkt::uni_ptr<GeometrySet> geometrySet = accelerations[i]->geometrySet;
             vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
 
             // 
@@ -71,8 +74,19 @@ namespace vlr {
         this->layout->bound[9u] = this->interpolations->set;
 
         // 
+        if (this->accelerationTop.has() && !this->accelerationTop->set) {
+            this->accelerationTop->createDescriptorSet(layout);
+            if (this->accelerationTop->instanceSet.has() && !this->accelerationTop->instanceSet->set) {
+                this->accelerationTop->instanceSet->createDescriptorSet(layout);
+            };
+        };
+
+        // 
         if (this->accelerationTop.has()) {
             this->layout->bound[10u] = this->accelerationTop->set;
+            if (this->accelerationTop->instanceSet.has()) {
+                this->layout->bound[17u] = this->accelerationTop->instanceSet->set;
+            };
         };
 
         // 

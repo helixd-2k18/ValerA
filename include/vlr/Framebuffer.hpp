@@ -8,8 +8,17 @@ namespace vlr {
     struct PipelineCreateInfo {
         vkt::uni_ptr<PipelineLayout> layout = {};
         vkt::uni_ptr<Framebuffer> framebuffer = {};
-        vkt::uni_ptr<GeometrySet> geometrySet = {};
-        uint32_t geometryID = 0u; // For Rasterization
+        vkt::uni_ptr<GeometrySet> geometrySet = {}; // For Rasterization
+        vkt::uni_ptr<InstanceSet> instanceSet = {}; 
+        uint32_t geometryID = 0u; // For Rasterization, Use That Geometry
+        uint32_t instanceID = 0u; // For Rasterization, Pick Up Transform
+    };
+
+    struct RayTracingCreateInfo {
+        vkt::uni_ptr<PipelineLayout> layout = {};
+        vkt::uni_ptr<Framebuffer> framebuffer = {};
+        vkt::uni_ptr<Acceleration> accelerationTop = {}; // Top Level for Ray Tracing
+        std::vector<vkt::uni_ptr<Acceleration>> accelerations = {}; // Bottom Levels
     };
 
     struct RenderPass {

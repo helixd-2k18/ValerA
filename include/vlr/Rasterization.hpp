@@ -8,7 +8,9 @@ namespace vlr {
 
     class Rasterization : public std::enable_shared_from_this<Rasterization> { protected: friend RayTracing;
         vkt::uni_ptr<GeometrySet> geometrySet = {};
+        vkt::uni_ptr<InstanceSet> instanceSet = {};
         uint32_t geometryID = 0u;
+        uint32_t instanceID = 0u;
 
         // 
         vkt::uni_ptr<PipelineLayout> layout = {};

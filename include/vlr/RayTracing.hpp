@@ -38,15 +38,13 @@ namespace vlr {
         vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<Driver> driver = {};
         
-
-        //std::vector<vkt::uni_ptr<GeometrySet>> geometries = {}; // Not Necessary, inbound with `vkt::uni_ptr<Acceleration>`
+        // 
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};
         std::vector<vkt::uni_ptr<Acceleration>> accelerations = {};
         VkPipeline generation = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE, finalize = VK_NULL_HANDLE;
         // TODO: Accumulation Shader (pick up all hits)
 
         // 
-        std::vector<vkt::uni_ptr<GeometrySet>> geometrySets = {}; // Meshes
         vkt::uni_ptr<BufferViewSet> geometriesDescs = {}; // Buffers with GeometryDesc
         vkt::uni_ptr<BufferViewSet> interpolations = {};
 
@@ -59,18 +57,24 @@ namespace vlr {
         vkt::uni_ptr<BufferViewSet> rayDataSetFlip0 = {};
         vkt::uni_ptr<BufferViewSet> rayDataSetFlip1 = {};
 
-        // 
+        // For TOP Level
+        //vkt::uni_ptr<InstanceSet> instanceSet = {}; // Used By Top Level
+        //std::vector<vkt::uni_ptr<GeometrySet>> geometries = {}; // Not Necessary, inbound with `vkt::uni_ptr<Acceleration>`, Used By Bottom Levels
 
     public: 
         RayTracing() { this->constructor(); };
-        RayTracing(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info = {}) { this->constructor(driver, info); };
+        RayTracing(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = {}) { this->constructor(driver, info); };
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info = {});
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = {});
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void swapRayData() {
             std::swap(this->rayDataSetFlip0, this->rayDataSetFlip1); // Swap
             this->layout->bound[12u] = this->rayDataSetFlip0->set;
+        };
+
+        virtual void setDescriptorSets() {
+
         };
     };
 

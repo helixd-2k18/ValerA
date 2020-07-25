@@ -54,7 +54,7 @@ struct MeshInfo {
 };
 
 // 
-struct RTXInstance {
+struct RTInstance {
     float3x4 transform;
     uint instance_mask;
     uint offset_flags;
