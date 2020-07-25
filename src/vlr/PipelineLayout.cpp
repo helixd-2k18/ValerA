@@ -113,6 +113,7 @@ namespace vlr {
         layouts.push_back(this->getSetLayout());            // [x] Hit Data
         layouts.push_back(this->getSetLayout());            // [x] Color-chain Data
         layouts.push_back(this->getBufferViewSetLayout());  // [x] Per-Mesh (Geometry) Attribute Indices
+        layouts.push_back(this->getTextureSetLayout());     // [x] Background
 
         // 
         this->bound.resize(layouts.size());

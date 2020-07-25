@@ -6,7 +6,10 @@
 namespace vlr {
 
     void Rasterization::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) {
-        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer; auto device = this->driver->getDeviceDispatch();
+        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->geometrySet = info->geometrySet, this->geometryID = info->geometryID; 
+        auto device = this->driver->getDeviceDispatch();
+
+        // 
         this->stages = { // for faster code, pre-initialize
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.vert.spv")), VK_SHADER_STAGE_VERTEX_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.geom.spv")), VK_SHADER_STAGE_GEOMETRY_BIT),
@@ -56,9 +59,9 @@ namespace vlr {
         device->CmdBeginRenderPass(rasterCommand, vkh::VkRenderPassBeginInfo{ .renderPass = framebuffer->rasterFBO.renderPass, .framebuffer = framebuffer->rasterFBO.framebuffer, .renderArea = renderArea, .clearValueCount = static_cast<uint32_t>(framebuffer->rasterFBO.clearValues.size()), .pClearValues = framebuffer->rasterFBO.clearValues.data() }, VK_SUBPASS_CONTENTS_INLINE);
 
         // 
-        if (geometry->indexType != VK_INDEX_TYPE_NONE_KHR && geometry->indexBufferView != ~0u && geometry->indexBufferView != -1) {
-            const auto& buffer = geometry->vertexSet->getBuffer(geometry->indexBufferView);
-            device->CmdBindIndexBuffer(rasterCommand, buffer, buffer.offset(), geometry->indexType);
+        if (geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR && geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1) {
+            const auto& buffer = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
+            device->CmdBindIndexBuffer(rasterCommand, buffer, buffer.offset(), geometry->desc->indexType);
             device->CmdDrawIndexed(rasterCommand, geometry->desc->primitiveCount * 3u, 1u, geometry->desc->firstVertex, 0u, 0u);
         } else {
             device->CmdDraw(rasterCommand, geometry->desc->primitiveCount * 3u, 1u, geometry->desc->firstVertex, 0u); // TODO: Instanced Support

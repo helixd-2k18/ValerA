@@ -14,7 +14,7 @@ namespace vlr {
 
         // 
         //vkt::uni_ptr<BufferViewSet> interpBufs = {};
-        
+
         // 
         //VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
         //vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};

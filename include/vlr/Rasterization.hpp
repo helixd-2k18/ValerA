@@ -7,11 +7,11 @@
 namespace vlr {
 
     class Rasterization : public std::enable_shared_from_this<Rasterization> { protected: friend RayTracing;
-        vkt::uni_ptr<VertexSet> vertexSet = {};
-        vkt::uni_ptr<Geometry> geometry = {};
-        vkt::uni_ptr<Interpolation> interpolation = {};
+        vkt::uni_ptr<GeometrySet> geometrySet = {};
+        uint32_t geometryID = 0u;
+
+        // 
         vkt::uni_ptr<PipelineLayout> layout = {};
-        //vkt::uni_arg<PipelineCreateInfo> info = {};
         vkt::uni_ptr<TextureSet> textureSet = {};
         vkt::uni_ptr<SamplerSet> samplerSet = {};
         vkt::uni_ptr<MaterialSet> materialSet = {};

@@ -30,7 +30,7 @@ namespace vlr {
             uint32_t i = 0u;
             {   // 
                 auto geometry = info->geometrySet->geometries[i];
-                auto attribute = geometry->vertexSet->getAttribute(geometry->vertexAttribute);
+                auto attribute = geometry->vertexSet->getAttribute(geometry->desc->vertexAttribute);
                 auto binding = geometry->vertexSet->getBinding(attribute.binding);
                 auto offsetDesc = vkh::VkAccelerationStructureBuildOffsetInfoKHR{};
                 auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eNoDuplicateAnyHitInvocation = 1 };
@@ -57,7 +57,7 @@ namespace vlr {
             for (uint32_t i=0u;i<info->geometrySet->geometries.size();i++) 
             {   // 
                 auto geometry = info->geometrySet->geometries[i];
-                auto attribute = geometry->vertexSet->getAttribute(geometry->vertexAttribute);
+                auto attribute = geometry->vertexSet->getAttribute(geometry->desc->vertexAttribute);
                 auto binding = geometry->vertexSet->getBinding(attribute.binding);
                 auto offsetDesc = vkh::VkAccelerationStructureBuildOffsetInfoKHR{};
                 auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eNoDuplicateAnyHitInvocation = 1 };
@@ -69,12 +69,12 @@ namespace vlr {
                 triangleDesc.transformData = info->geometrySet->getGpuBuffer();
                 triangleDesc.vertexFormat = attribute.format;
                 triangleDesc.vertexStride = binding.stride;
-                triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->vertexAttribute);
+                triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
                 
                 // 
-                if (geometry->indexBufferView != ~0u && geometry->indexBufferView != -1 && geometry->indexType != VK_INDEX_TYPE_NONE_KHR) {
-                    triangleDesc.indexData = geometry->vertexSet->getBuffer(geometry->indexBufferView);
-                    triangleDesc.indexType = geometry->indexType;
+                if (geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1 && geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR) {
+                    triangleDesc.indexData = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
+                    triangleDesc.indexType = geometry->desc->indexType;
                 } else {
                     triangleDesc.indexType = VK_INDEX_TYPE_NONE_KHR;
                     triangleDesc.indexData = VK_NULL_HANDLE;
