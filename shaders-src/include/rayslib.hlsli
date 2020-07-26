@@ -25,6 +25,7 @@ T fname(in uint WHERE) {\
     return T(pfx.y) * T(by) + WaveReadLaneFirst(gadd);\
 };
 
+// 
 initAtomicSubgroupIncFunction(counters[WHERE], incrementCnt, 1u, uint);
 
 // 
@@ -48,17 +49,22 @@ RayData finishRay(inout RayData ray) {
 
 // 
 RayData finishBy(inout RayData ray) {
-    if (dot(ray.color.xyz, 0.hf.xxx) <= 0.001f || lifetime(ray) <= 0u) { finishRay(ray); }; return ray;
+#ifdef GLSL
+    if (dot(ray.color.xyz, 0.hf.xxx) <= 0.001f || lifetime(ray) <= 0u) { finishRay(ray); };
+#endif
+    return ray;
 };
 
 // 
 void storeRay(in RayData ray, in uint rayID) {
+#ifdef GLSL
     if (rayID != ~0u && rayID < LIMITS) { lifetime(ray, lifetime(ray)-1u); rays[rayID] = ray; };
+#endif
 };
 
 // 
 uint emitRay(inout RayData ray) {
-    uint rayID = ~0u;
+    uint rayID = ~0u; finishBy(ray);
 #ifdef GLSL
     if (counters[RAY_COUNTER] < LIMITS && !finished(ray) && lifetime(ray) > 0u) { 
         rayID = incrementCnt(RAY_COUNTER); 
