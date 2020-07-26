@@ -19,7 +19,7 @@ namespace vlr {
     // i.e. float2x4
     struct HitData {
         glm::uvec3 indices = glm::uvec3(0u); uint32_t rayID = 0u; // 
-        glm::vec2 barycentric = glm::vec2(0.f); uint pixelID = 0u;
+        glm::vec2 barycentric = glm::vec2(0.f); uint32_t pixelID = 0u;
         vkh::uint24_t meshID = 0u; uint8_t meta = uint8_t(0u);
     };
 
