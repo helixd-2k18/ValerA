@@ -6,6 +6,6 @@
 #include "../include/bindings.hlsli"
 
 layout ( local_size_x = 32u, local_size_y = 24u ) in; 
-void main(){
+void main() {
     
 };

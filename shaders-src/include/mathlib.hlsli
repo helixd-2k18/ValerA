@@ -89,7 +89,12 @@ struct RayData {
 #else
     uint meta; // meta is u8vec4
 #endif
-    uint2 color; uint2 emission; // both is packed f16vec4
+    //uint2 color; uint2 emission; // both is packed f16vec4
+#ifdef GLSL
+    f16vec4 color; f16vec4 emission;
+#else
+    half4 color; half4 emission;
+#endif
 };
 
 struct HitData {
@@ -105,11 +110,17 @@ struct ColorChain {
 
 
 #ifdef GLSL // 4-bit is lifetime
-uint lifetime(in HitData hit) { return bitfieldExtract(hit.meshID_meta, 24, 4); };
-uint lifeTime(inout HitData hit, in uint a) { hit.meshID_meta = bitfieldInsert(hit.meshID_meta, a, 24, 4); return a; };
+//uint lifetime(in HitData hit) { return bitfieldExtract(hit.meshID_meta, 24, 4); };
+//uint lifetime(inout HitData hit, in uint a) { hit.meshID_meta = bitfieldInsert(hit.meshID_meta, a, 24, 4); return a; };
+// 
+uint lifetime(in RayData ray) { return bitfieldExtract(ray.meta.x, 2, 4); };
+uint lifetime(in RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a, 2, 4)); return a; };
 // 
 uint kind(in RayData ray) { return bitfieldExtract(ray.meta.x, 0, 2); };
 uint kind(in RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a, 0, 2)); return a; };
+//
+bool finished(in RayData ray) { return bool(bitfieldExtract(ray.meta.x, 6, 1)); };
+bool finished(in RayData ray, in bool a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, uint(a), 6, 1)); return a; };
 #endif
 
 
@@ -197,6 +208,16 @@ uint packUint2x16(in highp uint2 up) {
 };
 #endif
 
+
+float4 unpackUnorm4x16(in uint2 c) {
+    return float4(unpackUint2x16(c.x), unpackUint2x16(c.y));
+};
+
+uint2 packUnorm4x16(in float4 c) {
+    return uint2(packUnorm2x16(c.xy), packUnorm2x16(c.zw));
+};
+
+
 // 
 bool hasTransform(in GeometryDesc desc) {
     return bool(bitfieldExtract(desc.meshID_flags,24+0,1));
@@ -262,33 +283,33 @@ uint3 textureSize(in Texture3D<float4> tex, in int lod) { uint3 size = uint3(0,0
 #define textureLodSample(b, s, c, m) textureLod(sampler2D(b, s), c, m)
 #endif
 
-// i.e. RGBA32F by every R32F
-uint4 superImageLoad(in fimage2D image, int2 texcoord) {
-    return uint4(
-        imageLoad(image, int2(texcoord.x*4u+0u,texcoord.y)).x,
-        imageLoad(image, int2(texcoord.x*4u+1u,texcoord.y)).x,
-        imageLoad(image, int2(texcoord.x*4u+2u,texcoord.y)).x,
-        imageLoad(image, int2(texcoord.x*4u+3u,texcoord.y)).x
+#define superImageLoad(image, texcoord) \
+    uint4(\
+        imageLoad(image, int2(texcoord.x*4u+0u,texcoord.y)).x,\
+        imageLoad(image, int2(texcoord.x*4u+1u,texcoord.y)).x,\
+        imageLoad(image, int2(texcoord.x*4u+2u,texcoord.y)).x,\
+        imageLoad(image, int2(texcoord.x*4u+3u,texcoord.y)).x\
     );
-};
 
-// i.e. RGBA32F by every R32F
-void superImageStore(in fimage2D image, int2 texcoord, float4 fvalue){
-    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.xxxx);
-    imageStore(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.yyyy);
-    imageStore(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.zzzz);
+#define superImageStore(image, texcoord, fvalue) \
+    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.xxxx);\
+    imageStore(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.yyyy);\
+    imageStore(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.zzzz);\
     imageStore(image, int2(texcoord.x*4u+3u,texcoord.y), fvalue.wwww);
-};
 
 #ifdef GLSL 
-float4 atomicSuperImageAdd(in fimage2D image, int2 texcoord, float4 fvalue) {
-    float4 old = float4(0.f.xxxx);
-    imageAtomicAdd(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.x);
-    imageAtomicAdd(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.y);
-    imageAtomicAdd(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.z);
+#define atomicSuperImageAdd(image, texcoord, fvalue) \
+    imageAtomicAdd(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.x);\
+    imageAtomicAdd(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.y);\
+    imageAtomicAdd(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.z);\
     imageAtomicAdd(image, int2(texcoord.x*4u+3u,texcoord.y), fvalue.w);
-    return old;
-}
+
+#define atomicSuperImageAdd3(image, texcoord, fvalue) \
+    imageAtomicAdd(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.x);\
+    imageAtomicAdd(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.y);\
+    imageAtomicAdd(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.z);\
+    imageAtomicExchange(image, int2(texcoord.x*4u+3u,texcoord.y), 1.f);
+
 #endif
 
 

@@ -27,6 +27,7 @@
 #extension GL_KHR_shader_subgroup_basic                    : require
 #extension GL_EXT_shader_atomic_float                      : require
 #extension GL_KHR_shader_subgroup_arithmetic               : require
+#extension GL_KHR_shader_subgroup_ballot                   : require
 
 #ifndef ENABLE_AS
 #define ENABLE_AS
