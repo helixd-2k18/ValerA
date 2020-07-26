@@ -259,6 +259,17 @@ void superImageStore(in fimage2D image, int2 texcoord, float4 fvalue){
     imageStore(image, int2(texcoord.x*4u+3u,texcoord.y), fvalue.wwww);
 };
 
+#ifdef GLSL 
+float4 atomicSuperImageAdd(in fimage2D image, int2 texcoord, float4 fvalue) {
+    float4 old = float4(0.f.xxxx);
+    imageAtomicAdd(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.x);
+    imageAtomicAdd(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.y);
+    imageAtomicAdd(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.z);
+    imageAtomicAdd(image, int2(texcoord.x*4u+3u,texcoord.y), fvalue.w);
+    return old;
+}
+#endif
+
 
 // System Specified
 #ifdef GLSL
