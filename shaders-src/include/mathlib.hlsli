@@ -3,10 +3,6 @@
 
 #include "./driver.hlsli"
 
-
-
-
-
 // TODO: Materials
 struct RayPayloadData {
      uint4 udata;
@@ -105,10 +101,10 @@ struct ColorChain {
 
 #ifdef GLSL // 4-bit is lifetime
 uint lifetime(in HitData hit) { return bitfieldExtract(hit.meshID_meta, 24, 4); };
-void lifeTime(inout HitData hit, in uint a) { hit.meshID_meta = bitfieldInsert(hit.meshID_meta, a, 24, 4); };
+uint lifeTime(inout HitData hit, in uint a) { hit.meshID_meta = bitfieldInsert(hit.meshID_meta, a, 24, 4); return a; };
 // 
 uint kind(in RayData ray) { return bitfieldExtract(ray.meta.x, 0, 2); };
-void kind(in RayData ray), in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a, 0, 2)); };
+uint kind(in RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a, 0, 2)); return a; };
 #endif
 
 
@@ -293,9 +289,9 @@ float4 atomicSuperImageAdd(in fimage2D image, int2 texcoord, float4 fvalue) {
 
 // System Specified
 #ifdef GLSL
-#define meshID nonuniformEXT(nodeMeshID)
+#define meshID nonuniformEXT(geometrySetID)
 #else
-#define meshID nodeMeshID
+#define meshID geometrySetID
 #endif
 
 

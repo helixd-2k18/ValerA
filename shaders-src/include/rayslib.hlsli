@@ -4,6 +4,15 @@
 #include "./driver.hlsli"
 #include "./bindings.hlsli"
 
+// 
+#ifdef GLSL
+#define WaveActiveSum subgroupAdd
+#define WavePrefixSum subgroupExclusiveAdd
+#define WaveIsFirstLane subgroupElect
+#define WaveReadLaneFirst subgroupBroadcastFirst
+#endif
+
+// 
 const uint UONE = 1u;
 uint2 bPrefixSum() { return uvec2(WaveActiveSum(UONE), WavePrefixSum(UONE)); };
 

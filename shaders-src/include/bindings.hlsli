@@ -55,7 +55,7 @@ layout (binding = 0, set = 0, scalar) uniform Matrices {
     //uint2 tdata, rdata; // first for time, second for randoms
     uint2 tdata;
     uint2 rdata;
-} pushed;
+} constants;
 
 // 
 layout (binding = 0, set = 1) readonly buffer MeshData { uint8_t data[]; } mesh0[];
@@ -96,7 +96,7 @@ layout (binding = 0, set = 12, scalar) buffer RayDatas { RayData rays[]; };
 layout (binding = 0, set = 13, scalar) buffer HitDatas { HitData hits[]; };
 
 // 
-layout (push_constant) uniform pushConstants { uint4 data; } drawInfo;
+layout (push_constant) uniform pushConstants { uint4 pushed; };
 
 //
 #define textureSample(b, s, c) texture(sampler2D(b, s), c)
@@ -122,7 +122,7 @@ struct DrawInfo {
 };
 
 // 
-ConstantBuffer<Matrices> pushed : register(b0, space0);
+ConstantBuffer<Matrices> constants : register(b0, space0);
 RWByteAddressBuffer mesh0[] : register(u0, space1);
 RWStructuredBuffer<Binding> bindings[] : register(t0, space2);
 RWStructuredBuffer<Attribute> attributes[] : register(t0, space3);
@@ -194,6 +194,7 @@ struct CHIT {
 
 // 
 struct XTRI {
+    float3x4 gPosition;
     float3x4 gTangent; 
     float3x4 gBinormal; 
     float3x4 gNormal; 
@@ -207,9 +208,12 @@ STATIC uint2 seed = uint2(0u.xx);
 
 
 // 
-uint getMeshID(in RTInstance instance){
+uint getGeometrySetID(in RTInstance instance){
     return bitfieldExtract(instance.instance_mask, 0, 24); // only hack method support
 };
+
+// Deprecated
+#define getMeshID getGeometrySetID
 
 // RESERVED FOR OTHER OPERATIONS
 float3 refractive(in float3 dir) {
@@ -239,13 +243,13 @@ uint load_u32(in uint offset, in uint binding) {
 
 
 // TODO: Add Uint16_t, uint, Float16_t Support
-float4 get_float4(in uint idx, in uint loc, in uint nodeMeshID) {
+float4 get_float4(in uint idx, in uint loc, in uint geometrySetID) {
 #ifdef GLSL
     Attribute attrib = attributes[meshID].data[loc];
     Binding  binding = bindings[meshID].data[attrib.binding];
 #else
-    Attribute attrib = attributes[nodeMeshID][loc];
-    Binding  binding = bindings[nodeMeshID][attrib.binding];
+    Attribute attrib = attributes[geometrySetID][loc];
+    Binding  binding = bindings[geometrySetID][attrib.binding];
 #endif
 
     uint boffset = binding.stride * idx + attrib.offset;
@@ -262,32 +266,32 @@ float4 get_float4(in uint idx, in uint loc, in uint nodeMeshID) {
 };
 
 float3 world2screen(in float3 origin){
-    return divW(mul(pushed.projection, float4(mul(pushed.modelview, float4(origin,1.f)), 1.f)));
+    return divW(mul(constants.projection, float4(mul(constants.modelview, float4(origin,1.f)), 1.f)));
 };
 
 float3 screen2world(in float3 origin){
-    return mul(pushed.modelviewInv, float4(divW(mul(pushed.projectionInv, float4(origin,1.f))), 1.f));
+    return mul(constants.modelviewInv, float4(divW(mul(constants.projectionInv, float4(origin,1.f))), 1.f));
 };
 
 float3 world2screen(in float4 origin){
-    return divW(mul(pushed.projection, float4(mul(pushed.modelview, origin), 1.f)));
+    return divW(mul(constants.projection, float4(mul(constants.modelview, origin), 1.f)));
 };
 
 float3 screen2world(in float4 origin){
-    return mul(pushed.modelviewInv, float4(divW(mul(pushed.projectionInv, origin)), 1.f));
+    return mul(constants.modelviewInv, float4(divW(mul(constants.projectionInv, origin)), 1.f));
 };
 
 
-float3x4 triangled(in uint3 indices, in uint loc, in uint nodeMeshID){
+float3x4 triangled(in uint3 indices, in uint loc, in uint geometrySetID){
     return float3x4(
-        get_float4(indices[0],loc,nodeMeshID),
-        get_float4(indices[1],loc,nodeMeshID),
-        get_float4(indices[2],loc,nodeMeshID)
+        get_float4(indices[0],loc,geometrySetID),
+        get_float4(indices[1],loc,geometrySetID),
+        get_float4(indices[2],loc,geometrySetID)
     );
 };
 
-float4 triangulate(in uint3 indices, in uint loc, in uint nodeMeshID, in float3 barycenter){
-    return mul(barycenter, triangled(indices, loc, nodeMeshID));
+float4 triangulate(in uint3 indices, in uint loc, in uint geometrySetID, in float3 barycenter){
+    return mul(barycenter, triangled(indices, loc, geometrySetID));
 };
 
 
@@ -308,29 +312,36 @@ float4 gSkyShader(in float3 raydir, in float3 origin) {
 };
 
 // 
-float  staticRandom () { SCLOCK += 1; return floatConstruct(hash(uint4(SCLOCK,0u, pushed.rdata.xy))); }
-float2 staticRandom2() { SCLOCK += 1; return  halfConstruct(hash(uint4(SCLOCK,0u, pushed.rdata.xy))); }
+float  staticRandom () { SCLOCK += 1; return floatConstruct(hash(uint4(SCLOCK,0u, constants.rdata.xy))); }
+float2 staticRandom2() { SCLOCK += 1; return  halfConstruct(hash(uint4(SCLOCK,0u, constants.rdata.xy))); }
 
 // 
 XTRI geometrical(in XHIT hit) { // By Geometry Data
     const uint geometryInstanceID = hit.gIndices.y;
     const uint globalInstanceID = hit.gIndices.x;
     const uint primitiveID = hit.gIndices.z;
-    const uint nodeMeshID  = getMeshID(instances[globalInstanceID]);
+    const uint geometrySetID  = getGeometrySetID(instances[globalInstanceID]);
     const float3 baryCoord = hit.gBarycentric.xyz;
 
     // 
     GeometryDesc node;
 #ifdef GLSL
-    node = geometries[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
+    node = geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
 #else
-    node = geometries[nonuniformEXT(nodeMeshID)][geometryInstanceID];
+    node = geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
+#endif
+
+    Interpolations interpol;
+#ifdef GLSL
+    interpol = interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+#else
+    interpol = interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
 
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
     float3x4 matra4 = instances[globalInstanceID].transform;
-    if (hasTransform(geometries[nodeMeshID].data[geometryInstanceID])) { matras = node.transform; };
+    if (hasTransform(geometries[geometrySetID].data[geometryInstanceID])) { matras = node.transform; };
 
     // Native Normal Transform
     const float3x3 normalTransform = inverse(transpose(regen3(matras)));
@@ -344,10 +355,11 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
 
     // 
     XTRI geometry;
-    geometry.gTexcoord  = triangled(idx3, 0u, nodeMeshID);
-    geometry.gNormal    = triangled(idx3, 1u, nodeMeshID);
-    geometry.gTangent   = triangled(idx3, 2u, nodeMeshID);
-    geometry.gBinormal  = triangled(idx3, 3u, nodeMeshID);
+    geometry.gPosition  = triangled(idx3, node.vertexAttribute, geometrySetID);
+    geometry.gTexcoord  = triangled(idx3, interpol.AB[0u], geometrySetID);
+    geometry.gNormal    = triangled(idx3, interpol.AB[1u], geometrySetID);
+    geometry.gTangent   = triangled(idx3, interpol.AB[2u], geometrySetID);
+    geometry.gBinormal  = triangled(idx3, interpol.AB[3u], geometrySetID);
 
     // 
     for (uint32_t i=0u;i<3u;i++) {
@@ -404,13 +416,13 @@ XPOL materialize(in XHIT hit, inout XGEO geo) { //
     const uint geometryInstanceID = hit.gIndices.y;
     const uint globalInstanceID = hit.gIndices.x;
     const uint primitiveID = hit.gIndices.z;
-    const uint nodeMeshID = getMeshID(instances[globalInstanceID]);
+    const uint geometrySetID = getGeometrySetID(instances[globalInstanceID]);
 
     GeometryDesc node;
 #ifdef GLSL
-    node = geometries[nonuniformEXT(nodeMeshID)].data[geometryInstanceID];
+    node = geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
 #else
-    node = geometries[nonuniformEXT(nodeMeshID)][geometryInstanceID];
+    node = geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
 
     const MaterialUnit unit = materials[MatID]; // NEW! 20.04.2020
@@ -465,7 +477,7 @@ XHIT rasterize(in float3 origin, in float3 raydir, in float3 normal, float maxT,
     const uint primitiveID = indices.z;
     const uint geometryInstanceID = indices.y;
     const uint globalInstanceID = indices.x;
-    const uint nodeMeshID = getMeshID(instances[globalInstanceID]);
+    const uint geometrySetID = getGeometrySetID(instances[globalInstanceID]);
 
     // 
     if (!isSkybox) { // Only When Opaque!

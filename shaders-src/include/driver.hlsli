@@ -26,6 +26,7 @@
 #extension GL_EXT_shader_8bit_storage                      : require
 #extension GL_KHR_shader_subgroup_basic                    : require
 #extension GL_EXT_shader_atomic_float                      : require
+#extension GL_KHR_shader_subgroup_arithmetic               : require
 
 #ifndef ENABLE_AS
 #define ENABLE_AS
@@ -55,7 +56,6 @@ precision highp int;
 #define bool2 bvec2 
 #define bool3 bvec3
 #define bool4 bvec4
-
 #define float2x2 mat2x2 
 #define float3x3 mat3x3
 #define float4x4 mat4x4
@@ -63,4 +63,12 @@ precision highp int;
 #define float4x3 mat4x3
 #endif
 
+#endif
+
+#ifndef DRIVER_INCLUDE_H
+#define DRIVER_INCLUDE_H
+#include "./mathlib.hlsli"
+#include "./bindings.hlsli"
+#include "./rayslib.hlsli"
+#include "./material.hlsli"
 #endif

@@ -55,9 +55,9 @@ function BuildAllShaders($Pfx = "") {
     #BuildCompute "render.frag"          "$INDIR$RNDX" "$HRDDIR$RTPU"
     #BuildCompute "render.vert"          "$INDIR$RNDX" "$HRDDIR$RTPU"
     
-    #BuildCompute "rasterize.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU"
-    #BuildCompute "rasterize.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU"
-    #BuildCompute "rasterize.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    BuildCompute "rasterize.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    BuildCompute "rasterize.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU"
+    BuildCompute "rasterize.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU"
     
     #BuildCompute "rasterize.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE" "covergence.frag"
     #BuildCompute "rasterize.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU" "-DCONSERVATIVE" "covergence.geom"
