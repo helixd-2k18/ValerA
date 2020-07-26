@@ -77,7 +77,7 @@ void storeHit(in HitData hit, in uint hitID) {
 uint emitHit(in HitData hit) {
     uint hitID = ~0u;
 #ifdef GLSL
-    if (counters[RAY_COUNTER] < LIMITS) { 
+    if (counters[HIT_COUNTER] < LIMITS) { 
         hitID = incrementCnt(HIT_COUNTER); 
     };
     storeHit(hit, hitID);
