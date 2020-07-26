@@ -54,23 +54,26 @@ namespace vlr {
         this->hitData->createDescriptorSet(layout);
         this->counters->createDescriptorSet(layout);
 
-        // 
-        this->interpolations->resetBufferViews();
-        this->geometriesDescs->resetBufferViews();
-
-        // 
-        for (uint32_t i=0;i<accelerations.size();i++) {
-            vkt::uni_ptr<GeometrySet> geometrySet = accelerations[i]->geometrySet;
-            vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
+        // Check if exist...
+        if (this->accelerationTop.has() && this->accelerations.size() > 0 && this->accelerationTop->instanceSet.has()) { // 
+            // 
+            this->interpolations->resetBufferViews();
+            this->geometriesDescs->resetBufferViews();
 
             // 
-            this->interpolations->pushBufferView(interpolation->getGpuBuffer());
-            this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
-        };
+            for (uint32_t i=0;i<accelerations.size();i++) {
+                vkt::uni_ptr<GeometrySet> geometrySet = accelerations[i]->geometrySet;
+                vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
 
-        // 
-        this->interpolations->createDescriptorSet(layout);
-        this->geometriesDescs->createDescriptorSet(layout);
+                // 
+                this->interpolations->pushBufferView(interpolation->getGpuBuffer());
+                this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
+            };
+
+            // 
+            this->interpolations->createDescriptorSet(layout);
+            this->geometriesDescs->createDescriptorSet(layout);
+        };
 
         // TODO: Decise by PipelineLayout class
         this->layout->bound[8u] = this->geometriesDescs->set;

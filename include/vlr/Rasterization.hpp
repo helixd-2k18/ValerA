@@ -47,6 +47,26 @@ namespace vlr {
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void setDescriptorSets();
 
+        // 
+        virtual void setInstanceSet(vkt::uni_ptr<InstanceSet> instanceSet) {
+            this->instanceSet = instanceSet;
+        };
+
+        // 
+        virtual void setGeometrySets(std::vector<vkt::uni_ptr<GeometrySet>> geometrySets) {
+            this->geometrySets = geometrySets;
+        };
+
+        // 
+        virtual void pushGeometrySet(vkt::uni_ptr<GeometrySet> geometrySet) {
+            this->geometrySets.push_back(geometrySet);
+        };
+
+        // 
+        virtual void resetGeometrySets(vkt::uni_ptr<GeometrySet> geometrySet) {
+            this->geometrySets.resize(0u);
+        };
+
         // Set Constants Buffer
         virtual void setConstants(vkt::uni_ptr<Constants> constants) {
             this->constants = constants;

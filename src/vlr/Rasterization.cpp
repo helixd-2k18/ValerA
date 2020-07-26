@@ -11,7 +11,7 @@ namespace vlr {
 
     // 
     void Rasterization::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) {
-        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->geometrySets = info->geometrySets, this->constants = info->constants; 
+        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->instanceSet = info->instanceSet, this->geometrySets = info->geometrySets, this->constants = info->constants; 
         auto device = this->driver->getDeviceDispatch();
 
         // 
@@ -58,28 +58,30 @@ namespace vlr {
             this->layout->bound[0u] = this->constants->set;
         };
 
-        // 
-        this->interpolations->resetBufferViews();
-        this->geometriesDescs->resetBufferViews();
-
-        // 
-        for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
-            auto instanceDesc = this->instanceSet->get(i);
-            auto geometrySet = this->geometrySets[instanceDesc.customId];
-            vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
+        if (this->instanceSet.has() && this->geometrySets.size() > 0) { // 
+            this->interpolations->resetBufferViews();
+            this->geometriesDescs->resetBufferViews();
 
             // 
-            this->interpolations->pushBufferView(interpolation->getGpuBuffer());
-            this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
+            for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
+                auto instanceDesc = this->instanceSet->get(i);
+                auto geometrySet = this->geometrySets[instanceDesc.customId];
+                vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
+
+                // 
+                this->interpolations->pushBufferView(interpolation->getGpuBuffer());
+                this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
+            };
+
+            // 
+            this->interpolations->createDescriptorSet(layout);
+            this->geometriesDescs->createDescriptorSet(layout);
+        
+            // TODO: Decise by PipelineLayout class
+            this->layout->bound[8u] = this->geometriesDescs->set;
+            this->layout->bound[9u] = this->interpolations->set;
         };
 
-        // 
-        this->interpolations->createDescriptorSet(layout);
-        this->geometriesDescs->createDescriptorSet(layout);
-
-        // TODO: Decise by PipelineLayout class
-        this->layout->bound[8u] = this->geometriesDescs->set;
-        this->layout->bound[9u] = this->interpolations->set;
         this->layout->setConstants(this->constants);
     };
 
