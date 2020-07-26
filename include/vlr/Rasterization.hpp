@@ -17,13 +17,15 @@ namespace vlr {
         vkt::uni_ptr<Driver> driver = {};
 
         // 
-        vkt::uni_ptr<GeometrySet> geometrySet = {};
-        vkt::uni_ptr<InstanceSet> instanceSet = {};
+        //vkt::uni_ptr<GeometrySet> geometrySet = {};
+        //vkt::uni_ptr<InstanceSet> instanceSet = {};
+        vkt::uni_ptr<InstanceSet> instanceSet = {}; // Used By Top Level
+        std::vector<vkt::uni_ptr<GeometrySet>> geometrySets = {}; // Not Necessary, inbound with `vkt::uni_ptr<Acceleration>`, Used By Bottom Levels
 
         // 
         VkPipeline pipeline = VK_NULL_HANDLE;
-        uint32_t geometryID = 0u;
-        uint32_t instanceID = 0u;
+        //uint32_t geometryID = 0u; // 
+        //uint32_t instanceID = 0u; // 
 
         // 
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};
@@ -37,6 +39,7 @@ namespace vlr {
         // 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info);
+        virtual void drawCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void setDescriptorSets();
 

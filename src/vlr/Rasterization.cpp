@@ -4,11 +4,13 @@
 #include "./vlr/GeometrySet.hpp"
 #include "./vlr/Geometry.hpp"
 #include "./vlr/Constants.hpp"
+#include "./vlr/InstanceSet.hpp"
 
 namespace vlr {
 
+    // 
     void Rasterization::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) {
-        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->geometrySet = info->geometrySet, this->geometryID = info->geometryID, this->instanceID = info->instanceID, this->constants = info->constants; 
+        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->geometrySets = info->geometrySets, this->constants = info->constants; 
         auto device = this->driver->getDeviceDispatch();
 
         // 
@@ -17,7 +19,7 @@ namespace vlr {
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.geom.spv")), VK_SHADER_STAGE_GEOMETRY_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.frag.spv")), VK_SHADER_STAGE_FRAGMENT_BIT)
         };
-        
+
         // 
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
@@ -46,6 +48,7 @@ namespace vlr {
         vkh::handleVk(device->CreateGraphicsPipelines(driver->getPipelineCache(), 1u, this->pipelineInfo, nullptr, &this->pipeline));
     };
 
+    // 
     void Rasterization::setDescriptorSets() { // 
         if (this->constants.has()) {
             if (!this->constants->set) {
@@ -55,7 +58,8 @@ namespace vlr {
         };
     };
 
-    void Rasterization::setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta){
+    // 
+    void Rasterization::drawCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta) {
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
         auto device = this->driver->getDeviceDispatch();
@@ -70,7 +74,11 @@ namespace vlr {
         device->CmdBeginRenderPass(rasterCommand, vkh::VkRenderPassBeginInfo{ .renderPass = framebuffer->rasterFBO.renderPass, .framebuffer = framebuffer->rasterFBO.framebuffer, .renderArea = renderArea, .clearValueCount = static_cast<uint32_t>(framebuffer->rasterFBO.clearValues.size()), .pClearValues = framebuffer->rasterFBO.clearValues.data() }, VK_SUBPASS_CONTENTS_INLINE);
 
         // 
-        auto geometry = geometrySet->geometries[this->geometryID];
+        auto instanceDesc = this->instanceSet->get(meta.x);
+        auto geometrySet = this->geometrySets[instanceDesc.customId];
+        auto geometry = geometrySet->geometries[meta.y];
+
+        // 
         if (geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR && geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1) {
             const auto& buffer = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
             device->CmdBindIndexBuffer(rasterCommand, buffer, buffer.offset(), geometry->desc->indexType);
@@ -81,6 +89,18 @@ namespace vlr {
 
         // 
         device->CmdEndRenderPass(rasterCommand);
+    };
+
+    // 
+    void Rasterization::setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta) {
+        for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
+            auto instanceDesc = this->instanceSet->get(i);
+            auto geometrySet = this->geometrySets[instanceDesc.customId];
+            for (uint32_t j=0;j<geometrySet->geometries.size();j++) {
+                auto geometry = geometrySet->geometries[j];
+                this->drawCommand(rasterCommand, glm::uvec4(i, j, 0u, 0u));
+            };
+        };
     };
 
 };

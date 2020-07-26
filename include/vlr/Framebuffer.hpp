@@ -8,9 +8,9 @@ namespace vlr {
     struct PipelineCreateInfo {
         vkt::uni_ptr<PipelineLayout> layout = {};
         vkt::uni_ptr<Framebuffer> framebuffer = {};
-        vkt::uni_ptr<GeometrySet> geometrySet = {}; // For Rasterization
         vkt::uni_ptr<InstanceSet> instanceSet = {};
         vkt::uni_ptr<Constants> constants = {};
+        std::vector<vkt::uni_ptr<GeometrySet>> geometrySets = {}; // For Rasterization
         uint32_t geometryID = 0u; // For Rasterization, Use That Geometry
         uint32_t instanceID = 0u; // For Rasterization, Pick Up Transform
     };
