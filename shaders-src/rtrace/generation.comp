@@ -5,7 +5,7 @@
 #include "../include/driver.hlsli"
 #include "../include/bindings.hlsli"
 
-layout ( local_size_x = 32u, local_size_y = 12u ) in; 
+layout ( local_size_x = 32u, local_size_y = 24u ) in; 
 void main(){
     
 };

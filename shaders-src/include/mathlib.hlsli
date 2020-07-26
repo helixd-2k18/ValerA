@@ -241,7 +241,7 @@ uint3 textureSize(in Texture3D<float4> tex, in int lod) { uint3 size = uint3(0,0
 #define textureLodSample(b, s, c, m) textureLod(sampler2D(b, s), c, m)
 #endif
 
-
+// i.e. RGBA32F by every R32F
 uint4 superImageLoad(in fimage2D image, int2 texcoord) {
     return uint4(
         imageLoad(image, int2(texcoord.x*4u+0u,texcoord.y)).x,
@@ -251,11 +251,12 @@ uint4 superImageLoad(in fimage2D image, int2 texcoord) {
     );
 };
 
+// i.e. RGBA32F by every R32F
 void superImageStore(in fimage2D image, int2 texcoord, float4 fvalue){
     imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.xxxx);
-    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.yyyy);
-    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.zzzz);
-    imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.wwww);
+    imageStore(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.yyyy);
+    imageStore(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.zzzz);
+    imageStore(image, int2(texcoord.x*4u+3u,texcoord.y), fvalue.wwww);
 };
 
 

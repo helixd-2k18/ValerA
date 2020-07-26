@@ -25,6 +25,7 @@
 #extension GL_EXT_shader_16bit_storage                     : require
 #extension GL_EXT_shader_8bit_storage                      : require
 #extension GL_KHR_shader_subgroup_basic                    : require
+#extension GL_EXT_shader_atomic_float                      : require
 
 #ifndef ENABLE_AS
 #define ENABLE_AS

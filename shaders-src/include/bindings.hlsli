@@ -61,19 +61,22 @@ layout (binding = 0, set = 0, scalar) uniform Matrices {
 layout (binding = 0, set = 1) readonly buffer MeshData { uint8_t data[]; } mesh0[];
 layout (binding = 0, set = 2, scalar) uniform Bindings   { Binding   data[8u]; } bindings  [];
 layout (binding = 0, set = 3, scalar) uniform Attributes { Attribute data[8u]; } attributes[];
-layout (binding = 0, set = 8, scalar) readonly buffer Geometries { GeometryDesc data[]; } geometries[];
-layout (binding = 0, set = 9, scalar) readonly buffer Interpolat { Interpolations data[]; } interpolations[];
 
 // Deferred and Rasterization Set
-layout (binding = 0, set = 4, r32f) uniform image2D prevBuffers[12u]; // 4x wider
-layout (binding = 1, set = 4, r32f) uniform image2D currBuffers[12u]; // 4x wider
-layout (binding = 2, set = 4, rgba32f) uniform image2D resampleBuffers[8u]; 
+layout (binding = 0, set = 4,    r32f) uniform image2D prevBuffers[12u]; // 4x wider
+layout (binding = 1, set = 4,    r32f) uniform image2D currBuffers[12u]; // 4x wider
+layout (binding = 2, set = 4,    r32f) uniform image2D resampleBuffers[8u]; 
 layout (binding = 3, set = 4, rgba32f) uniform image2D rasteredBuffers[8u]; // used by rasterization
-layout (binding = 4, set = 4) uniform sampler samplers[8u];
+layout (binding = 4, set = 4         ) uniform sampler samplers[8u];
 
 // Material Set
 layout (binding = 0, set = 5, scalar) readonly buffer Materials { MaterialUnit materials[]; };
 layout (binding = 0, set = 6) uniform texture2D textures[];
+// TODO: Samplers Set
+
+layout (binding = 0, set = 8, scalar) readonly buffer Geometries { GeometryDesc data[]; } geometries[];
+layout (binding = 0, set = 9, scalar) readonly buffer Interpolat { Interpolations data[]; } interpolations[];
+
 
 // 
 #ifdef ENABLE_AS
@@ -443,7 +446,6 @@ XHIT rasterize(in float3 origin, in float3 raydir, in float3 normal, float maxT,
     processing.gIndices = uint4(0u.xxxx);
     processing.gBarycentric = float4(0.f.xxx, lastMax);
     confirmed = processing;
-    
 
     // 
     float3 sslr = world2screen(origin);

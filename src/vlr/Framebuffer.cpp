@@ -141,7 +141,7 @@ namespace vlr {
 
         // 
         for (uint32_t b = 0u; b < 8u; b++) {
-            resampleImages.push_back(createImage());
+            resampleImages.push_back(createImage(VK_FORMAT_R32_SFLOAT, 4u)); // Required for GL_EXT_shader_atomic_float i.e. super-vec4 
             resampleAttachments.push_back(resampleImages.back());
             rasterImages.push_back(createImage());
             rasterAttachments.push_back(rasterImages.back());
@@ -188,7 +188,7 @@ namespace vlr {
         rasterAttachments.push_back(depthStencilImage);
 
         // 
-        createFramebuffer(resampleFBO, resampleAttachments);
+        //createFramebuffer(resampleFBO, resampleAttachments); // Using Atomic Float
         createFramebuffer(rasterFBO, rasterAttachments);
 
         // 
