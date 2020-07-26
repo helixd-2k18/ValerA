@@ -27,8 +27,7 @@ T fname(in uint WHERE) {\
 
 initAtomicSubgroupIncFunction(counters[WHERE], incrementCnt, 1u, uint);
 
-// TODO: Partitioned Atomic Increment...
-
+// 
 const uint LIMITS = 4096u * 4096u;
 const uint RAY_COUNTER = 0u;
 const uint RAY_COUNTER_READ = 1u;
@@ -53,35 +52,35 @@ RayData finishBy(inout RayData ray) {
 };
 
 // 
-uint emitRayT(in RayData ray) {
+void storeRay(in RayData ray, in uint rayID) {
+    if (rayID != ~0u && rayID < LIMITS) { lifetime(ray, lifetime(ray)-1u); rays[rayID] = ray; };
+};
+
+// 
+uint emitRay(inout RayData ray) {
     uint rayID = ~0u;
 #ifdef GLSL
-    if (counters[RAY_COUNTER] < LIMITS && !finished(ray) && lifetime(ray) > 0u) {
-        rayID = incrementCnt(RAY_COUNTER);
+    if (counters[RAY_COUNTER] < LIMITS && !finished(ray) && lifetime(ray) > 0u) { 
+        rayID = incrementCnt(RAY_COUNTER); 
     };
-    if (rayID != ~0u && rayID < LIMITS) {
-        lifetime(ray, lifetime(ray)-1u);
-        rays[rayID] = ray;
-    };
+    storeRay(ray, rayID);
 #endif
     return rayID;
 };
 
-uint emitRay(inout RayData ray){
-    return emitRayT(finishBy(ray));
+// 
+void storeHit(in HitData hit, in uint hitID) { 
+    if (hitID != ~0u && hitID < LIMITS) { hits[hitID] = hit; };
 };
-
 
 // 
 uint emitHit(in HitData hit) {
     uint hitID = ~0u;
 #ifdef GLSL
-    if (counters[RAY_COUNTER] < LIMITS) {
-        hitID = incrementCnt(HIT_COUNTER);
+    if (counters[RAY_COUNTER] < LIMITS) { 
+        hitID = incrementCnt(HIT_COUNTER); 
     };
-    if (hitID != ~0u && hitID < LIMITS) {
-        hits[hitID] = hit;
-    };
+    storeHit(hit, hitID);
 #endif
     return hitID;
 };
