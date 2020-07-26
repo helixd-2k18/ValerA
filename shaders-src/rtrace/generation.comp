@@ -5,7 +5,65 @@
 #include "../include/driver.hlsli"
 #include "../include/bindings.hlsli"
 
+#define LAUNCH_ID GlobalInvocationID
+
 layout ( local_size_x = 32u, local_size_y = 24u ) in; 
 void main() {
-    
+#ifdef GLSL
+    const uint3 GlobalInvocationID = gl_GlobalInvocationID;
+    const uint3 LocalInvocationID = gl_LocalInvocationID;
+    const uint LocalInvocationIndex = gl_LocalInvocationIndex;
+#endif
+
+    const Box box = { -1.f.xxx, 1.f.xxx }; // TODO: Change Coordinate
+    const float4 sphere = float4(float3(16.f,128.f,16.f), 8.f);
+    const float3 lightc = 32.f*4096.f.xxx/(sphere.w*sphere.w);
+
+    const uint2 lanQ = LAUNCH_ID.xy;//gl_LaunchIDEXT.xy;//gl_GlobalInvocationID.xy;
+    uint2 launchSize = imageSize(currImages[IW_POSITION]); launchSize.x >>= 2;
+
+    // 
+    const int2 curPixel = int2(lanQ), invPixel = int2(curPixel.x,curPixel.y);
+    const int2 sizPixel = int2(launchSize);
+
+    // WARNING! Quality may critically drop when move! 
+    const bool checker = bool(((curPixel.x ^ curPixel.y) ^ (constants.rdata.x^1u))&1u);
+
+    {
+        //
+        packed = packUint2x16(curPixel),       seed = uint2(packed, constants.rdata.x);
+        const float2 shift = random2(seed),   pixel = float2(invPixel)+(shift*2.f-1.f)*0.25f+0.5f;
+        //const float2 shift = 0.5f.xx,       pixel = float2(invPixel)+(shift*2.f-1.f)*0.25f+0.5f;
+
+        // 
+        float3 origin = screen2world(float3((float2(pixel)/float2(sizPixel))*2.f-1.f,0.001f));
+        float3 target = screen2world(float3((float2(pixel)/float2(sizPixel))*2.f-1.f,0.999f));
+        float3 raydir = normalize(target - origin);
+        float3 normal = float3(0.f.xxx);
+        float3 geonrm = float3(0.f.xxx);
+
+        // Replacement for rasterization
+        //XHIT RPM = traceRays(    origin.xyz,           (raydir), normal, 10000.f, true, 0.001f);
+          XHIT RPM = rasterize(    origin.xyz,           (raydir), normal, 10000.f, true, 0.001f);
+
+        // TODO: Optimize Fetching and Interpolation 
+        XGEO GEO = interpolate(RPM);
+        XPOL MAT = materialize(RPM, GEO);
+        
+        // Emit Diffuse Indirect Ray
+        RayData rays;
+        rays.origin = origin;
+        rays.direct = raydir;
+#ifdef GLSL
+        rays.pixelID = u16vec2(LAUNCH_ID);
+        rays.color = f16vec4(1.f.xxxx);
+        rays.emission = f16vec4(0.f.xxxx);
+#endif
+        rays.meta = u8vec4(0u);
+        kind(rays, 0);
+        lifetime(rays, 2);
+        finished(rays, false);
+        emitRay(rays);
+    };
+
 };

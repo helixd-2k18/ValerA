@@ -40,7 +40,7 @@ RayData finishRay(inout RayData ray) {
 #ifdef GLSL
     finished(ray, true);
     if (dot(ray.emission.xyz, 0.hf.xxx) > 0.001hf) {
-        atomicSuperImageAdd3(currBuffers[IW_INDIRECT], int2(ray.pixelID), ray.emission.xyz);
+        atomicSuperImageAdd3(currImages[IW_INDIRECT], int2(ray.pixelID), ray.emission.xyz);
         ray.emission.xyz = 0.hf.xxx;
     };
 #endif

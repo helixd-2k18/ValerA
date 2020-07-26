@@ -63,10 +63,10 @@ layout (binding = 0, set = 2, scalar) uniform Bindings   { Binding   data[8u]; }
 layout (binding = 0, set = 3, scalar) uniform Attributes { Attribute data[8u]; } attributes[];
 
 // Deferred and Rasterization Set
-layout (binding = 0, set = 4,    r32f) uniform image2D prevBuffers[12u]; // 4x wider
-layout (binding = 1, set = 4,    r32f) uniform image2D currBuffers[12u]; // 4x wider
-layout (binding = 2, set = 4,    r32f) uniform image2D resampleBuffers[8u]; 
-layout (binding = 3, set = 4, rgba32f) uniform image2D rasteredBuffers[8u]; // used by rasterization
+layout (binding = 0, set = 4,    r32f) uniform image2D prevImages[12u]; // 4x wider
+layout (binding = 1, set = 4,    r32f) uniform image2D currImages[12u]; // 4x wider
+layout (binding = 2, set = 4,    r32f) uniform image2D resampleImages[8u]; 
+layout (binding = 3, set = 4, rgba32f) uniform image2D rasteredImages[8u]; // used by rasterization
 layout (binding = 4, set = 4         ) uniform sampler samplers[8u];
 
 // Material Set
@@ -137,11 +137,11 @@ RaytracingAccelerationStructure Scene : register(t0, space10);
 #endif
 
 // Deferred and Rasterization Set
-RWTexture2D<float4> prevBuffers[12u]    : register(u0 , space4); // Pre-resampled buffers
-RWTexture2D<float4> currBuffers[12u]    : register(u12, space4); // Used by rasterization
-RWTexture2D<float4> resampleBuffers[8u] : register(u24, space4);
-RWTexture2D<float4> rasteredBuffers[8u] : register(u32, space4);
-SamplerState               samplers[8u] : register(t0, space4);
+RWTexture2D<float4> prevImages[12u]    : register(u0 , space4); // Pre-resampled buffers
+RWTexture2D<float4> currImages[12u]    : register(u12, space4); // Used by rasterization
+RWTexture2D<float4> resampleImages[8u] : register(u24, space4);
+RWTexture2D<float4> rasteredImages[8u] : register(u32, space4);
+SamplerState              samplers[8u] : register(t0, space4);
 
 // 
 RWStructuredBuffer<MaterialUnit> materials : register(u0, space5);
@@ -466,13 +466,13 @@ XHIT rasterize(in float3 origin, in float3 raydir, in float3 normal, float maxT,
 
     // 
     float3 sslr = world2screen(origin);
-    const int2 tsize = imageSize(rasteredBuffers[RS_MATERIAL]);
-    const int2 samplep = int2((sslr.xy*0.5f+0.5f) * imageSize(rasteredBuffers[RS_MATERIAL]));
-    const uint4 indices  = floatBitsToUint(imageLoad(rasteredBuffers[RS_GEOMETRY], samplep));
-    const uint4 datapass = floatBitsToUint(imageLoad(rasteredBuffers[RS_MATERIAL], samplep));
+    const int2 tsize = imageSize(rasteredImages[RS_MATERIAL]);
+    const int2 samplep = int2((sslr.xy*0.5f+0.5f) * imageSize(rasteredImages[RS_MATERIAL]));
+    const uint4 indices  = floatBitsToUint(imageLoad(rasteredImages[RS_GEOMETRY], samplep));
+    const uint4 datapass = floatBitsToUint(imageLoad(rasteredImages[RS_MATERIAL], samplep));
 
     // 
-    const float3 baryCoord = imageLoad(rasteredBuffers[RS_BARYCENT], samplep).xyz;
+    const float3 baryCoord = imageLoad(rasteredImages[RS_BARYCENT], samplep).xyz;
     const bool isSkybox = dot(baryCoord.yz,1.f.xx)<=0.f; //uintBitsToFloat(datapass.z) <= 0.99f;
     const uint primitiveID = indices.z;
     const uint geometryInstanceID = indices.y;
@@ -482,7 +482,7 @@ XHIT rasterize(in float3 origin, in float3 raydir, in float3 normal, float maxT,
     // 
     if (!isSkybox) { // Only When Opaque!
         processing.direct = float4(raydir.xyz, 0.f);
-        processing.origin = imageLoad(rasteredBuffers[RS_POSITION], samplep);
+        processing.origin = imageLoad(rasteredImages[RS_POSITION], samplep);
 
         // Interpolate In Ray-Tracing
         processing.gIndices = indices;
