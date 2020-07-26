@@ -5,6 +5,7 @@
 #include "./vlr/Geometry.hpp"
 #include "./vlr/Constants.hpp"
 #include "./vlr/InstanceSet.hpp"
+#include "./vlr/Interpolation.hpp"
 
 namespace vlr {
 
@@ -56,6 +57,30 @@ namespace vlr {
             };
             this->layout->bound[0u] = this->constants->set;
         };
+
+        // 
+        this->interpolations->resetBufferViews();
+        this->geometriesDescs->resetBufferViews();
+
+        // 
+        for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
+            auto instanceDesc = this->instanceSet->get(i);
+            auto geometrySet = this->geometrySets[instanceDesc.customId];
+            vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
+
+            // 
+            this->interpolations->pushBufferView(interpolation->getGpuBuffer());
+            this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
+        };
+
+        // 
+        this->interpolations->createDescriptorSet(layout);
+        this->geometriesDescs->createDescriptorSet(layout);
+
+        // TODO: Decise by PipelineLayout class
+        this->layout->bound[8u] = this->geometriesDescs->set;
+        this->layout->bound[9u] = this->interpolations->set;
+        this->layout->setConstants(this->constants);
     };
 
     // 
