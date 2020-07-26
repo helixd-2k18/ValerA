@@ -77,7 +77,12 @@ struct Interpolations { // Per every geometry for interpolations
 };
 
 struct RayData {
-    float3 origin; uint reserved;
+    float3 origin; 
+#ifdef GLSL
+    u16vec2 pixelID;
+#else
+    uint16_t2 pixelID;
+#endif
     float3 direct; 
 #ifdef GLSL
     u8vec4 meta;
