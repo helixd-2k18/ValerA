@@ -82,14 +82,34 @@ struct Interpolations { // Per every geometry for interpolations
 
 struct RayData {
     float3 origin; uint reserved;
-    float3 direct; uint meta; // meta is u8vec4
+    float3 direct; 
+#ifdef GLSL
+    u8vec4 meta;
+#else
+    uint meta; // meta is u8vec4
+#endif
     uint2 color; uint2 emission; // both is packed f16vec4
+};
+
+struct HitData {
+    uint3 indices; uint rayID;
+    float3 barycentric;
+    uint meshID_meta; // 24-bit MESH ID, 8-bit META
 };
 
 struct ColorChain {
     float3 color; // RGB Color by RGB32F, Sample Always 1S when has index
     uint next; // Also, can be replaced by Pixel ID when used Accumulation Shader
 };
+
+
+#ifdef GLSL // 4-bit is lifetime
+uint lifetime(in HitData hit) { return bitfieldExtract(hit.meshID_meta, 24, 4); };
+void lifeTime(inout HitData hit, in uint a) { hit.meshID_meta = bitfieldInsert(hit.meshID_meta, a, 24, 4); };
+// 
+uint kind(in RayData ray) { return bitfieldExtract(ray.meta.x, 0, 2); };
+void kind(in RayData ray), in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a, 0, 2)); };
+#endif
 
 
 //

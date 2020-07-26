@@ -91,6 +91,11 @@ layout (binding = 0, set = 15) uniform texture2D background;
 layout (binding = 0, set = 16, scalar) readonly buffer Instances { RTInstance instances[]; };
 
 // 
+layout (binding = 0, set = 11, scalar) buffer Counters { uint counters[5u]; };
+layout (binding = 0, set = 12, scalar) buffer RayDatas { RayData rays[]; };
+layout (binding = 0, set = 13, scalar) buffer HitDatas { HitData hits[]; };
+
+// 
 layout (push_constant) uniform pushConstants { uint4 data; } drawInfo;
 
 //
@@ -311,7 +316,7 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     const uint geometryInstanceID = hit.gIndices.y;
     const uint globalInstanceID = hit.gIndices.x;
     const uint primitiveID = hit.gIndices.z;
-    const uint nodeMeshID  = hit.gIndices.w;
+    const uint nodeMeshID  = getMeshID(instances[globalInstanceID]);
     const float3 baryCoord = hit.gBarycentric.xyz;
 
     // 

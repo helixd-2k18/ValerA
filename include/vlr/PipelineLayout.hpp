@@ -54,13 +54,10 @@ namespace vlr {
         virtual void setMaterials(vkt::uni_ptr<MaterialSet> materialSet, vkt::uni_ptr<TextureSet> textureSet, vkt::uni_ptr<SamplerSet> samplerSet);
         virtual void setVertexData(vkt::uni_ptr<VertexSet> vertexData);
         virtual void setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer);
-
-        // 
         virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> acceleration);
         virtual void setConstants(vkt::uni_ptr<Constants> constants);
         virtual void setRayTracing(vkt::uni_ptr<RayTracing> rayTracing);
+        virtual void setInstanceSet(vkt::uni_ptr<InstanceSet> instanceSet);
     };
-
-
 
 };

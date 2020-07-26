@@ -15,6 +15,7 @@
 #include "./vlr/Constants.hpp"
 #include "./vlr/Acceleration.hpp"
 #include "./vlr/RayTracing.hpp"
+#include "./vlr/InstanceSet.hpp"
 
 // 
 namespace vlr {
@@ -171,11 +172,16 @@ namespace vlr {
         };
     };
 
+    void PipelineLayout::setInstanceSet(vkt::uni_ptr<InstanceSet> instanceSet) {
+        if (instanceSet.has()) {
+            if (!instanceSet->set) { instanceSet->createDescriptorSet(this); };
+            this->bound[16u] = instanceSet->set;
+        };
+    };
+
     void PipelineLayout::setConstants(vkt::uni_ptr<Constants> constants) { // 
         if (constants.has()) {
-            if (!constants->set) {
-                constants->createDescriptorSet(this);
-            };
+            if (!constants->set) { constants->createDescriptorSet(this); };
             this->bound[0u] = constants->set;
         };
     };
