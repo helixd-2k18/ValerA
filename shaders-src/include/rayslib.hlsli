@@ -40,7 +40,7 @@ RayData finishRay(inout RayData ray) {
     finished(ray, true);
     if (dot(ray.emission.xyz, 0.hf.xxx) > 0.001hf) {
         atomicSuperImageAdd3(currBuffers[IW_INDIRECT], int2(ray.pixelID), ray.emission.xyz);
-        ray.emission.xyz = 0.hf.xxx
+        ray.emission.xyz = 0.hf.xxx;
     };
 #endif
     return ray;

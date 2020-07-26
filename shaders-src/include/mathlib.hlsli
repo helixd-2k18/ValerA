@@ -289,7 +289,7 @@ uint3 textureSize(in Texture3D<float4> tex, in int lod) { uint3 size = uint3(0,0
         imageLoad(image, int2(texcoord.x*4u+1u,texcoord.y)).x,\
         imageLoad(image, int2(texcoord.x*4u+2u,texcoord.y)).x,\
         imageLoad(image, int2(texcoord.x*4u+3u,texcoord.y)).x\
-    );
+    )
 
 #define superImageStore(image, texcoord, fvalue) \
     imageStore(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.xxxx);\
@@ -299,16 +299,20 @@ uint3 textureSize(in Texture3D<float4> tex, in int lod) { uint3 size = uint3(0,0
 
 #ifdef GLSL 
 #define atomicSuperImageAdd(image, texcoord, fvalue) \
-    imageAtomicAdd(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.x);\
-    imageAtomicAdd(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.y);\
-    imageAtomicAdd(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.z);\
-    imageAtomicAdd(image, int2(texcoord.x*4u+3u,texcoord.y), fvalue.w);
+    float4(\
+        imageAtomicAdd(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.x),\
+        imageAtomicAdd(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.y),\
+        imageAtomicAdd(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.z),\
+        imageAtomicAdd(image, int2(texcoord.x*4u+3u,texcoord.y), fvalue.w) \
+    )
 
 #define atomicSuperImageAdd3(image, texcoord, fvalue) \
-    imageAtomicAdd(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.x);\
-    imageAtomicAdd(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.y);\
-    imageAtomicAdd(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.z);\
-    imageAtomicExchange(image, int2(texcoord.x*4u+3u,texcoord.y), 1.f);
+    float4(\
+        imageAtomicAdd(image, int2(texcoord.x*4u+0u,texcoord.y), fvalue.x),\
+        imageAtomicAdd(image, int2(texcoord.x*4u+1u,texcoord.y), fvalue.y),\
+        imageAtomicAdd(image, int2(texcoord.x*4u+2u,texcoord.y), fvalue.z),\
+        imageAtomicExchange(image, int2(texcoord.x*4u+3u,texcoord.y), 1.f)\
+    )
 
 #endif
 
