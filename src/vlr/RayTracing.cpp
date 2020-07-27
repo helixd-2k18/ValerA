@@ -21,14 +21,16 @@ namespace vlr {
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/generation.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/intersection.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/interpolation.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/finalize.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT)
+            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/finalize.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/resample.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT)
         };
 
         // 
         this->generation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[0]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->interpolation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[0]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->intersection = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[0]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->finalize = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[0]), layout->pipelineLayout, this->driver->getPipelineCache());
+        this->interpolation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[1]), layout->pipelineLayout, this->driver->getPipelineCache());
+        this->intersection = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[2]), layout->pipelineLayout, this->driver->getPipelineCache());
+        this->finalize = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[3]), layout->pipelineLayout, this->driver->getPipelineCache());
+        this->resample = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[4]), layout->pipelineLayout, this->driver->getPipelineCache());
 
         // 
         this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
@@ -104,18 +106,18 @@ namespace vlr {
         // 
         for (uint32_t i=0;i<5;i++) {
             (*this->counters)[i] = zero;
-            this->counters->setCommand(currentCmd);
+        //    this->counters->setCommand(currentCmd);
         };
 
-        //
-        //device->CmdUpdateBuffer(currentCmd, this->counters->getGpuBuffer(), 5ull * sizeof(uint32_t), sizeof(uint32_t), &zero);
+        // nullify counters
+        device->CmdUpdateBuffer(currentCmd, this->counters->getGpuBuffer(), 0u, 5ull * sizeof(uint32_t), &zero);
         vkt::commandBarrier(device, currentCmd);
 
         {   // Denoise diffuse data
             device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->generation);
             device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
             device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
-            device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 12u), 1u);
+            device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 24u), 1u);
             vkt::commandBarrier(device, currentCmd);
         };
 
@@ -156,11 +158,19 @@ namespace vlr {
             };
         };
 
+        {   // Resample Previous Frame
+            device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->resample);
+            device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
+            device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
+            device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 24u), 1u);
+            vkt::commandBarrier(device, currentCmd);
+        };
+
         {   // Finalize Ray Tracing
             device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->finalize);
             device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
             device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
-            device->CmdDispatch(currentCmd, 256u, 1u, 1u); // Planned Indirect
+            device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 24u), 1u);
             vkt::commandBarrier(device, currentCmd);
         };
     };
