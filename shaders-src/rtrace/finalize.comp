@@ -21,10 +21,6 @@ void main()
     const uint LocalInvocationIndex = gl_LocalInvocationIndex;
 #endif
 
-    const Box box = { -1.f.xxx, 1.f.xxx }; // TODO: Change Coordinate
-    const float4 sphere = float4(float3(16.f,128.f,16.f), 8.f);
-    const float3 lightc = 32.f*4096.f.xxx/(sphere.w*sphere.w);
-
     const uint2 lanQ = LAUNCH_ID.xy;//gl_LaunchIDEXT.xy;//gl_GlobalInvocationID.xy;
     uint2 launchSize = imageSize(currImages[IW_POSITION]); launchSize.x >>= 2;
 
@@ -35,8 +31,7 @@ void main()
     // WARNING! Quality may critically drop when move! 
     const bool checker = bool(((curPixel.x ^ curPixel.y) ^ (constants.rdata.x^1u))&1u);
 
-    {
-        //
+    {   // 
         packed = packUint2x16(curPixel),       seed = uint2(packed, constants.rdata.x);
         const float2 shift = random2(seed),   pixel = float2(invPixel)+(shift*2.f-1.f)*0.25f+0.5f;
         //const float2 shift = 0.5f.xx,       pixel = float2(invPixel)+(shift*2.f-1.f)*0.25f+0.5f;
@@ -56,41 +51,20 @@ void main()
         XGEO GEO = interpolate(RPM);
         XPOL MAT = materialize(RPM, GEO);
         
-        {   // 
-            const float4 original = imageLoad(rasteredImages[RS_ORIGINAL], curPixel);
-            const float4 indicies = imageLoad(rasteredImages[RS_INDICIES], curPixel);
-            const float4 position = imageLoad(rasteredImages[RS_POSITION], curPixel);
-            superImageStore(currImages[IW_ORIGINAL], curPixel, original);
-            superImageStore(currImages[IW_INDICIES], curPixel, indicies);
-            superImageStore(currImages[IW_POSITION], curPixel, position);
-            superImageStore(currImages[IW_MAPNORML], curPixel, MAT.mapNormal);
-            superImageStore(currImages[IW_GEONORML], curPixel, GEO.gNormal);
-            superImageStore(currImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));
-            superImageStore(currImages[IW_SHADOWCL], curPixel, float4(0.f.xxxx));
-            superImageStore(currImages[IW_REFLECLR], curPixel, float4(0.f.xxxx));
-
-            // Nullify Resampling
-            superImageStore(resampleImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));
-        };
-
-        // Emit Diffuse Indirect Ray
-        RayData outRay;
+        // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            outRay.origin = origin;
-            outRay.direct = raydir;
-            outRay.pixelID = u16vec2(LAUNCH_ID);
-            outRay.emission = f16vec4(0.f.xxxx);
-            outRay.color = f16vec4(1.f.xxxx);
-            outRay.meta = u8vec4(0u);
-            kind(outRay, DIFFUSE_RAY);
-            lifetime(outRay, 2);
-            finished(outRay, false);
-            emitRay(outRay);
-        } else { // SkyBox
-            outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(raydir.xyz, origin.xyz));
-            outRay.color = half4(0.f);
-            lifetime(outRay, 0u);
+            float4 indirect = superImageLoad(currImages[IW_INDIRECT], curPixel) + superImageLoad(resampleImages[IW_INDIRECT], curPixel);
+            float4 shadows = superImageLoad(currImages[IW_SHADOWCL], curPixel) + superImageLoad(resampleImages[IW_SHADOWCL], curPixel); indirect += shadows;
+            float4 diffuse = float4(MAT.diffuseColor.xyz * (indirect.xyz/max(indirect.w,1.f)), 1.f);
+            superImageStore(currImages[IW_RENDERED], curPixel, diffuse);
         };
     };
 
+    // 
+    for (uint i=0;i<12;i++) {
+        const float4 pixof = superImageLoad(currImages[i], curPixel);
+        superImageStore(currImages[i], curPixel, pixof);
+    };
+
+    
 };

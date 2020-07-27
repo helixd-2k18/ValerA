@@ -158,8 +158,8 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
         oOriginal = outp.oOriginal;
         oPosition = outp.oPosition;
         oMaterial = outp.oMaterial;
-        oGeoIndice = outp.oGeoIndice;
         oBarycent = outp.oBarycent;
+        oGeoIndice = outp.oGeoIndice;
         gl_FragDepth = outp.FragDepth;
     };
 #else

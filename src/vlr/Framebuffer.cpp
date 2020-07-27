@@ -104,22 +104,34 @@ namespace vlr {
             }, allocInfo), vkh::VkImageViewCreateInfo{
                 .format = VK_FORMAT_D32_SFLOAT_S8_UINT,
                 .subresourceRange = dpres,
-            }, VK_IMAGE_LAYOUT_GENERAL);
+            }, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+
+            // 
+            vkt::submitOnceAsync(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
+                depthStencilImage.transfer(cmd);
+            });
         };
 
         // 
         auto createImage = [=,this](VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT, uint32_t wide = 1u){
-            return vkt::ImageRegion(std::make_shared<vkt::ImageAllocation>(vkh::VkImageCreateInfo{
+            auto image = vkt::ImageRegion(std::make_shared<vkt::ImageAllocation>(vkh::VkImageCreateInfo{
                 .format = format,
                 .extent = {width*wide,height,1u},
                 .usage = fbusage,
             }, allocInfo), vkh::VkImageViewCreateInfo{
                 .format = format,
                 .subresourceRange = apres
+            }, VK_IMAGE_LAYOUT_GENERAL);
+
+            // 
+            vkt::submitOnceAsync(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
+                image.transfer(cmd);
             });
+
+            return image;
         };
 
-        //
+        // 
         this->atomicMapping = createImage(VK_FORMAT_R32_UINT);
 
         // 

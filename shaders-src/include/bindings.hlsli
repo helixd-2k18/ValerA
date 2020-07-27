@@ -7,31 +7,16 @@
 
 // Ray-Tracing Data (With resampling output support!)
 #define IW_INDIRECT 0  // Indrect Diffuse
-#define IW_INDICIES 1  // Anti-Aliased diffuse colors
-#define IW_REFLECLR 2  // Previous Frame Reflection
-#define IW_TRANSPAR 3  // Semi-Transparent Mixing
-#define IW_MATERIAL 4  // Texcoord, Material ID, Skybox Mask
-#define IW_GEONORML 5  // Geometry Normals
-#define IW_ADAPTIVE 6  // Adaptive Data (reflection length, etc.)
-#define IW_ORIGINAL 7  // 
-// Ray-Tracing Data (Without resampling output support!)
-#define IW_GEOMETRY 8  
-#define IW_MAPNORML 9  // Mapped Normals
-#define IW_POSITION 10 // Ray-Traced Position (for resampling)
-
-// Last Action Data (another binding only)
-#define BW_INDIRECT 0  
-#define BW_INDICIES 1  
-#define BW_REFLECLR 2  
-#define BW_TRANSPAR 3  
-#define BW_MATERIAL 4  // Texcoord, Material ID, Skybox Mask
-#define BW_GEONORML 5  // Geometry Normal
-#define BW_ADAPTIVE 6  // Final Rendering Result
-#define BW_MAPNORML 7  
-#define BW_RENDERED 8  
-#define BW_GROUNDPS 9  // Deep Layer!!
-#define BW_POSITION 10 // Position Data
-
+#define IW_REFLECLR 1  // Previous Frame Reflection
+#define IW_TRANSPAR 2  // Semi-Transparent Mixing
+#define IW_GEONORML 3  // Geometry Normals
+#define IW_MAPNORML 4  // Mapped Normals
+#define IW_SHADOWCL 5  // Shadow Accumulation
+#define IW_ORIGINAL 6  // 
+#define IW_ADAPTIVE 7  // 
+#define IW_INDICIES 8  // 
+#define IW_POSITION 9  // Ray-Traced Position (for resampling)
+#define IW_RENDERED 10 // 
 
 // From Rasterization Phase!
 #define RS_MATERIAL 0
@@ -39,7 +24,6 @@
 #define RS_POSITION 2
 #define RS_BARYCENT 3
 #define RS_ORIGINAL 4
-
 
 
 

@@ -122,6 +122,37 @@ namespace vlr {
 
     // 
     void Rasterization::setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta) {
+        vkt::imageBarrier(rasterCommand, vkt::ImageBarrierInfo{
+            .image = this->framebuffer->depthStencilImage.getImage(),
+            .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
+            .originLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+            .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
+                it->aspectMask = aspect;
+                return it;
+            })
+        });
+
+        // 
+        for (auto& image : this->framebuffer->rasterImages) {
+            this->driver->getDeviceDispatch()->CmdClearColorImage(rasterCommand, image, image.getImageLayout(), vkh::VkClearColorValue{ .float32 = { 0.f,0.f,0.f,0.f } }, 1u, image.getImageSubresourceRange());
+        };
+        this->driver->getDeviceDispatch()->CmdClearDepthStencilImage(rasterCommand, this->framebuffer->depthStencilImage, this->framebuffer->depthStencilImage.getImageLayout(), vkh::VkClearDepthStencilValue{ .depth = 1.0f, .stencil = 0 }, 1u, this->framebuffer->depthStencilImage.getImageSubresourceRange());
+
+        // 
+        vkt::commandBarrier(this->driver->getDeviceDispatch(), rasterCommand);
+        vkt::imageBarrier(rasterCommand, vkt::ImageBarrierInfo{
+            .image = this->framebuffer->depthStencilImage.getImage(),
+            .targetLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+            .originLayout = VK_IMAGE_LAYOUT_GENERAL,
+            .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
+                it->aspectMask = aspect;
+                return it;
+            })
+        });
+
+        // 
         for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
             auto instanceDesc = this->instanceSet->get(i);
             auto geometrySet = this->geometrySets[instanceDesc.customId];
