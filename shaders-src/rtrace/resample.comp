@@ -77,7 +77,7 @@ void main()
         distance(wPosition.xyz, worldspos.xyz) < 0.1f
     ) 
     {
-        atomicSuperImageAdd3(resampleImages[IW_INDIRECT], topix, indirect); // Atomically Adding Samples
+        atomicSuperImageAdd(resampleImages[IW_INDIRECT], topix, indirect); // Atomically Adding Samples
     };
 
 };
