@@ -84,9 +84,9 @@ uint emitHit(in HitData hit) {
     uint hitID = ~0u;
 #ifdef GLSL
     if (counters[HIT_COUNTER] < LIMITS) { 
-        hitID = incrementCnt(HIT_COUNTER); 
+        hitID = incrementCnt(HIT_COUNTER);
+        storeHit(hit, hitID);
     };
-    storeHit(hit, hitID);
 #endif
     return hitID;
 };
