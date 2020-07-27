@@ -60,11 +60,9 @@ void main()
         RayData rays;
         rays.origin = origin;
         rays.direct = raydir;
-#ifdef GLSL
         rays.pixelID = u16vec2(LAUNCH_ID);
         rays.color = f16vec4(1.f.xxxx);
         rays.emission = f16vec4(0.f.xxxx);
-#endif
         rays.meta = u8vec4(0u);
         kind(rays, 0);
         lifetime(rays, 2);

@@ -35,6 +35,11 @@ const uint RAY_COUNTER_READ = 1u;
 const uint HIT_COUNTER = 2u;
 const uint HIT_COUNTER_READ = 3u;
 
+
+const uint DIFFUSE_RAY = 0u;
+const uint REFLECT_RAY = 1u;
+const uint SHADOWS_RAY = 2u;
+
 // 
 RayData finishRay(inout RayData ray) {
 #ifdef GLSL
