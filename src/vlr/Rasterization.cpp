@@ -11,9 +11,11 @@ namespace vlr {
 
     // 
     void Rasterization::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) {
-        this->driver = driver, this->layout = info->layout, this->framebuffer = info->framebuffer, this->instanceSet = info->instanceSet, this->geometrySets = info->geometrySets, this->constants = info->constants; 
-        auto device = this->driver->getDeviceDispatch();
-
+        this->driver = driver; auto device = this->driver->getDeviceDispatch();
+        if (info.has()) {
+            this->layout = info->layout, this->framebuffer = info->framebuffer, this->instanceSet = info->instanceSet, this->geometrySets = info->geometrySets, this->constants = info->constants; 
+        };
+        
         // 
         this->stages = { // for faster code, pre-initialize
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.vert.spv")), VK_SHADER_STAGE_VERTEX_BIT),
@@ -161,6 +163,7 @@ namespace vlr {
                 this->drawCommand(rasterCommand, glm::uvec4(i, j, 0u, 0u));
             };
         };
+        vkt::commandBarrier(this->driver->getDeviceDispatch(), rasterCommand);
     };
 
 };

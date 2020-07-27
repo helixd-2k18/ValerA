@@ -12,7 +12,7 @@ namespace vlr {
         std::vector<VkDeviceSize> initials = {};
     };
 
-    class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing; friend PipelineLayout;
+    class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing; friend PipelineLayout; friend BuildCommand;
         vkt::uni_ptr<InstanceSet> instanceSet = {}; // Top Level
         vkt::uni_ptr<GeometrySet> geometrySet = {}; // Bottom Level
         vkt::uni_ptr<Driver> driver = {};
@@ -47,8 +47,9 @@ namespace vlr {
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = {});
         virtual void updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build = false);
-        virtual void buildAccelerationStructureCmd(const VkCommandBuffer& cmd = VK_NULL_HANDLE);
+        virtual void setCommand(const VkCommandBuffer& cmd = VK_NULL_HANDLE); // buildAccelerationStructureCmd
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
+        virtual uint64_t getHandle();
     };
 
 };

@@ -7,6 +7,7 @@
 
 namespace vlr {
 
+    // 
     void Acceleration::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
         this->descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getAccelerationSetLayout(), pipelineLayout->getDescriptorPool());
         auto& handle = this->descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
@@ -19,6 +20,7 @@ namespace vlr {
         vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));
     };
 
+    // 
     void Acceleration::updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build) {
         offsetInfo.resize(0u);
         buildGInfo.resize(0u);
@@ -119,6 +121,7 @@ namespace vlr {
         };
     };
 
+    // 
     void Acceleration::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info) {
         this->driver = driver, this->info = info;
         auto device = this->driver->getDeviceDispatch();
@@ -191,9 +194,15 @@ namespace vlr {
         this->updateAccelerationStructure(info, false);
     };
 
-    void Acceleration::buildAccelerationStructureCmd(const VkCommandBuffer& cmd) {
+    // buildAccelerationStructureCmd
+    void Acceleration::setCommand(const VkCommandBuffer& cmd) {
         this->updateAccelerationStructure(info, false);
-        driver->getDeviceDispatch()->CmdBuildAccelerationStructureKHR(cmd, 1u, this->bdHeadInfo, reinterpret_cast<VkAccelerationStructureBuildOffsetInfoKHR**>(this->offsetPtr.data()));
+        this->driver->getDeviceDispatch()->CmdBuildAccelerationStructureKHR(cmd, 1u, this->bdHeadInfo, reinterpret_cast<VkAccelerationStructureBuildOffsetInfoKHR**>(this->offsetPtr.data()));
+    };
+
+    // 
+    uint64_t Acceleration::getHandle() {
+        return this->driver->getDeviceDispatch()->GetAccelerationStructureDeviceAddressKHR(vkh::VkAccelerationStructureDeviceAddressInfoKHR{ .accelerationStructure = this->structure });
     };
 
 
