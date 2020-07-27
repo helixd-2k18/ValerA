@@ -7,8 +7,14 @@
 
 #define LAUNCH_ID GlobalInvocationID
 
+// TODO: HLSL
+#ifdef GLSL
 layout ( local_size_x = 32u, local_size_y = 24u ) in; 
-void main() {
+void main() 
+#else
+
+#endif
+{
 #ifdef GLSL
     const uint3 GlobalInvocationID = gl_GlobalInvocationID;
     const uint3 LocalInvocationID = gl_LocalInvocationID;

@@ -1,0 +1,182 @@
+#version 460 core
+#extension GL_GOOGLE_include_directive : require
+#define GLSL
+
+#include "../include/driver.hlsli"
+#include "../include/bindings.hlsli"
+
+#define LAUNCH_ID GlobalInvocationID
+
+
+
+// Needs 1000$ for fix BROKEN ray query...
+STATIC const uint MAX_ITERATION = 16u;
+
+
+#ifndef GLSL
+#define rayQueryGetIntersectionInstanceCustomIndexEXT(q, B) (B?q.CommittedInstanceID():q.CandidateInstanceID())
+#define rayQueryGetIntersectionGeometryIndexEXT(q, B) (B?q.CommittedGeometryIndex():q.CandidateGeometryIndex())
+#define rayQueryGetIntersectionInstanceIdEXT(q, B) (B?q.CommittedInstanceIndex():q.CandidateInstanceIndex())
+#define rayQueryGetIntersectionBarycentricsEXT(q, B) (B?q.CommittedTriangleBarycentrics():q.CandidateTriangleBarycentrics())
+#define rayQueryGetIntersectionPrimitiveIndexEXT(q, B) (B?q.CommittedPrimitiveIndex():q.CandidatePrimitiveIndex())
+#define rayQueryGetIntersectionTEXT(q, B) (B?q.CommittedRayT():q.CandidateTriangleRayT())
+#define rayQueryProceedEXT(q) q.Proceed()
+#define rayQueryGetIntersectionTypeEXT(q, B) (B?q.CommittedStatus():COMMITTED_NOTHING)
+#define rayQueryConfirmIntersectionEXT(q) q.CommitNonOpaqueTriangleHit()
+#define rayQueryTerminateEXT(q) q.Abort()
+
+// 
+void rayQueryInitializeEXT(in RayQuery<RAY_FLAG_CULL_BACK_FACING_TRIANGLES> rayQuery, in uint flags, in uint mask, in float3 origin, in float minT, in float3 direct, in float maxT) {
+    RayDesc desc;
+    desc.Origin = origin;
+    desc.TMin = minT;
+    desc.Direction = direct;
+    desc.TMax = maxT;
+
+    // 
+    rayQuery.TraceRayInline(Scene, flags, mask, desc);
+};
+#else
+#define RAY_FLAG_FORCE_OPAQUE gl_RayFlagsOpaqueEXT
+#define RAY_FLAG_CULL_BACK_FACING_TRIANGLES gl_RayFlagsCullBackFacingTrianglesEXT
+#define COMMITTED_NOTHING gl_RayQueryCommittedIntersectionNoneEXT
+
+void rayQueryInitializeEXT(in rayQueryEXT rayQuery, in uint flags, in lowp uint mask, in float3 origin, in float minT, in float3 direct, in float maxT) {
+    rayQueryInitializeEXT(rayQuery, Scene, flags, mask, origin, minT, direct, maxT);
+};
+#endif
+
+// Ray Query Broken In Latest Driver... 
+XHIT traceRays(in float3 origin, in float3 raydir, float maxT, bool scatterTransparency, float threshold) {
+    uint I = 0, R = 0; float lastMax = maxT, lastMin = 0.001f, fullLength = 0.f; float3 forigin = origin + raydir.xyz * lastMin, sorigin = forigin;
+
+    // 
+    XHIT processing, confirmed;
+    processing.origin = float4(origin.xyz, 1.f);
+    processing.direct = float4(raydir.xyz, 0.f);
+    processing.gIndices = uint4(0u.xxxx);
+    processing.gBarycentric = float4(0.f.xxx, maxT);
+    confirmed = processing;
+
+    // 
+    bool restart = true, opaque = false;
+    while((R++) < 4u && restart) { restart = false; // restart needs for transparency (after every resolve)
+        float lastMax = (maxT - fullLength); float3 lastOrigin = forigin;//raydir * fullLength + sorigin;
+
+#ifdef GLSL
+        rayQueryEXT rayQuery;
+#else
+        RayQuery<RAY_FLAG_CULL_BACK_FACING_TRIANGLES> rayQuery;
+#endif
+
+        rayQueryInitializeEXT(rayQuery, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, lastOrigin, lastMin, raydir, lastMax);
+
+        // BROKEN `rayQueryProceedEXT`
+        bool proceed = false;
+        I = 0; while((I++) < MAX_ITERATION && (proceed = rayQueryProceedEXT(rayQuery))) { // 
+            uint nodeMeshID = rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery, false); // Mesh ID from Node Mesh List (because indexing)
+            uint geometryInstanceID = rayQueryGetIntersectionGeometryIndexEXT(rayQuery, false); // TODO: Using In Ray Tracing (and Query) shaders!
+            uint globalInstanceID = rayQueryGetIntersectionInstanceIdEXT(rayQuery, false);
+            float2 baryCoord = rayQueryGetIntersectionBarycentricsEXT(rayQuery, false);
+            uint primitiveID = rayQueryGetIntersectionPrimitiveIndexEXT(rayQuery, false); 
+            //float3 origin = rayQueryGetIntersectionObjectRayOriginEXT(rayQuery, false);
+            float tHit = rayQueryGetIntersectionTEXT(rayQuery, false);
+
+            // 
+            {   //lastOrigin = raydir*(lastMax = tHit) + forigin;
+                XHIT hit = processing;
+                hit.gIndices = uint4(globalInstanceID, geometryInstanceID, primitiveID, 0u);
+                hit.gBarycentric.xyz = float3(1.f-baryCoord.x-baryCoord.y,baryCoord);
+                hit.origin = float4(raydir*(hit.gBarycentric.w = (fullLength + tHit)) + sorigin, 1.f);
+
+                // Interpolate In Ray-Tracing
+                XGEO geometry = interpolate(hit);
+                XPOL material = materialize(hit, geometry);
+
+                // confirm that hit 
+                if (material.diffuseColor.w > (scatterTransparency ? random(seed) : threshold)) { // Only When Opaque!
+                    rayQueryConfirmIntersectionEXT(rayQuery); // override hit hit
+                };
+            };
+        };
+
+        // 
+        processing = confirmed; lastMax = (maxT - fullLength); lastOrigin = raydir*maxT + sorigin; opaque = false;
+        if (!proceed) { // Attemp to fix Broken Ray Query
+            if (rayQueryGetIntersectionTypeEXT(rayQuery, true) != COMMITTED_NOTHING) 
+            {
+                uint nodeMeshID = rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery, true); // Mesh ID from Node Mesh List (because indexing)
+                uint geometryInstanceID = rayQueryGetIntersectionGeometryIndexEXT(rayQuery, true); // TODO: Using In Ray Tracing (and Query) shaders!
+                uint globalInstanceID = rayQueryGetIntersectionInstanceIdEXT(rayQuery, true);
+                float2 baryCoord = rayQueryGetIntersectionBarycentricsEXT(rayQuery, true);
+                uint primitiveID = rayQueryGetIntersectionPrimitiveIndexEXT(rayQuery, true); 
+                //float3 origin = rayQueryGetIntersectionObjectRayOriginEXT(rayQuery, true);
+                float tHit = rayQueryGetIntersectionTEXT(rayQuery, true);
+
+                // 
+                if (tHit < lastMax) { lastOrigin = raydir*(lastMax=tHit) + forigin;
+                    processing.gIndices = uint4(globalInstanceID, geometryInstanceID, primitiveID, 0u);
+                    processing.gBarycentric.xyz = float3(1.f-baryCoord.x-baryCoord.y,baryCoord);
+                    processing.origin.xyz = (forigin = (raydir*(processing.gBarycentric.w = (fullLength += tHit)) + sorigin));
+
+                    // Interpolate In Ray-Tracing
+                    XGEO geometry = interpolate(processing);
+                    XPOL material = materialize(processing, geometry);
+
+                    // 
+                    //forigin += faceforward(geometry.gNormal.xyz, -raydir.xyz, geometry.gNormal.xyz) * lastMin + raydir.xyz * lastMin;
+
+                    // confirm that hit 
+                    if (processing.gBarycentric.w <= 9999.f && material.diffuseColor.w > 0.001f) { opaque = true; };
+                };
+            } else { fullLength = maxT; };
+        };
+        rayQueryTerminateEXT(rayQuery);
+
+        // 
+        if (fullLength <= (maxT-1.f) && !opaque) { restart = true; };
+        if (!restart) { break; };
+    };
+
+    // 
+    if (fullLength <= (maxT-1.f)) { confirmed = processing; };
+    return confirmed;
+};
+
+// TODO: HLSL
+#ifdef GLSL
+layout ( local_size_x = 256u, local_size_y = 1u ) in; 
+void main() 
+#else
+
+#endif
+{
+#ifdef GLSL
+    const uint3 GlobalInvocationID = gl_GlobalInvocationID;
+    const uint3 LocalInvocationID = gl_LocalInvocationID;
+    const uint LocalInvocationIndex = gl_LocalInvocationIndex;
+    const uint3 NumWorkGroups = gl_NumWorkGroups;
+    const uint3 WorkGroupID = gl_WorkGroupID;
+    const uint3 WorkGroupSize = gl_WorkGroupSize;
+#endif
+
+    const uint fcount = counters[RAY_COUNTER];
+    const uint wcount = tiled(tiled(fcount, NumWorkGroups.x), WorkGroupSize.x) * WorkGroupSize.x;
+    const uint woffset = WorkGroupID.x * wcount;
+    for (uint i=0;i<wcount;i+=WorkGroupSize.x) {
+        const uint gID = woffset + (i + LocalInvocationIndex);
+        packed = gID, seed = uint2(packed, constants.rdata.x);
+        if (gID < fcount) {
+            RayData ray = rays[gID];
+            XHIT xhit = traceRays(ray.origin, ray.direct, 10000.f, true, 0.001f);
+
+            HitData hit;
+            hit.indices = xhit.gIndices.xyz;
+            hit.barycentric = xhit.gBarycentric.xyz;
+            hit.rayID = gID;
+            storeHit(hit, gID); // Store at same position, as ray... (for faster results)
+            //emitHit(hit);
+        };
+    };
+
+};

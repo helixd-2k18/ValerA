@@ -82,6 +82,7 @@ function BuildAllShaders($Pfx = "") {
     #BuildCompute "raytrace.rmiss"       "$INDIR$RNDX" "$HRDDIR$RTPU"
     
     BuildCompute "generation.comp"        "$INDIR$RNDX" "$HRDDIR$RTPU"
+    BuildCompute "intersection.comp"        "$INDIR$RNDX" "$HRDDIR$RTPU"
 
     # optimize built shaders
     OptimizeMainline $RNDX

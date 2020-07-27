@@ -77,24 +77,11 @@ struct Interpolations { // Per every geometry for interpolations
 };
 
 struct RayData {
-    float3 origin; 
-#ifdef GLSL
+    float3 origin;
     u16vec2 pixelID;
-#else
-    uint16_t2 pixelID;
-#endif
     float3 direct; 
-#ifdef GLSL
-    u8vec4 meta;
-#else
-    uint meta; // meta is u8vec4
-#endif
-    //uint2 color; uint2 emission; // both is packed f16vec4
-#ifdef GLSL
-    f16vec4 color; f16vec4 emission;
-#else
+    ubyte4 meta;
     half4 color; half4 emission;
-#endif
 };
 
 struct HitData {
@@ -882,6 +869,14 @@ float4x4 extract_rotation_matrix(in float4x4 m)
 float4x4 inverse(in float3x4 imat) {
     //return inverse(transpose(float4x4(imat[0],imat[1],imat[2],float4(0.f,0.f,0.f,1.f))));
     return transpose(inverse(float4x4(imat[0],imat[1],imat[2],float4(0.f,0.f,0.f,1.f))));
+};
+
+uint tiled(in uint x, in uint y) {
+    return 1u + ((x - 1u) / y);
+};
+
+int tiled(in int x, in int y) {
+    return 1 + ((x - 1) / y);
 };
 
 #endif

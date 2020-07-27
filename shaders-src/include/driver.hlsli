@@ -62,6 +62,26 @@ precision highp int;
 #define float4x4 mat4x4
 #define float3x4 mat3x4
 #define float4x3 mat4x3
+#define half float16_t
+#define half2 f16vec2
+#define half3 f16vec3
+#define half4 f16vec4
+#define uint16_t2 u16vec2
+#define uint16_t3 u16vec3
+#define uint16_t4 u16vec4
+#define ushort2 u16vec2
+#define ushort3 u16vec3
+#define ushort4 u16vec4
+#define ubyte4 u8vec4
+#define ubyte3 u8vec3
+#define ubyte2 u8vec2
+#else
+#define u16vec2 uint16_t2
+#define u16vec3 uint16_t3
+#define u16vec4 uint16_t4
+#define f16vec2 half2
+#define f16vec3 half3 
+#define f16vec4 half4
 #endif
 
 #endif
