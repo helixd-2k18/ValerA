@@ -35,20 +35,20 @@ namespace vlr {
         virtual void constructor(vkt::uni_ptr<Driver> driver);
 
         // 
-        VkPipelineCache getPipelineCache() const { return driver->getPipelineCache(); };
-        VkPipelineLayout getBindingPipelineLayout() const { return pipelineLayout; };
-        VkPipelineLayout getTransformPipelineLayout() const { return transformLayout; };
-        VkDescriptorPool getDescriptorPool() const { return driver->getDescriptorPool(); };
+        virtual VkPipelineCache getPipelineCache() const { return driver->getPipelineCache(); };
+        virtual VkPipelineLayout getBindingPipelineLayout() const { return pipelineLayout; };
+        virtual VkPipelineLayout getTransformPipelineLayout() const { return transformLayout; };
+        virtual VkDescriptorPool getDescriptorPool() const { return driver->getDescriptorPool(); };
 
-        VkDescriptorSetLayout getDescriptorSetLayout(const uint32_t& I) const { return layouts[I]; };
-        VkDescriptorSetLayout getSetLayout() const { return layouts[0u]; };
-        VkDescriptorSetLayout getTextureSetLayout() const { return layouts[1u]; };
-        VkDescriptorSetLayout getSamplerSetLayout() const { return layouts[2u]; };
-        VkDescriptorSetLayout getUniformSetLayout() const { return layouts[4u]; };
-        VkDescriptorSetLayout getBufferViewSetLayout() const { return layouts[3u]; };
-        VkDescriptorSetLayout getBackgroundSetLayout() const { return layouts[5u]; };
-        VkDescriptorSetLayout getFramebufferSetLayout() const { return layouts[6u]; };
-        VkDescriptorSetLayout getAccelerationSetLayout() const { return layouts[7u]; };
+        virtual VkDescriptorSetLayout getDescriptorSetLayout(const uint32_t& I) const { return layouts[I]; };
+        virtual VkDescriptorSetLayout getSetLayout() const { return layouts[0u]; };
+        virtual VkDescriptorSetLayout getTextureSetLayout() const { return layouts[1u]; };
+        virtual VkDescriptorSetLayout getSamplerSetLayout() const { return layouts[2u]; };
+        virtual VkDescriptorSetLayout getUniformSetLayout() const { return layouts[4u]; };
+        virtual VkDescriptorSetLayout getBufferViewSetLayout() const { return layouts[3u]; };
+        virtual VkDescriptorSetLayout getBackgroundSetLayout() const { return layouts[5u]; };
+        virtual VkDescriptorSetLayout getFramebufferSetLayout() const { return layouts[6u]; };
+        virtual VkDescriptorSetLayout getAccelerationSetLayout() const { return layouts[7u]; };
 
         // 
         virtual void setMaterials(vkt::uni_ptr<MaterialSet> materialSet, vkt::uni_ptr<TextureSet> textureSet, vkt::uni_ptr<SamplerSet> samplerSet);
