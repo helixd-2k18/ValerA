@@ -57,17 +57,17 @@ void main()
         XPOL MAT = materialize(RPM, GEO);
         
         {   // 
-            const float4 original = imageLoad(rasteredImages[RS_ORIGINAL], curPixel);
-            const float4 indicies = imageLoad(rasteredImages[RS_INDICIES], curPixel);
-            const float4 position = imageLoad(rasteredImages[RS_POSITION], curPixel);
-            superImageStore(currImages[IW_ORIGINAL], curPixel, original);
-            superImageStore(currImages[IW_INDICIES], curPixel, indicies);
-            superImageStore(currImages[IW_POSITION], curPixel, position);
+            superImageStore(currImages[IW_ORIGINAL], curPixel, GEO.oPosition);
+            superImageStore(currImages[IW_POSITION], curPixel, GEO.gPosition);
             superImageStore(currImages[IW_MAPNORML], curPixel, MAT.mapNormal);
+            superImageStore(currImages[IW_INDICIES], curPixel, RPM.gIndices);
             superImageStore(currImages[IW_GEONORML], curPixel, GEO.gNormal);
             superImageStore(currImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));
             superImageStore(currImages[IW_SHADOWCL], curPixel, float4(0.f.xxxx));
             superImageStore(currImages[IW_REFLECLR], curPixel, float4(0.f.xxxx));
+            superImageStore(currImages[IW_ADAPTIVE], curPixel, float4(0.f.xxxx));
+            superImageStore(currImages[IW_TRANSPAR], curPixel, float4(0.f.xxxx));
+            superImageStore(currImages[IW_RENDERED], curPixel, float4(0.f.xxxx));
 
             // Nullify Resampling
             superImageStore(resampleImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));

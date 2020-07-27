@@ -23,7 +23,7 @@
 #define RS_INDICIES 1
 #define RS_POSITION 2
 #define RS_BARYCENT 3
-#define RS_ORIGINAL 4
+//#define RS_ORIGINAL 4
 
 
 
@@ -161,7 +161,7 @@ struct XPOL {
 };
 
 struct XGEO {
-    float4 gTangent; float4 gBinormal; float4 gNormal; float4 gTexcoord;
+    float4 oPosition; float4 gPosition; float4 gTangent; float4 gBinormal; float4 gNormal; float4 gTexcoord;
 };
 
 struct XHIT {
@@ -178,6 +178,7 @@ struct CHIT {
 
 // 
 struct XTRI {
+    float3x4 oPosition;
     float3x4 gPosition;
     float3x4 gTangent; 
     float3x4 gBinormal; 
@@ -284,18 +285,10 @@ float4 triangulate(in uint3 indices, in uint loc, in uint geometrySetID, in floa
 
 
 // Some Settings
-//const float3 gSkyColor = float3(0.9f,0.98,0.999f); // TODO: Use 1.f and texture shading (include from rasterization)
-//#define gSkyColor float3(0.9f,0.98,0.999f)
-#define DIFFUSE_COLOR (diffuseColor.xyz)
-//#define BACKSKY_COLOR gSignal.xyz = max(fma(gEnergy.xyz, (i > 0u ? gSkyColor : 1.f.xxx), gSignal.xyz),0.f.xxx), gEnergy *= 0.f
-//#define BACKSKY_COLOR gSignal.xyz = max(fma(gEnergy.xyz, gSkyColor, gSignal.xyz),0.f.xxx), gEnergy *= 0.f
+#define DIFFUSE_COLOR diffuseColor.xyz
+#define EMISSION_COLOR emissionColor.xyz
 
 float4 gSkyShader(in float3 raydir, in float3 origin) {
-//#ifdef GLSL
-//    return float4(texture(sampler2D(background, samplers[3u]), flip(lcts(raydir.xyz))).xyz, 1.f);
-//#else
-//    return background.SampleLevel(samplers[3u], flip(lcts(raydir.xyz)).xy, 0);
-//#endif
     return float4(textureSample(background, samplers[3u], flip(lcts(raydir.xyz))).xyz, 1.f);
 };
 
@@ -351,6 +344,7 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
 
     // 
     for (uint32_t i=0u;i<3u;i++) {
+        geometry.oPosition[i] = geometry.gPosition[i];
         geometry.gPosition[i] = float4(mul(matra4, float4(mul(matras, float4(geometry.gPosition[i].xyz, 1.f)), 1.f)), 1.f);
 
         // 
@@ -382,6 +376,8 @@ XGEO interpolate(in XHIT hit) { // By Geometry Data
 
     // 
     XGEO geometry;
+    geometry.oPosition  = mul(geometryMat.oPosition, baryCoord);
+    geometry.gPosition  = mul(geometryMat.gPosition, baryCoord);
     geometry.gTexcoord  = mul(geometryMat.gTexcoord, baryCoord);
     geometry.gNormal    = mul(geometryMat.gNormal, baryCoord);
     geometry.gTangent   = mul(geometryMat.gTangent, baryCoord);
@@ -432,7 +428,7 @@ XPOL materialize(in XHIT hit, inout XGEO geo) { //
 
         // Use real origin
         material.txcmid = float4(uintBitsToFloat(packUnorm2x16(fract(geo.gTexcoord.xy))), uintBitsToFloat(MatID), 1.f, 0.f); // 
-    }
+    };
 
     // 
     return material;
