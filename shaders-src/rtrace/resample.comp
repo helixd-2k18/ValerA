@@ -59,8 +59,12 @@ void main()
     // WARNING! Quality may critically drop when move! 
     const bool checker = bool(((curPixel.x ^ curPixel.y) ^ (constants.rdata.x^1u))&1u);
 
-    // Getting Previous Frame Sample
-    float4 indirect = float4(superImageLoad(prevImages[IW_INDIRECT], curPixel).xyz, 1.f);
+    // Getting Previous Frame Sample (shows as COLOR.xyz/COLOR.w)
+    float4 indirect = superImageLoad(prevImages[IW_INDIRECT], curPixel); // Pre-Multiplied with Alpha, if you want just bright sum, use zero W
+    float4 shadowcl = superImageLoad(prevImages[IW_SHADOWCL], curPixel); // Pre-Multiplied with Alpha, if you want just bright sum, use zero W
+    float4 refleclr = superImageLoad(prevImages[IW_REFLECLR], curPixel); // Pre-Multiplied with Alpha, if you want just bright sum, use zero W
+
+    // 
     float4 wPosition = float4(superImageLoad(prevImages[IW_ORIGINAL], curPixel).xyz, 1.f);
     wPosition = float4(mul(matra4, float4(mul(matras, float4(wPosition.xyz, 1.f)), 1.f)), 1.f); // Transform As Current
     float3 screenpos = world2screen(wPosition.xyz);
@@ -78,6 +82,8 @@ void main()
     ) 
     {
         atomicSuperImageAdd(resampleImages[IW_INDIRECT], topix, indirect); // Atomically Adding Samples
+        atomicSuperImageAdd(resampleImages[IW_SHADOWCL], topix, shadowcl);
+        atomicSuperImageAdd(resampleImages[IW_REFLECLR], topix, refleclr);
     };
 
 };

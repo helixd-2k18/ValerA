@@ -54,8 +54,15 @@ void main()
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
             float4 indirect = superImageLoad(currImages[IW_INDIRECT], curPixel) + superImageLoad(resampleImages[IW_INDIRECT], curPixel);
+            float4 refleclr = superImageLoad(currImages[IW_REFLECLR], curPixel); refleclr /= indirect.w; // Premultiplied alpha and has no sampling ratio
+
+            // 
             float4 shadows = superImageLoad(currImages[IW_SHADOWCL], curPixel) + superImageLoad(resampleImages[IW_SHADOWCL], curPixel); indirect += shadows;
             float4 diffuse = float4(MAT.diffuseColor.xyz * (indirect.xyz/max(indirect.w,1.f)), 1.f);
+
+            // 
+            //diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, vec3(0.f));
+            diffuse.xyz += refleclr.xyz; // Already Pre-Multiplied with Coef
             superImageStore(currImages[IW_RENDERED], curPixel, diffuse);
         };
     };
