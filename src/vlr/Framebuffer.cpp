@@ -109,11 +109,40 @@ namespace vlr {
             // 
             vkt::submitOnceAsync(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
                 depthStencilImage.transfer(cmd);
+
+                // 
+                vkt::imageBarrier(cmd, vkt::ImageBarrierInfo{
+                    .image = depthStencilImage.getImage(),
+                    .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
+                    .originLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                        auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
+                        it->aspectMask = aspect;
+                        return it;
+                    })
+                });
+
+                //
+                this->driver->getDeviceDispatch()->CmdClearDepthStencilImage(cmd, depthStencilImage, depthStencilImage.getImageLayout(), vkh::VkClearDepthStencilValue{ .depth = 1.0f, .stencil = 0 }, 1u, depthStencilImage.getImageSubresourceRange());
+
+                // 
+                vkt::commandBarrier(this->driver->getDeviceDispatch(), cmd);
+                vkt::imageBarrier(cmd, vkt::ImageBarrierInfo{
+                    .image = depthStencilImage.getImage(),
+                    .targetLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    .originLayout = VK_IMAGE_LAYOUT_GENERAL,
+                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                        auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
+                        it->aspectMask = aspect;
+                        return it;
+                    })
+                });
+                
             });
         };
 
         // 
-        auto createImage = [=,this](VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT, uint32_t wide = 1u){
+        auto createImage = [=,this](VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT, uint32_t wide = 1u) {
             auto image = vkt::ImageRegion(std::make_shared<vkt::ImageAllocation>(vkh::VkImageCreateInfo{
                 .format = format,
                 .extent = {width*wide,height,1u},
@@ -126,6 +155,7 @@ namespace vlr {
             // 
             vkt::submitOnceAsync(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
                 image.transfer(cmd);
+                this->driver->getDeviceDispatch()->CmdClearColorImage(cmd, image, image.getImageLayout(), vkh::VkClearColorValue{ .float32 = { 0.f,0.f,0.f,0.f } }, 1u, image.getImageSubresourceRange());
             });
 
             return image;
