@@ -50,7 +50,9 @@ namespace vlr {
     };
 
     // 
-    void Rasterization::setDescriptorSets() { // 
+    void Rasterization::setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout) { // 
+        if (layout.has()) { this->layout = ilayout; };
+        
         if (this->constants.has()) {
             if (!this->constants->set) {
                 this->constants->createDescriptorSet(layout);

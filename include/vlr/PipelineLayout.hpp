@@ -57,6 +57,7 @@ namespace vlr {
         virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> acceleration);
         virtual void setConstants(vkt::uni_ptr<Constants> constants);
         virtual void setRayTracing(vkt::uni_ptr<RayTracing> rayTracing);
+        virtual void setRasterization(vkt::uni_ptr<Rasterization> rayTracing);
         virtual void setInstanceSet(vkt::uni_ptr<InstanceSet> instanceSet);
     };
 
