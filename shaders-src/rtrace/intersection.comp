@@ -173,7 +173,8 @@ void main()
             HitData hit;
             hit.indices = xhit.gIndices.xyz;
             hit.barycentric = xhit.gBarycentric.xyz;
-            hit.rayID = gID;
+            //hit.rayID = gID;
+            hit.dist = xhit.gBarycentric.w;
             storeHit(hit, gID); // Store at same position, as ray... (for faster results)
             //emitHit(hit);
         };

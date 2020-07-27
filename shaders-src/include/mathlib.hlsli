@@ -85,9 +85,8 @@ struct RayData {
 };
 
 struct HitData {
-    uint3 indices; uint rayID;
-    float3 barycentric;
-    uint meshID_meta; // 24-bit MESH ID, 8-bit META
+    uint3 indices; uint meshID_meta; // 24-bit MESH ID, 8-bit META
+    float3 barycentric; float dist;
 };
 
 struct ColorChain {
