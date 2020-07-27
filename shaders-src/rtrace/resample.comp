@@ -1,0 +1,83 @@
+#version 460 core
+#extension GL_GOOGLE_include_directive : require
+#define GLSL
+
+#include "../include/driver.hlsli"
+#include "../include/bindings.hlsli"
+
+#define LAUNCH_ID GlobalInvocationID
+
+// TODO: HLSL
+#ifdef GLSL
+layout ( local_size_x = 32u, local_size_y = 24u ) in; 
+void main() 
+#else
+
+#endif
+{
+#ifdef GLSL
+    const uint3 GlobalInvocationID = gl_GlobalInvocationID;
+    const uint3 LocalInvocationID = gl_LocalInvocationID;
+    const uint LocalInvocationIndex = gl_LocalInvocationIndex;
+#endif
+
+    const uint2 lanQ = LAUNCH_ID.xy;//gl_LaunchIDEXT.xy;//gl_GlobalInvocationID.xy;
+    uint2 launchSize = imageSize(currImages[IW_POSITION]); launchSize.x >>= 2;
+
+    // 
+    const int2 curPixel = int2(lanQ), invPixel = int2(curPixel.x,curPixel.y);
+    const int2 sizPixel = int2(launchSize);
+
+    // Previous Frame Indices
+    uint4 wIndices = floatBitsToUint(superImageLoad(prevImages[IW_INDICIES], curPixel));
+
+    // 
+    uint globalInstanceID = wIndices.x;
+    uint geometrySetID = getMeshID(globalInstanceID);
+    uint geometryInstanceID = wIndices.y;
+    
+    // 
+    Interpolations interpol;
+#ifdef GLSL
+    interpol = interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+#else
+    interpol = interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
+#endif
+
+    GeometryDesc node;
+#ifdef GLSL
+    node = geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+#else
+    node = geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
+#endif
+
+    // By Geometry Data
+    float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
+    float3x4 matra4 = instances[globalInstanceID].transform;
+    if (hasTransform(geometries[geometrySetID].data[geometryInstanceID])) { matras = node.transform; };
+
+    // WARNING! Quality may critically drop when move! 
+    const bool checker = bool(((curPixel.x ^ curPixel.y) ^ (constants.rdata.x^1u))&1u);
+
+    // Getting Previous Frame Sample
+    float4 indirect = float4(superImageLoad(prevImages[IW_INDIRECT], curPixel).xyz, 1.f);
+    float4 wPosition = float4(superImageLoad(prevImages[IW_ORIGINAL], curPixel).xyz, 1.f);
+    wPosition = float4(mul(matra4, float4(mul(matras, float4(wPosition.xyz, 1.f)), 1.f)), 1.f); // Transform As Current
+    float3 screenpos = world2screen(wPosition.xyz);
+
+    // Where Will Re-Located
+    const int2 topix = int2((screenpos.xy * 0.5f + 0.5f) * launchSize);
+    float4 worldspos = float4(superImageLoad(currImages[IW_POSITION], topix).xyz, 1.f);
+    float3 screensmp = world2screen(worldspos.xyz);
+
+    // 
+    if (
+        abs(screenpos.z - screensmp.z) < 0.0001f && 
+        imageLoad(currImages[IW_MATERIAL], curPixel).z > 0.f &&
+        distance(wPosition.xyz, worldspos.xyz) < 0.1f
+    ) 
+    {
+        atomicSuperImageAdd3(resampleImages[IW_INDIRECT], topix, indirect); // Atomically Adding Samples
+    };
+
+};

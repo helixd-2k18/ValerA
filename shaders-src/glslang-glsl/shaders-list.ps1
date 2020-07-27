@@ -84,6 +84,8 @@ function BuildAllShaders($Pfx = "") {
     BuildCompute "generation.comp"        "$INDIR$RNDX" "$HRDDIR$RTPU"
     BuildCompute "intersection.comp"      "$INDIR$RNDX" "$HRDDIR$RTPU"
     BuildCompute "interpolation.comp"     "$INDIR$RNDX" "$HRDDIR$RTPU"
+    BuildCompute "resample.comp"          "$INDIR$RNDX" "$HRDDIR$RTPU"
+    
 
     # optimize built shaders
     OptimizeMainline $RNDX

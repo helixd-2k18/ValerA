@@ -7,13 +7,13 @@
 
 // Ray-Tracing Data (With resampling output support!)
 #define IW_INDIRECT 0  // Indrect Diffuse
-#define IW_SMOOTHED 1  // Anti-Aliased diffuse colors
+#define IW_INDICIES 1  // Anti-Aliased diffuse colors
 #define IW_REFLECLR 2  // Previous Frame Reflection
 #define IW_TRANSPAR 3  // Semi-Transparent Mixing
 #define IW_MATERIAL 4  // Texcoord, Material ID, Skybox Mask
 #define IW_GEONORML 5  // Geometry Normals
 #define IW_ADAPTIVE 6  // Adaptive Data (reflection length, etc.)
-#define IW_RESERVED 7  // 
+#define IW_ORIGINAL 7  // 
 // Ray-Tracing Data (Without resampling output support!)
 #define IW_GEOMETRY 8  
 #define IW_MAPNORML 9  // Mapped Normals
@@ -21,13 +21,13 @@
 
 // Last Action Data (another binding only)
 #define BW_INDIRECT 0  
-#define BW_SMOOTHED 1  
+#define BW_INDICIES 1  
 #define BW_REFLECLR 2  
 #define BW_TRANSPAR 3  
 #define BW_MATERIAL 4  // Texcoord, Material ID, Skybox Mask
 #define BW_GEONORML 5  // Geometry Normal
 #define BW_ADAPTIVE 6  // Final Rendering Result
-#define BW_MAPNORML 7
+#define BW_MAPNORML 7  
 #define BW_RENDERED 8  
 #define BW_GROUNDPS 9  // Deep Layer!!
 #define BW_POSITION 10 // Position Data
@@ -35,10 +35,10 @@
 
 // From Rasterization Phase!
 #define RS_MATERIAL 0
-#define RS_GEOMETRY 1
+#define RS_INDICIES 1
 #define RS_POSITION 2
 #define RS_BARYCENT 3
-//#define RS_DIFFUSED 4
+#define RS_ORIGINAL 4
 
 
 
@@ -212,6 +212,10 @@ uint getGeometrySetID(in RTInstance instance){
     return bitfieldExtract(instance.instance_mask, 0, 24); // only hack method support
 };
 
+uint getGeometrySetID(in uint instance){
+    return bitfieldExtract(instances[instance].instance_mask, 0, 24); // only hack method support
+};
+
 // Deprecated
 #define getMeshID getGeometrySetID
 
@@ -363,6 +367,9 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
 
     // 
     for (uint32_t i=0u;i<3u;i++) {
+        geometry.gPosition[i] = float4(mul(matra4, float4(mul(matras, float4(geometry.gPosition[i].xyz, 1.f)), 1.f)), 1.f);
+
+        // 
         geometry.gNormal[i] = float4(geometry.gNormal[i].xyz, 0.f);
         geometry.gTangent[i] = float4(geometry.gTangent[i].xyz, 0.f);
         geometry.gBinormal[i] = float4(geometry.gBinormal[i].xyz, 0.f);
@@ -468,7 +475,7 @@ XHIT rasterize(in float3 origin, in float3 raydir, in float3 normal, float maxT,
     float3 sslr = world2screen(origin);
     const int2 tsize = imageSize(rasteredImages[RS_MATERIAL]);
     const int2 samplep = int2((sslr.xy*0.5f+0.5f) * imageSize(rasteredImages[RS_MATERIAL]));
-    const uint4 indices  = floatBitsToUint(imageLoad(rasteredImages[RS_GEOMETRY], samplep));
+    const uint4 indices  = floatBitsToUint(imageLoad(rasteredImages[RS_INDICIES], samplep));
     const uint4 datapass = floatBitsToUint(imageLoad(rasteredImages[RS_MATERIAL], samplep));
 
     // 

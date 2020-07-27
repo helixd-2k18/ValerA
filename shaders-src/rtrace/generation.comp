@@ -56,13 +56,24 @@ void main()
         XGEO GEO = interpolate(RPM);
         XPOL MAT = materialize(RPM, GEO);
         
+        {   // 
+            const float4 original = imageLoad(rasteredImages[RS_ORIGINAL], curPixel);
+            const float4 indicies = imageLoad(rasteredImages[RS_INDICIES], curPixel);
+            superImageStore(currImages[IW_ORIGINAL], curPixel, original);
+            superImageStore(currImages[IW_INDICIES], curPixel, indicies);
+            superImageStore(currImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));
+
+            // Nullify Resampling
+            superImageStore(resampleImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));
+        };
+
         // Emit Diffuse Indirect Ray
         RayData rays;
         rays.origin = origin;
         rays.direct = raydir;
         rays.pixelID = u16vec2(LAUNCH_ID);
-        rays.color = f16vec4(1.f.xxxx);
         rays.emission = f16vec4(0.f.xxxx);
+        rays.color = f16vec4(1.f.xxxx);
         rays.meta = u8vec4(0u);
         kind(rays, 0);
         lifetime(rays, 2);

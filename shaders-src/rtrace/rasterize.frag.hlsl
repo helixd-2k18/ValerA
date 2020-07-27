@@ -34,6 +34,7 @@ struct PS_OUTPUT {
      float4 oGeoIndice; 
      float4 oPosition;
      float4 oBarycent;
+     float4 oOriginal;
      float FragDepth;
 };
 
@@ -45,9 +46,10 @@ layout (location = 3) flat in float4 uData;
 
 // 
 layout (location = RS_MATERIAL) out float4 oMaterial;
-layout (location = RS_GEOMETRY) out float4 oGeoIndice;
+layout (location = RS_INDICIES) out float4 oGeoIndice;
 layout (location = RS_POSITION) out float4 oPosition;
 layout (location = RS_BARYCENT) out float4 oBarycent;
+layout (location = RS_ORIGINAL) out float4 oOriginal;
 
 #else
 
@@ -68,6 +70,8 @@ struct PS_OUTPUT {
      float4 oGeoIndice  : SV_TARGET1; 
      float4 oPosition   : SV_TARGET2;
      float4 oBarycent   : SV_TARGET3;
+     float4 oOriginal   : SV_TARGET4;
+     float4 oIndicies   : SV_TARGET5;
      float FragDepth    : SV_Depth;
 };
 
@@ -101,12 +105,24 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     const uint globalInstanceID = floatBitsToUint(inp.uData.x);
     const uint geometrySetID = getGeometrySetID(instances[globalInstanceID]);
 
+    Interpolations interpol;
+#ifdef GLSL
+    interpol = interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+#else
+    interpol = interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
+#endif
+
     GeometryDesc node;
 #ifdef GLSL
     node = geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
 #else
     node = geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
+
+    // By Geometry Data
+    float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
+    float3x4 matra4 = instances[globalInstanceID].transform;
+    if (hasTransform(geometries[geometrySetID].data[geometryInstanceID])) { matras = node.transform; };
 
 #ifndef MatID
 #define MatID node.material
@@ -133,11 +149,13 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
         outp.oMaterial = uintBitsToFloat(uint4(0u, 0u, 0u, floatBitsToUint(1.f)));
         outp.oGeoIndice = uintBitsToFloat(uint4(globalInstanceID, geometryInstanceID, PrimitiveID, floatBitsToUint(1.f)));
         outp.oBarycent = float4(max(BaryWeights, 0.0001f.xxx), 1.f);
+        outp.oOriginal = float4(mul(float4(mul(float4(outp.oPosition.xyz, 1.f), inverse(transpose(regen4(matras)))).xyz, 1.f), inverse(transpose(regen4(matra4)))).xyz, 1.f);
         outp.FragDepth = inp.FragCoord.z;
     };
 
 #ifdef GLSL
     {
+        oOriginal = outp.oOriginal;
         oPosition = outp.oPosition;
         oMaterial = outp.oMaterial;
         oGeoIndice = outp.oGeoIndice;
