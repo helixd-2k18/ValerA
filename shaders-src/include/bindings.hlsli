@@ -234,11 +234,11 @@ uint load_u32(in uint offset, in uint binding) {
 // TODO: Add Uint16_t, uint, Float16_t Support
 float4 get_float4(in uint idx, in uint loc, in uint geometrySetID) {
 #ifdef GLSL
-    Attribute attrib = attributes[meshID].data[loc];
-    Binding  binding = bindings[meshID].data[attrib.binding];
+    Attribute attrib = attributes[nonuniformEXT(geometrySetID)].data[loc];
+    Binding  binding = bindings[nonuniformEXT(geometrySetID)].data[attrib.binding];
 #else
-    Attribute attrib = attributes[geometrySetID][loc];
-    Binding  binding = bindings[geometrySetID][attrib.binding];
+    Attribute attrib = attributes[nonuniformEXT(geometrySetID)][loc];
+    Binding  binding = bindings[nonuniformEXT(geometrySetID)][attrib.binding];
 #endif
 
     uint boffset = binding.stride * idx + attrib.offset;
@@ -321,8 +321,8 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
 
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
-    float3x4 matra4 = instances[globalInstanceID].transform;
-    if (hasTransform(geometries[geometrySetID].data[geometryInstanceID])) { matras = node.transform; };
+    float3x4 matra4 = instances[nonuniformEXT(globalInstanceID)].transform;
+    if (hasTransform(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { matras = node.transform; };
 
     // Native Normal Transform
     const float3x3 normalTransform = inverse(transpose(regen3(matras)));

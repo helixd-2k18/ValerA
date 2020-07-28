@@ -121,8 +121,8 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
 
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
-    float3x4 matra4 = instances[globalInstanceID].transform;
-    if (hasTransform(geometries[geometrySetID].data[geometryInstanceID])) { matras = node.transform; };
+    float3x4 matra4 = instances[nonuniformEXT(globalInstanceID)].transform;
+    if (hasTransform(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { matras = node.transform; };
 
 #ifndef MatID
 #define MatID node.material
