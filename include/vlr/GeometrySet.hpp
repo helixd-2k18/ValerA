@@ -2,6 +2,7 @@
 #include "./Config.hpp"
 #include "./Driver.hpp"
 #include "./Geometry.hpp"
+#include "./Interpolation.hpp"
 
 // 
 namespace vlr {

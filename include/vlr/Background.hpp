@@ -1,12 +1,13 @@
 #pragma once
 #include "./Config.hpp"
+#include "./Driver.hpp"
 
 namespace vlr {
 
     // Not Only Background Images, but Native Samplers
     class Background : public std::enable_shared_from_this<Background> { protected: 
         vkt::ImageRegion background = {};
-        std::shared_ptr<Driver> driver = {};
+        vkt::uni_ptr<Driver> driver = {};
 
     public: 
         Background() { this->constructor(); };

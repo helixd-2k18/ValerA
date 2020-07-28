@@ -8,7 +8,7 @@ namespace vlr {
         VkDescriptorSet set = {}; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         std::vector<VkSampler> samplers = {};
-        std::shared_ptr<Driver> driver = {};
+        vkt::uni_ptr<Driver> driver = {};
         
     public: 
         SamplerSet() { this->constructor(); };

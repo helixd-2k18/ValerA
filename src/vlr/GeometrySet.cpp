@@ -2,7 +2,6 @@
 #include "./vlr/Geometry.hpp"
 #include "./vlr/Interpolation.hpp"
 #include "./vlr/VertexSet.hpp"
-#include "./vlr/SetBase.hpp"
 
 namespace vlr {
 

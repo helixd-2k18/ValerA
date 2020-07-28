@@ -1,9 +1,49 @@
 #pragma once
 
+
+//#ifdef OS_WIN
+#if (defined(_WIN32) || defined(__MINGW32__) || defined(_MSC_VER_) || defined(__MINGW64__)) 
+#define GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_EXPOSE_NATIVE_WGL
+#endif
+
+//#ifdef OS_LNX
+#ifdef __linux__
+#define GLFW_EXPOSE_NATIVE_X11
+#define GLFW_EXPOSE_NATIVE_GLX
+#endif
+
+//
+#define ENABLE_EXTENSION_GLM
+#define ENABLE_EXTENSION_VMA
+#define ENABLE_EXTENSION_RTX
+#define GLFW_INCLUDE_VULKAN
+
+//
+#ifndef VKT_CORE_ENABLE_XVK
+#define VKT_CORE_ENABLE_XVK
+#endif
+
+//
+#ifndef VKT_CORE_ENABLE_VMA
+#define VKT_CORE_ENABLE_VMA
+#endif
+
+//
+#ifndef ENABLE_VULKAN_HPP
+#define ENABLE_VULKAN_HPP
+#endif
+
+// 
+#ifndef VK_ENABLE_BETA_EXTENSIONS
+#define VK_ENABLE_BETA_EXTENSIONS
+#endif
+
 // 
 #define VKT_CORE_ENABLE_VMA
 #define VKT_CORE_ENABLE_XVK
-#define VK_ENABLE_BETA_EXTENSIONS
+#define VKT_CORE_ENABLE_VMA
+
 
 //
 #include <memory>
@@ -21,9 +61,9 @@
 // 
 namespace vlr {
     class Acceleration;
-    class AttributeSet;
-    class BindingSet;
-    class MaterialSet;
+    //class AttributeSet;
+    //class BindingSet;
+    //class MaterialSet;
     class TextureSet;
     class SamplerSet;
     class BuildCommand;
@@ -38,13 +78,13 @@ namespace vlr {
     class Background;
     class Resampling;
     class PipelineLayout;
-    class Driver;
+    //class Driver;
     template<class T = uint8_t> class SetBase_T;
     class SetBase;
     class VertexSet;
     class RayTracing;
     class InstanceSet;
-    class Constants;
+    //class Constants;
 
     struct DataSetCreateInfo {
         VkDeviceSize count = 1u;

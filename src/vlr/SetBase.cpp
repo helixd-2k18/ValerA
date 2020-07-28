@@ -1,6 +1,4 @@
-#include "./vlr/SetBase.hpp"
 #include "./vlr/PipelineLayout.hpp"
-#include "./vlr/Driver.hpp"
 
 namespace vlr {
 

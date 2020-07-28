@@ -1,5 +1,6 @@
 #pragma once
 #include "./Config.hpp"
+#include "./Driver.hpp"
 #include "./VertexSet.hpp"
 
 namespace vlr {
@@ -23,6 +24,7 @@ namespace vlr {
 #pragma pack(pop)
 
     class Geometry : public std::enable_shared_from_this<Geometry> { protected: friend GeometrySet; friend Acceleration; friend Rasterization;
+        //vkt::uni_ptr<VertexSet> vertexSet = {}; // BROKEN!
         vkt::uni_ptr<VertexSet> vertexSet = {};
         vkt::uni_arg<GeometryDesc> desc = {};
 

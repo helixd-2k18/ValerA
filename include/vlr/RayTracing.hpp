@@ -1,5 +1,6 @@
 #pragma once
 #include "./Config.hpp"
+#include "./Driver.hpp"
 #include "./Framebuffer.hpp"
 #include "./SetBase.hpp"
 #include "./BufferViewSet.hpp"

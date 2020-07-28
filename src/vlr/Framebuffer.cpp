@@ -1,5 +1,4 @@
 #include "./vlr/Framebuffer.hpp"
-#include "./vlr/Driver.hpp"
 #include "./vlr/PipelineLayout.hpp"
 
 namespace vlr {
@@ -79,7 +78,7 @@ namespace vlr {
     };
 
     // 
-    void Framebuffer::createFramebuffer(uint32_t width = 1920u, uint32_t height = 1200u) { //
+    void Framebuffer::createFramebuffer(uint32_t width, uint32_t height) { //
         auto fbusage = vkh::VkImageUsageFlags{.eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
         auto aspect = vkh::VkImageAspectFlags{.eColor = 1};
         auto apres = vkh::VkImageSubresourceRange{.aspectMask = aspect};

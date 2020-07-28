@@ -1,6 +1,5 @@
 #include "./vlr/Acceleration.hpp"
 #include "./vlr/PipelineLayout.hpp"
-#include "./vlr/SetBase.hpp"
 #include "./vlr/GeometrySet.hpp"
 #include "./vlr/InstanceSet.hpp"
 #include "./vlr/Geometry.hpp"

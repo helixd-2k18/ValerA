@@ -13,5 +13,233 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\vlr">
+      <UniqueIdentifier>{f2dbaf3e-c7d7-46f9-a316-a5f6c906d5d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vlr\additional">
+      <UniqueIdentifier>{1c08e5fd-ca3e-468e-be66-51a7dbb2bcf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vlr">
+      <UniqueIdentifier>{3e75d385-9780-4a5e-88e8-bdc676fbb5bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vlr\additional">
+      <UniqueIdentifier>{31f0beb1-9076-4d89-a4fa-1c7aa67264d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vkt3">
+      <UniqueIdentifier>{aba7112a-f90e-4495-bc4d-e8c85d1647e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vkh">
+      <UniqueIdentifier>{1d2b8ea1-6b19-4980-8bec-11c5380165f0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\vlr\Acceleration.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Accumulation.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\AttributeSet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Background.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\BindingSet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\BufferViewSet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\BuildCommand.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Config.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Driver.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Framebuffer.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Geometry.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\GeometrySet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\InstanceSet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Interpolation.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\MaterialSet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\OthersCommand.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\PipelineLayout.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Rasterization.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\RayTracing.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\RenderCommand.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\Resampling.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\SamplerSet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\SetBase.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\TextureSet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\VertexSet.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\additional\GeometryAdd.cpp">
+      <Filter>Source Files\vlr\additional</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\vlr\Acceleration.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Accumulation.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\AttributeSet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Background.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\BindingSet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\BufferViewSet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\BuildCommand.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Config.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Constants.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Driver.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Framebuffer.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Geometry.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\GeometrySet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\InstanceSet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Interpolation.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\MaterialSet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\OthersCommand.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\PipelineLayout.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Rasterization.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\RayTracing.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\RenderCommand.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Resampling.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\SamplerSet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\SetBase.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\TextureSet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\VertexSet.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\additional\GeometryAdd.hpp">
+      <Filter>Header Files\vlr\additional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\core.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\essential.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\image.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\structs.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\utils.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\vector.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp">
+      <Filter>Header Files\vkh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkh\enums.hpp">
+      <Filter>Header Files\vkh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkh\handle.hpp">
+      <Filter>Header Files\vkh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkh\helpers.hpp">
+      <Filter>Header Files\vkh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkh\matching.hpp">
+      <Filter>Header Files\vkh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkh\spirv-mod.hpp">
+      <Filter>Header Files\vkh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkh\structures.hpp">
+      <Filter>Header Files\vkh</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\vkt\include\vkt3\readme.md">
+      <Filter>Header Files\vkt3</Filter>
+    </None>
   </ItemGroup>
 </Project>

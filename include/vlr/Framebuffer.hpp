@@ -42,7 +42,7 @@ namespace vlr {
         std::vector<vkt::ImageRegion> rasterImages = {};    // Rasterized Frame
         VkRect2D scissor = {}; VkViewport viewport = {};    // 
         uint32_t width = 1920u, height = 1200u;
-        std::shared_ptr<Driver> driver = {};
+        vkt::uni_ptr<Driver> driver = {};
         bool updated = false;
 
     public: 

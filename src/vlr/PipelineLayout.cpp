@@ -1,4 +1,3 @@
-#include "./vlr/Driver.hpp"
 #include "./vlr/PipelineLayout.hpp"
 
 // 
@@ -97,10 +96,6 @@ namespace vlr {
             layouts.push_back({});
             vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
         };
-
-        //
-        auto pipusage = vkh::VkShaderStageFlags{.eVertex = 1, .eGeometry = 1, .eFragment = 1, .eCompute = 1, .eRaygen = 1, .eAnyHit = 1, .eClosestHit = 1, .eMiss = 1 };
-        auto indexedf = vkh::VkDescriptorBindingFlags{ .eUpdateAfterBind = 1, .eUpdateUnusedWhilePending = 1, .ePartiallyBound = 1 };
 
         // 
         std::vector<VkDescriptorSetLayout> layouts = {};

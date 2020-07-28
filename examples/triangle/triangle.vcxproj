@@ -17,7 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -53,25 +52,23 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared" >
+  <ImportGroup Label="Shared">
   </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -81,11 +78,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)/include;$(ProjectDir)/../../include;$(ProjectDir)/../include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)/include;$(ProjectDir)/../../include;$(ProjectDir)/../include</IncludePath>
   </PropertyGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -118,8 +116,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_T=LPCWSTR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,8 +133,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_T=LPCWSTR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,8 +146,80 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-
-  <ItemGroup></ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\vlr\Acceleration.cpp" />
+    <ClCompile Include="..\..\src\vlr\Accumulation.cpp" />
+    <ClCompile Include="..\..\src\vlr\additional\GeometryAdd.cpp" />
+    <ClCompile Include="..\..\src\vlr\AttributeSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\Background.cpp" />
+    <ClCompile Include="..\..\src\vlr\BindingSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\BufferViewSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\BuildCommand.cpp" />
+    <ClCompile Include="..\..\src\vlr\Config.cpp" />
+    <ClCompile Include="..\..\src\vlr\Driver.cpp" />
+    <ClCompile Include="..\..\src\vlr\Framebuffer.cpp" />
+    <ClCompile Include="..\..\src\vlr\Geometry.cpp" />
+    <ClCompile Include="..\..\src\vlr\GeometrySet.cpp" />
+    <ClCompile Include="..\..\src\vlr\InstanceSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\Interpolation.cpp" />
+    <ClCompile Include="..\..\src\vlr\MaterialSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\OthersCommand.cpp" />
+    <ClCompile Include="..\..\src\vlr\PipelineLayout.cpp" />
+    <ClCompile Include="..\..\src\vlr\Rasterization.cpp" />
+    <ClCompile Include="..\..\src\vlr\RayTracing.cpp" />
+    <ClCompile Include="..\..\src\vlr\RenderCommand.cpp" />
+    <ClCompile Include="..\..\src\vlr\Resampling.cpp" />
+    <ClCompile Include="..\..\src\vlr\SamplerSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\SetBase.cpp" />
+    <ClCompile Include="..\..\src\vlr\TextureSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\VertexSet.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\enums.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\handle.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\helpers.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\matching.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\spirv-mod.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\structures.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\core.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\essential.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\image.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\structs.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\utils.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\vector.hpp" />
+    <ClInclude Include="..\..\include\vlr\Acceleration.hpp" />
+    <ClInclude Include="..\..\include\vlr\Accumulation.hpp" />
+    <ClInclude Include="..\..\include\vlr\additional\GeometryAdd.hpp" />
+    <ClInclude Include="..\..\include\vlr\AttributeSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\Background.hpp" />
+    <ClInclude Include="..\..\include\vlr\BindingSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\BufferViewSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\BuildCommand.hpp" />
+    <ClInclude Include="..\..\include\vlr\Config.hpp" />
+    <ClInclude Include="..\..\include\vlr\Constants.hpp" />
+    <ClInclude Include="..\..\include\vlr\Driver.hpp" />
+    <ClInclude Include="..\..\include\vlr\Framebuffer.hpp" />
+    <ClInclude Include="..\..\include\vlr\Geometry.hpp" />
+    <ClInclude Include="..\..\include\vlr\GeometrySet.hpp" />
+    <ClInclude Include="..\..\include\vlr\InstanceSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\Interpolation.hpp" />
+    <ClInclude Include="..\..\include\vlr\MaterialSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\OthersCommand.hpp" />
+    <ClInclude Include="..\..\include\vlr\PipelineLayout.hpp" />
+    <ClInclude Include="..\..\include\vlr\Rasterization.hpp" />
+    <ClInclude Include="..\..\include\vlr\RayTracing.hpp" />
+    <ClInclude Include="..\..\include\vlr\RenderCommand.hpp" />
+    <ClInclude Include="..\..\include\vlr\Resampling.hpp" />
+    <ClInclude Include="..\..\include\vlr\SamplerSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\SetBase.hpp" />
+    <ClInclude Include="..\..\include\vlr\TextureSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\VertexSet.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\vkt\include\vkt3\readme.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

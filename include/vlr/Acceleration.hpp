@@ -1,7 +1,8 @@
 #pragma once
 #include "./Config.hpp"
-#include "./vlr/GeometrySet.hpp"
-#include "./vlr/InstanceSet.hpp"
+#include "./Driver.hpp"
+#include "./GeometrySet.hpp"
+#include "./InstanceSet.hpp"
 
 namespace vlr {
 

@@ -1,12 +1,10 @@
 #include "./vlr/BuildCommand.hpp"
 #include "./vlr/Framebuffer.hpp"
-#include "./vlr/SetBase.hpp"
 #include "./vlr/Acceleration.hpp"
 #include "./vlr/BufferViewSet.hpp"
 #include "./vlr/Interpolation.hpp"
 #include "./vlr/Constants.hpp"
 #include "./vlr/InstanceSet.hpp"
-#include "./vlr/Driver.hpp"
 
 namespace vlr {
 

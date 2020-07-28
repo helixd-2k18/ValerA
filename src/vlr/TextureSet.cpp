@@ -1,6 +1,5 @@
 #include "./vlr/TextureSet.hpp"
 #include "./vlr/PipelineLayout.hpp"
-#include "./vlr/Driver.hpp"
 
 namespace vlr {
 

@@ -23,9 +23,9 @@ namespace vlr {
         
         // 
         std::vector<VkDescriptorSetLayout> layouts = {};
-        std::shared_ptr<Driver> driver = {};
+        vkt::uni_ptr<Driver> driver = {};
         vkh::VkShaderStageFlags stages = {};
-        
+
     public: 
         PipelineLayout() { this->constructor(); };
         PipelineLayout(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
