@@ -31,7 +31,7 @@ Classic-like batch ray tracing, but based on `VK_KHR_ray_tracing` ideas... vRt r
 ## Tech Spec
 
 ```MD
-- Architecture    : [ARC:F2020H]
+- Architecture    : [ARC:F2020H:XT]
 - Portfolio       : Work in Progress
 - License         : Apache-2.0 (Currently)
 - Execute Day     : [2021:Q1]
