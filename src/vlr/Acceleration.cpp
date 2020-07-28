@@ -43,8 +43,8 @@ namespace vlr {
                 geometryDesc.geometry.instances = instanceDesc;
 
                 // 
-                offsetDesc.primitiveCount = info->instanceSet->getGpuBuffer().size();
-                offsetDesc.transformOffset = info->instanceSet->getGpuBuffer().offset();
+                offsetDesc.primitiveCount = uint32_t(info->instanceSet->getGpuBuffer().size());
+                offsetDesc.transformOffset = uint32_t(info->instanceSet->getGpuBuffer().offset());
                 offsetDesc.primitiveOffset = 0u;
                 offsetDesc.firstVertex = 0u;
 
@@ -90,7 +90,7 @@ namespace vlr {
                 offsetDesc.firstVertex = (info->geometrySet)->get(i).firstVertex;
                 offsetDesc.primitiveCount = (info->geometrySet)->get(i).primitiveCount;
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
-                offsetDesc.primitiveOffset = buffer.offset();
+                offsetDesc.primitiveOffset = uint32_t(buffer.offset());
 
                 // 
                 buildGInfo.push_back(geometryDesc);
@@ -107,7 +107,7 @@ namespace vlr {
         // FOR BUILD!
         auto bdHeadFlags = vkh::VkBuildAccelerationStructureFlagsKHR{ .eAllowUpdate = 1, .ePreferFastTrace = 1 };
         this->bdHeadInfo = vkh::VkAccelerationStructureBuildGeometryInfoKHR{};
-        this->bdHeadInfo.geometryCount = buildGPtr.size();
+        this->bdHeadInfo.geometryCount = uint32_t(buildGPtr.size());
         this->bdHeadInfo.ppGeometries = buildGPtr.data();
         this->bdHeadInfo.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
         this->bdHeadInfo.flags = bdHeadFlags;
@@ -139,7 +139,7 @@ namespace vlr {
         // FOR CREATE! 
         {
             auto bdHeadFlags = vkh::VkBuildAccelerationStructureFlagsKHR{ .eAllowUpdate = 1, .ePreferFastTrace = 1 };
-            this->create.maxGeometryCount = this->dataCreate.size();
+            this->create.maxGeometryCount = uint32_t(this->dataCreate.size());
             this->create.pGeometryInfos = this->dataCreate.data();
             this->create.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
             this->create.flags = bdHeadFlags;
