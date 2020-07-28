@@ -17,7 +17,7 @@ namespace vlr {
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver) {};
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
-        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
+        //virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
         virtual void pushBufferView_T(const vkt::uni_arg<vkt::Vector<uint8_t>>& bufferView) { this->buffers.push_back(bufferView); };
         virtual void resetBufferViews(){ this->buffers.resize(0ull); };
 
