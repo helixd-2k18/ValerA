@@ -172,6 +172,7 @@ inclusion
 .vs/
 .vs/*
 .vs
+*.ilk
 
 # Visual Studio Artifacts
 build/*/.vs/*
@@ -180,4 +181,3 @@ build/*/.vs
 build/.vs/*
 build/.vs/
 build/.vs
-
