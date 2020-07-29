@@ -57,6 +57,10 @@ namespace vlr {
         // 
         T& operator[](const uint32_t& I) { return this->get(I); };
         const T& operator[](const uint32_t& I) const { return this->get(I); };
+
+        // 
+        virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) override { SetBase::createDescriptorSet(pipelineLayout); };
+        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false) override { SetBase::setCommand(commandBuffer, barrier); };
     };
 
 };

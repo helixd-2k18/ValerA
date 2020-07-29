@@ -5,9 +5,12 @@
 
 namespace vlr {
 
-    void GeometrySet::pushGeometry(vkt::uni_ptr<Geometry> geometry, vkt::uni_ptr<Interpolation> interpolation) {
+    void GeometrySet::setInterpolation(vkt::uni_ptr<Interpolation> interpolation) {
+        this->interpolations = interpolation;
+    };
+
+    void GeometrySet::pushGeometry(vkt::uni_ptr<Geometry> geometry) {
         uintptr_t I = this->getCpuBuffer().size();
-        interpolations = interpolation;
         geometries.push_back(geometry);
 
         vkt::Vector<uint8_t> buffer = this->vertexSet->getBuffer_T(geometry->desc->vertexAttribute);

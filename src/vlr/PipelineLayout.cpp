@@ -16,6 +16,7 @@
 #include "./vlr/RayTracing.hpp"
 #include "./vlr/InstanceSet.hpp"
 #include "./vlr/Rasterization.hpp"
+#include "./vlr/Background.hpp"
 
 // 
 namespace vlr {
@@ -188,6 +189,10 @@ namespace vlr {
 
     void PipelineLayout::setRasterization(vkt::uni_ptr<Rasterization> rasterization) {
         rasterization->setDescriptorSets(this);
+    };
+
+    void PipelineLayout::setBackground(vkt::uni_ptr<Background> background) {
+        background->createDescriptorSet(this);
     };
 
 };

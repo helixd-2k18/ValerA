@@ -278,7 +278,7 @@ int main() {
     const auto  bufferUsage = vkh::VkBufferUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eUniformTexelBuffer = 1, .eStorageTexelBuffer = 1, .eUniformBuffer = 1, .eStorageBuffer = 1, .eIndexBuffer = 1, .eVertexBuffer = 1, .eTransformFeedbackBuffer = 1 };
     const auto& uploadUsage = bufferUsage;
 
-    //
+    // 
     auto bflgs = vkh::VkBufferUsageFlags{};
     vkt::unlock32(bflgs) = 0u;
 
@@ -289,12 +289,138 @@ int main() {
     allocInfo.instanceDispatch = fw->getInstanceDispatch();
     allocInfo.deviceDispatch = fw->getDeviceDispatch();
 
-    //
+    // 
     auto aspect = vkh::VkImageAspectFlags{ .eColor = 1 };
     auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
 
+    // 
+    vkt::uni_ptr<vlr::Constants> constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
+    vkt::uni_ptr<vlr::BindingSet> bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    vkt::uni_ptr<vlr::AttributeSet> accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = 4u });
+    vkt::uni_ptr<vlr::BufferViewSet> buffers = std::make_shared<vlr::BufferViewSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    vkt::uni_ptr<vlr::SetBase_T<FDStruct>> vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
 
-    {
+    //
+    vkt::uni_ptr<vlr::Interpolation> interpolation = std::make_shared<vlr::Interpolation>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    vkt::uni_ptr<vlr::GeometrySet> geometrySet = std::make_shared<vlr::GeometrySet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    vkt::uni_ptr<vlr::Geometry> geometry = std::make_shared<vlr::Geometry>(fw, vlr::GeometryDesc{
+        .primitiveCount = 1u,
+        .vertexAttribute = 0u
+    });
+
+    // use attributes
+    interpolation->get(0u).data[0u] = 1u;
+    interpolation->get(0u).data[1u] = 2u;
+    interpolation->get(0u).data[2u] = 3u;
+
+    // 
+    vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f) };
+    vertexData->get(1u) = FDStruct{ .fPosition = glm::vec4(-1.f, -1.f, 0.f, 1.f) };
+    vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f) };
+
+    // 
+    fw->submitOnce([&](VkCommandBuffer cmd) {
+        vertexData->setCommand(cmd);
+    });
+
+    // 
+    buffers->pushBufferView(vertexData->getGpuBuffer());
+    geometrySet->setInterpolation(interpolation);
+    geometrySet->pushGeometry(geometry);
+
+    // 
+    bindings->get(0u) = vkh::VkVertexInputBindingDescription{
+        .binding = 0u,
+        .stride = sizeof(FDStruct)
+    };
+
+    // 
+    accessors->get(0u) = vkh::VkVertexInputAttributeDescription{
+        .location = 0u, .binding = 0u,
+        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+        .offset = offsetof(FDStruct, fPosition)
+    };
+
+    accessors->get(1u) = vkh::VkVertexInputAttributeDescription{
+        .location = 1u, .binding = 0u,
+        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+        .offset = offsetof(FDStruct, fTexcoord)
+    };
+
+    accessors->get(2u) = vkh::VkVertexInputAttributeDescription{
+        .location = 2u, .binding = 0u,
+        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+        .offset = offsetof(FDStruct, fNormal)
+    };
+
+    accessors->get(3u) = vkh::VkVertexInputAttributeDescription{
+        .location = 3u, .binding = 0u,
+        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+        .offset = offsetof(FDStruct, fTangent)
+    };
+
+    // 
+    vkt::uni_ptr<vlr::InstanceSet> instanseSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    vkt::uni_ptr<vlr::Acceleration> accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanseSet, .initials = {1u} });
+    vkt::uni_ptr<vlr::Acceleration> accelerationBottom = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = {1u} });
+
+    // 
+    vkt::uni_ptr<vlr::Framebuffer> framebuffer = std::make_shared<vlr::Framebuffer>(fw);
+    vkt::uni_ptr<vlr::PipelineLayout> layout = std::make_shared<vlr::PipelineLayout>(fw);
+
+    // 
+    vkt::uni_ptr<vlr::Rasterization> rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
+        .layout = layout,
+        .framebuffer = framebuffer,
+        .instanceSet = instanseSet,
+        .constants = constants,
+        .geometrySets = {geometrySet},
+    });
+
+    // 
+    vkt::uni_ptr<vlr::RayTracing> rayTracing = std::make_shared<vlr::RayTracing>(fw, vlr::RayTracingCreateInfo{
+        .layout = layout,
+        .framebuffer = framebuffer,
+        .accelerationTop = accelerationTop,
+        .constants = constants,
+        .accelerations = {accelerationBottom}
+    });
+
+    //
+    vkt::uni_ptr<vlr::RenderCommand> renderCommand = std::make_shared<vlr::RenderCommand>(fw, vlr::RenderCommandCreateInfo{
+        .layout = layout,
+        .rayTracing = rayTracing,
+        .rasterization = rasterization
+    });
+
+    // 
+    vkt::uni_ptr<vlr::BuildCommand> buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
+        .layout = layout,
+        .accelerationTop = accelerationTop,
+        .accelerations = {accelerationBottom}
+    });
+
+    // 
+    rasterization->setDescriptorSets();
+    rayTracing->setDescriptorSets();
+    renderCommand->setDescriptorSets();
+    buildCommand->setDescriptorSets();
+
+    // 
+    vkt::uni_ptr<vlr::MaterialSet> materialSet = std::make_shared<vlr::MaterialSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    vkt::uni_ptr<vlr::TextureSet> textureSet = std::make_shared<vlr::TextureSet>(fw);
+    vkt::uni_ptr<vlr::SamplerSet> samplerSet = std::make_shared<vlr::SamplerSet>(fw);
+    vkt::uni_ptr<vlr::Background> background = std::make_shared<vlr::Background>(fw);
+
+    // 
+    auto testMaterial = materialSet->get(0u);
+
+    // 
+    layout->setBackground(background);
+    layout->setMaterials(materialSet, textureSet, samplerSet);
+
+
+    {   // 
         int width = 0u, height = 0u;
         float* rgba = nullptr;
         const char* err = nullptr;
@@ -360,11 +486,181 @@ int main() {
             });
 
             //
+            background->setImage(image);
         };
     };
 
 
 
 
-    return 0u;
+    // 
+    //glm::dvec3 eye = glm::dvec3(5.f, 2.f, 2.f);
+    glm::dvec3 eye = glm::dvec3(2.f, 2.f, 5.f);
+    glm::dvec3 foc = glm::dvec3(0.f, 0.f, 0.f);
+    glm::dvec3 evc = foc - eye;
+    glm::dvec3 upv = glm::dvec3(0.f, 1.f, 0.f);
+    glm::uvec2 canvasSize = { canvasWidth, canvasHeight };
+
+    // 
+    auto cameraController = std::make_shared<CameraController>();
+    cameraController->canvasSize = &canvasSize;
+    cameraController->eyePos = &eye;
+    cameraController->upVector = &upv;
+    cameraController->viewVector = &evc;
+
+    // 
+    constants->get(0u).modelview = glm::transpose(glm::mat4x3(glm::lookAt(eye, foc, glm::dvec3(0.f, 1.f, 0.f))));
+    constants->get(0u).projection = glm::transpose(glm::mat4x3(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
+
+    // 
+    vkh::VsGraphicsPipelineCreateInfoConstruction pipelineInfo = {};
+    pipelineInfo.stages = {
+        vkt::makePipelineStageInfo(fw->getDeviceDispatch(), vkt::readBinary(std::string("./shaders/render.vert.spv")), VK_SHADER_STAGE_VERTEX_BIT),
+        vkt::makePipelineStageInfo(fw->getDeviceDispatch(), vkt::readBinary(std::string("./shaders/render.frag.spv")), VK_SHADER_STAGE_FRAGMENT_BIT)
+    };
+    pipelineInfo.graphicsPipelineCreateInfo.layout = layout->getPipelineLayout();
+    pipelineInfo.graphicsPipelineCreateInfo.renderPass = fw->applicationWindow.renderPass;//context->refRenderPass();
+    pipelineInfo.inputAssemblyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+    pipelineInfo.viewportState.pViewports = &reinterpret_cast<vkh::VkViewport&>(viewport);
+    pipelineInfo.viewportState.pScissors = &reinterpret_cast<vkh::VkRect2D&>(renderArea);
+    pipelineInfo.colorBlendAttachmentStates = { {} }; // Default Blend State
+    pipelineInfo.dynamicStates = { VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT };
+
+    // 
+    VkPipeline finalPipeline = {};
+    vkh::handleVk(fw->getDeviceDispatch()->CreateGraphicsPipelines(fw->getPipelineCache(), 1u, pipelineInfo, nullptr, &finalPipeline));
+
+    // 
+    int64_t currSemaphore = -1;
+    uint32_t currentBuffer = 0u;
+    uint32_t frameCount = 0u;
+
+    // set GLFW callbacks
+    glfwSetMouseButtonCallback(fw->window(), &Shared::MouseButtonCallback);
+    glfwSetCursorPosCallback(fw->window(), &Shared::MouseMoveCallback);
+    glfwSetKeyCallback(fw->window(), &Shared::KeyCallback);
+
+    // 
+    Shared::active = Active{};
+    Shared::window = fw->window(); // set GLFW window
+    Shared::active.tDiff = 0.0; // reset diff to near-zero (avoid critical math errors)
+    Shared::active.keys.resize(1024, uint8_t(0u));
+    Shared::active.mouse.resize(128, uint8_t(0u));
+    //Shared::TimeCallback(double(context->registerTime()->setDrawCount(frameCount++)->drawTime()));
+
+    // 
+    while (!glfwWindowShouldClose(manager.window)) { // 
+        glfwPollEvents();
+
+        // 
+        int64_t n_semaphore = currSemaphore, c_semaphore = (currSemaphore + 1) % framebuffers.size(); // Next Semaphore
+        currSemaphore = (c_semaphore = c_semaphore >= 0 ? c_semaphore : int64_t(framebuffers.size()) + c_semaphore); // Current Semaphore
+        (n_semaphore = n_semaphore >= 0 ? n_semaphore : int64_t(framebuffers.size()) + n_semaphore); // Fix for Next Semaphores
+
+        // 
+        vkh::handleVk(fw->getDeviceDispatch()->WaitForFences(1u, &framebuffers[c_semaphore].waitFence, true, 30ull * 1000ull * 1000ull * 1000ull));
+        vkh::handleVk(fw->getDeviceDispatch()->ResetFences(1u, &framebuffers[c_semaphore].waitFence));
+        vkh::handleVk(fw->getDeviceDispatch()->AcquireNextImageKHR(swapchain, std::numeric_limits<uint64_t>::max(), framebuffers[c_semaphore].presentSemaphore, nullptr, &currentBuffer));
+        //fw->getDeviceDispatch()->SignalSemaphore(vkh::VkSemaphoreSignalInfo{.semaphore = framebuffers[n_semaphore].semaphore, .value = 1u});
+
+        { // submit rendering (and wait presentation in device)
+            vkh::VkClearValue clearValues[2] = { {}, {} };
+            clearValues[0].color = vkh::VkClearColorValue{}; clearValues[0].color.float32 = glm::vec4(0.f, 0.f, 0.f, 0.f);
+            clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.0f, 0 };
+
+            // 
+            //Shared::TimeCallback(double(context->registerTime()->setModelView(glm::mat4x4(cameraController->handle().project()))->drawTime()));
+
+            // Create render submission 
+            std::vector<VkSemaphore> waitSemaphores = { framebuffers[currentBuffer].presentSemaphore }, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
+            std::vector<vkh::VkPipelineStageFlags> waitStages = {
+                vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 },
+                vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
+            };
+
+            // 
+            auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
+            materialSet->setCommand(rtCommand);
+            constants->setCommand(rtCommand, true);
+            buildCommand->setCommand(rtCommand);
+            renderCommand->setCommand(rtCommand);
+
+            // Submit command once
+            //renderer->setupCommands();
+            vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+                .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
+                .commandBufferCount = 1u, .pCommandBuffers = &rtCommand,
+                .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
+            }, {}));
+
+            // 
+            waitSemaphores = { framebuffers[currentBuffer].computeSemaphore }, signalSemaphores = { framebuffers[currentBuffer].drawSemaphore };
+
+            // create command buffer (with rewrite)
+            VkCommandBuffer& commandBuffer = framebuffers[currentBuffer].commandBuffer;
+            if (!commandBuffer) {
+                commandBuffer = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false); // do reference of cmd buffer
+
+                // Already present, prepare to render
+                vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
+                    .image = framebuffers[currentBuffer].image,
+                    .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
+                    .originLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                        auto aspect = vkh::VkImageAspectFlags{.eColor = 1u };
+                        it->aspectMask = aspect;
+                        return it;
+                    })
+                });
+
+                // Already present, prepare to render
+                vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
+                    .image = fw->getDepthImage(),
+                    .targetLayout = VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL,
+                    .originLayout = VK_IMAGE_LAYOUT_GENERAL,
+                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                        auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
+                        it->aspectMask = aspect;
+                        return it;
+                    })
+                });
+
+                //
+                decltype(auto) descriptorSets = layout->getDescriptorSets();
+                fw->getDeviceDispatch()->CmdBeginRenderPass(commandBuffer, vkh::VkRenderPassBeginInfo{ .renderPass = fw->applicationWindow.renderPass, .framebuffer = framebuffers[currentBuffer].frameBuffer, .renderArea = renderArea, .clearValueCount = 2u, .pClearValues = reinterpret_cast<vkh::VkClearValue*>(&clearValues[0]) }, VK_SUBPASS_CONTENTS_INLINE);
+                fw->getDeviceDispatch()->CmdSetViewport(commandBuffer, 0u, 1u, viewport);
+                fw->getDeviceDispatch()->CmdSetScissor(commandBuffer, 0u, 1u, renderArea);
+                fw->getDeviceDispatch()->CmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, finalPipeline);
+                fw->getDeviceDispatch()->CmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout->getPipelineLayout(), 0u, descriptorSets.size(), descriptorSets.data(), 0u, nullptr);
+                fw->getDeviceDispatch()->CmdDraw(commandBuffer, 4, 1, 0, 0);
+                fw->getDeviceDispatch()->CmdEndRenderPass(commandBuffer);
+                vkt::commandBarrier(fw->getDeviceDispatch(), commandBuffer);
+                fw->getDeviceDispatch()->EndCommandBuffer(commandBuffer);
+            };
+
+            // Submit command once
+            vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+                .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
+                .commandBufferCount = 1u, .pCommandBuffers = &commandBuffer,
+                .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
+            }, framebuffers[currentBuffer].waitFence));
+
+            // 
+            constants->get(0u).rdata.x = frameCount++;
+        };
+
+        // 
+        std::vector<VkSemaphore> waitSemaphoes = { framebuffers[c_semaphore].drawSemaphore };
+        vkh::handleVk(fw->getDeviceDispatch()->QueuePresentKHR(queue, vkh::VkPresentInfoKHR{
+            .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphoes.size()), .pWaitSemaphores = waitSemaphoes.data(),
+            .swapchainCount = 1, .pSwapchains = &swapchain,
+            .pImageIndices = &currentBuffer, .pResults = nullptr
+        }));
+
+    };
+
+    // 
+    glfwDestroyWindow(manager.window);
+    glfwTerminate(); exit(0);
+    return 0;
 };

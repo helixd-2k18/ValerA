@@ -20,6 +20,7 @@ namespace vlr {
     void BuildCommand::setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout) { // 
         if (layout.has()) { this->layout = ilayout; };
         this->layout->setAccelerationTop(this->accelerationTop);
+        // TODO: Port from RayTracing Interpolations and Geometry Set bindings
     };
 
     void BuildCommand::setCommand(vkt::uni_arg<VkCommandBuffer> buildCommand, const glm::uvec4& meta) {

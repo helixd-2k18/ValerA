@@ -60,6 +60,19 @@ namespace vlr {
         virtual void setRayTracing(vkt::uni_ptr<RayTracing> rayTracing);
         virtual void setRasterization(vkt::uni_ptr<Rasterization> rayTracing);
         virtual void setInstanceSet(vkt::uni_ptr<InstanceSet> instanceSet);
+        virtual void setBackground(vkt::uni_ptr<Background> background);
+
+        // 
+        virtual VkPipelineLayout& getPipelineLayout() { return this->pipelineLayout; };
+        virtual const VkPipelineLayout& getPipelineLayout() const { return this->pipelineLayout; };
+
+        // 
+        virtual VkDescriptorSet& getDescriptorSet(const uint32_t& I) { return this->bound[I]; };
+        virtual const VkDescriptorSet& getDescriptorSet(const uint32_t& I) const { return this->bound[I]; };
+
+        // 
+        virtual std::vector<VkDescriptorSet>& getDescriptorSets() { return this->bound; };
+        virtual const std::vector<VkDescriptorSet>& getDescriptorSets() const { return this->bound; };
     };
 
 };

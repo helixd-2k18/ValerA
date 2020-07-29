@@ -31,7 +31,8 @@ namespace vlr {
         virtual void constructorExtend0(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info) {
             interpolations = std::make_shared<Interpolation>(driver, info);
         };
-        virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry, vkt::uni_ptr<Interpolation> interpolation);
+        virtual void setInterpolation(vkt::uni_ptr<Interpolation> interpolation);
+        virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry);
         virtual void resetGeometries() {
             geometries.resize(0u);
         };

@@ -37,6 +37,7 @@
 #include <vlr/MaterialSet.hpp>
 #include <vlr/TextureSet.hpp>
 #include <vlr/SamplerSet.hpp>
+#include <vlr/Background.hpp>
 
 // 
 #include <vlr/Interpolation.hpp>
