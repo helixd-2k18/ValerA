@@ -296,7 +296,8 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = 4u });
-    auto buffers = std::make_shared<vlr::BufferViewSet>(fw); buffers->pushBufferView(vertexData->getGpuBuffer());
+    auto buffers = std::make_shared<vlr::BufferViewSet>(fw); 
+    buffers->pushBufferView(vertexData->getGpuBuffer());
 
     // 
     auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
