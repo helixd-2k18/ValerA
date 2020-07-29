@@ -44,6 +44,7 @@ namespace vlr {
     public: 
         Acceleration() { this->constructor(); };
         Acceleration(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~Acceleration() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = {});

@@ -29,6 +29,7 @@ namespace vlr {
     public: 
         PipelineLayout() { this->constructor(); };
         PipelineLayout(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~PipelineLayout() {};
 
         // 
         virtual void constructor() {};

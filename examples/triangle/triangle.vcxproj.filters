@@ -120,6 +120,9 @@
     <ClCompile Include="..\..\src\vlr\VMA.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\vlr\Acceleration.hpp">
@@ -247,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\vma\vk_mem_alloc.h">
       <Filter>Header Files\vma</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

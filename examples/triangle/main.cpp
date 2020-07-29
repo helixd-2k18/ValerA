@@ -1,36 +1,10 @@
-
-#define VKT_ENABLE_GLFW_SUPPORT
-#define GLM_FORCE_SWIZZLE 
-#define GLM_SWIZZLE_XYZW 
-#define GLM_SWIZZLE_STQP
-
-// 
-#include "vlr/Config.hpp"
-#include "vlr/Driver.hpp"
-
-// #
-#if defined(_WIN32) && !defined(WIN32)
-#define WIN32
-#endif
-
-#ifdef WIN32
-#define VK_USE_PLATFORM_WIN32_KHR
-#endif
-
-//
-//#define VMA_IMPLEMENTATION
-//#define TINYGLTF_IMPLEMENTATION
-//#define TINYEXR_IMPLEMENTATION
-//#define STB_IMAGE_IMPLEMENTATION
-//#define STB_IMAGE_WRITE_IMPLEMENTATION
-
 // 
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <misc/tiny_gltf.h>
-#include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
+
+// 
+#include "./stdafx.h"
 
 //
 namespace vkx {
@@ -299,7 +273,95 @@ int main() {
 
 
 
+    // BUT FOR NOW REQUIRED GPU BUFFERS! NOT JUST COPY DATA!
+    const auto  imageUsage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
+    const auto  bufferUsage = vkh::VkBufferUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eUniformTexelBuffer = 1, .eStorageTexelBuffer = 1, .eUniformBuffer = 1, .eStorageBuffer = 1, .eIndexBuffer = 1, .eVertexBuffer = 1, .eTransformFeedbackBuffer = 1 };
+    const auto& uploadUsage = bufferUsage;
 
+    //
+    auto bflgs = vkh::VkBufferUsageFlags{};
+    vkt::unlock32(bflgs) = 0u;
+
+    // 
+    auto allocInfo = vkt::MemoryAllocationInfo{};
+    allocInfo.device = fw->getDevice();
+    allocInfo.memoryProperties = fw->getMemoryProperties().memoryProperties;
+    allocInfo.instanceDispatch = fw->getInstanceDispatch();
+    allocInfo.deviceDispatch = fw->getDeviceDispatch();
+
+    //
+    auto aspect = vkh::VkImageAspectFlags{ .eColor = 1 };
+    auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
+
+
+    {
+        int width = 0u, height = 0u;
+        float* rgba = nullptr;
+        const char* err = nullptr;
+
+        //
+        std::vector<glm::vec4> gSkyColor = {
+            glm::vec4(0.9f,0.98,0.999f, 1.f),
+            glm::vec4(0.9f,0.98,0.999f, 1.f),
+            glm::vec4(0.9f,0.98,0.999f, 1.f),
+            glm::vec4(0.9f,0.98,0.999f, 1.f)
+        };
+
+        { //
+            int ret = LoadEXR(&rgba, &width, &height, "spiaggia_di_mondello_4k.exr", &err);
+            if (ret != 0) {
+                printf("err: %s\n", err); //
+
+                // backdoor image
+                rgba = (float*)gSkyColor.data();
+                width = 2u, height = 2u;
+            }
+        };
+
+        {   //
+            vkt::VmaMemoryInfo memInfo = {};
+            memInfo.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+            //
+            auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
+                it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
+                it->usage = imageUsage;
+                return it;
+            }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
+                it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                it->subresourceRange = apres;
+                return it;
+            }));
+
+            //
+            vkt::Vector<> imageBuf = {};
+            if (width > 0u && height > 0u && rgba) {
+                memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+                imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
+                    .size = size_t(width) * size_t(height) * sizeof(glm::vec4), .usage = uploadUsage,
+                    }, memInfo));
+                memcpy(imageBuf.data(), rgba, size_t(width) * size_t(height) * sizeof(glm::vec4));
+            };
+
+            //
+            fw->submitOnce([&](VkCommandBuffer& cmd) {
+                image.transfer(cmd);
+
+                auto buffer = imageBuf;
+                fw->getDeviceDispatch()->CmdCopyBufferToImage(cmd, buffer.buffer(), image.getImage(), image.getImageLayout(), 1u, vkh::VkBufferImageCopy{
+                    .bufferOffset = buffer.offset(),
+                    .bufferRowLength = uint32_t(width),
+                    .bufferImageHeight = uint32_t(height),
+                    .imageSubresource = image.subresourceLayers(),
+                    .imageOffset = {0u,0u,0u},
+                    .imageExtent = {uint32_t(width),uint32_t(height),1u},
+                });
+            });
+
+            //
+        };
+    };
 
 
 

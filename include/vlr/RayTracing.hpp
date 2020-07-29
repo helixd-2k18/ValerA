@@ -68,6 +68,7 @@ namespace vlr {
     public: 
         RayTracing() { this->constructor(); };
         RayTracing(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = {}) { this->constructor(driver, info); };
+        ~RayTracing() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = {});

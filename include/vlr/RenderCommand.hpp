@@ -19,6 +19,7 @@ namespace vlr {
     public: 
         RenderCommand() { this->constructor(); };
         RenderCommand(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RenderCommandCreateInfo> info = {}) { this->constructor(driver, info); };
+        ~RenderCommand() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RenderCommandCreateInfo> info = {});

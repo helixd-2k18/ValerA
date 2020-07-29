@@ -12,6 +12,7 @@ namespace vlr {
     public: 
         Background() { this->constructor(); };
         Background(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~Background() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver) {

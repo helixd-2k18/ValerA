@@ -21,6 +21,7 @@ namespace vlr {
     public: 
         BuildCommand() { this->constructor(); };
         BuildCommand(vkt::uni_ptr<Driver> driver, vkt::uni_arg<BuildCommandCreateInfo> info = {}) { this->constructor(driver, info); };
+        ~BuildCommand() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<BuildCommandCreateInfo> info = {});

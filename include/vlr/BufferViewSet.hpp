@@ -13,6 +13,7 @@ namespace vlr {
     public: 
         BufferViewSet() { this->constructor(); };
         BufferViewSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~BufferViewSet() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver) {};

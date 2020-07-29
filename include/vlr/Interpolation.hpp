@@ -19,6 +19,7 @@ namespace vlr {
     public: 
         Interpolation() : SetBase_T<InterpData>() { this->constructorExtend0(); };
         Interpolation(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info) : SetBase_T<InterpData>(driver, info) { this->constructorExtend0(driver); };
+        ~Interpolation() {};
 
         // 
         virtual void constructorExtend0() {};

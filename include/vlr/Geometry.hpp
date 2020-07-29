@@ -31,6 +31,7 @@ namespace vlr {
     public: 
         Geometry() { this->constructor(); };
         Geometry(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<GeometryDesc> desc = {}) { this->constructor(driver, desc); };
+        ~Geometry() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<GeometryDesc> desc = {}) {

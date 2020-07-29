@@ -20,6 +20,7 @@ namespace vlr {
     public:
         SetBase() { this->constructor(); };
         SetBase(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) { this->constructor(driver, 1u, info); };
+        ~SetBase() {};
 
         // 
         virtual const vkt::VectorBase& getCpuBuffer() const { return cpuBuffer; };
@@ -41,6 +42,7 @@ namespace vlr {
     public: 
         SetBase_T() : SetBase() { this->constructor(); };
         SetBase_T(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) { this->constructor(driver, sizeof(T), info); };
+        ~SetBase_T() {};
 
         // 
         virtual const vkt::VectorBase& getCpuBuffer() const override { return reinterpret_cast<const vkt::VectorBase&>(cpuBuffer); };

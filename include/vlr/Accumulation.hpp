@@ -8,6 +8,7 @@ namespace vlr {
     public: 
         Accumulation() { this->constructor(); };
         Accumulation(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~Accumulation() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver) {

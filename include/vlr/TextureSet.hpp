@@ -13,6 +13,7 @@ namespace vlr {
     public: 
         TextureSet() { this->constructor(); };
         TextureSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~TextureSet() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver) {};

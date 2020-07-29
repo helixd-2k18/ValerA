@@ -13,6 +13,7 @@ namespace vlr {
     public: 
         SamplerSet() { this->constructor(); };
         SamplerSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~SamplerSet() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver) {};

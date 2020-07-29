@@ -28,6 +28,7 @@ namespace vlr {
     public: 
         Resampling() { this->constructor(); };
         Resampling(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) { this->constructor(driver, info); };
+        ~Resampling() {};
 
         // 
         virtual void constructor() {};

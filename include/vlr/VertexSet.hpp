@@ -17,6 +17,7 @@ namespace vlr {
     public: 
         VertexSet() { this->constructor(); };
         VertexSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~VertexSet() {};
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver) {

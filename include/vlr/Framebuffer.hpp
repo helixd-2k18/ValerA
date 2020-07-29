@@ -48,6 +48,7 @@ namespace vlr {
     public: 
         Framebuffer() { this->constructor(); };
         Framebuffer(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        ~Framebuffer() {};
 
         // 
         virtual void constructor() {};

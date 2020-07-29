@@ -125,6 +125,9 @@
       <EnableModules>true</EnableModules>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>CompileAsCpp</CompileAs>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +148,9 @@
       <EnableModules>true</EnableModules>
       <CompileAs>CompileAsCpp</CompileAs>
       <Optimization>Full</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -183,6 +189,7 @@
     <ClCompile Include="..\..\src\vlr\VertexSet.cpp" />
     <ClCompile Include="..\..\src\vlr\VMA.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp" />
@@ -227,6 +234,7 @@
     <ClInclude Include="..\..\include\vlr\SetBase.hpp" />
     <ClInclude Include="..\..\include\vlr\TextureSet.hpp" />
     <ClInclude Include="..\..\include\vlr\VertexSet.hpp" />
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\vkt\include\vkt3\readme.md" />
