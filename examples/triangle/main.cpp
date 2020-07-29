@@ -255,6 +255,7 @@ int main() {
     auto viewport = vkh::VkViewport{ 0.0f, 0.0f, static_cast<float>(renderArea.extent.width), static_cast<float>(renderArea.extent.height), 0.f, 1.f };
 
     // 
+    fw = std::make_shared<vlr::Driver>();
     auto instance = fw->createInstance();
     //auto manager = fw->createWindowSurface(canvasWidth, canvasHeight);
     auto manager = fw->createWindowSurface(fw->createWindowOnly(renderArea.extent.width, renderArea.extent.height, "VKTest"));
@@ -398,17 +399,14 @@ int main() {
         .accelerations = {accelerationBottom}
     });
 
-    // 
-    rasterization->setDescriptorSets(layout);
-    rayTracing->setDescriptorSets(layout);
-    renderCommand->setDescriptorSets(layout);
-    buildCommand->setDescriptorSets(layout);
+    
 
     // 
     auto materialSet = std::make_shared<vlr::MaterialSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
     auto textureSet = std::make_shared<vlr::TextureSet>(fw);
     auto samplerSet = std::make_shared<vlr::SamplerSet>(fw);
     auto background = std::make_shared<vlr::Background>(fw);
+
 
     // 
     auto testMaterial = materialSet->get(0u);
@@ -435,7 +433,7 @@ int main() {
             glm::vec4(0.9f,0.98,0.999f, 1.f)
         };
 
-        { //
+        {   //
             int ret = LoadEXR(&rgba, &width, &height, "spiaggia_di_mondello_4k.exr", &err);
             if (ret != 0) {
                 printf("err: %s\n", err); //
@@ -468,7 +466,7 @@ int main() {
                 memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
                 imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
                     .size = size_t(width) * size_t(height) * sizeof(glm::vec4), .usage = uploadUsage,
-                    }, memInfo));
+                }, memInfo));
                 memcpy(imageBuf.data(), rgba, size_t(width) * size_t(height) * sizeof(glm::vec4));
             };
 
@@ -491,6 +489,16 @@ int main() {
             background->setImage(image);
         };
     };
+
+
+
+
+    // 
+    rasterization->setDescriptorSets(layout);
+    rayTracing->setDescriptorSets(layout);
+    renderCommand->setDescriptorSets(layout);
+    buildCommand->setDescriptorSets(layout);
+
 
 
 
