@@ -23,13 +23,13 @@ namespace vlr {
 
     public: 
         GeometrySet() : SetBase_T<GeometryDesc>() { this->constructorExtend0(); };
-        GeometrySet(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<VertexSet> vertexSet = {}, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<GeometryDesc>(driver, info) { this->constructorExtend0(driver, vertexSet, info); };
+        GeometrySet(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<GeometryDesc>(driver, info) { this->constructorExtend0(vertexSet, info); };
         ~GeometrySet() {};
 
         // 
         virtual void constructorExtend0() {};
-        virtual void constructorExtend0(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<VertexSet> vertexSet = {}, vkt::uni_arg<DataSetCreateInfo> info = {}) {
-            interpolations = std::make_shared<Interpolation>(driver, vertexSet, info);
+        virtual void constructorExtend0(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) {
+            interpolations = std::make_shared<Interpolation>(vertexSet, info);
         };
         virtual void setInterpolation(vkt::uni_ptr<Interpolation> interpolation);
         virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry);

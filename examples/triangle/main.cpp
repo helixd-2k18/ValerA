@@ -304,9 +304,9 @@ int main() {
     });
 
     //
-    auto interpolation = std::make_shared<vlr::Interpolation>(fw, vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
-    auto geometrySet = std::make_shared<vlr::GeometrySet>(fw, vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
-    auto geometry = std::make_shared<vlr::Geometry>(fw, vertexSet, vlr::GeometryDesc{
+    auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
+    auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
+    auto geometry = std::make_shared<vlr::Geometry>(vertexSet, vlr::GeometryDesc{
         .primitiveCount = 1u,
         .vertexAttribute = 0u
     });

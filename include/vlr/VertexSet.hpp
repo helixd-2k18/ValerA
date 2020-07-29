@@ -27,6 +27,7 @@ namespace vlr {
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<VertexSetCreateInfo> info = {}) {
+            this->driver = driver;
             this->bufferViews = info->bufferViews;
             this->attributes = info->attributes;
             this->bindings = info->bindings;

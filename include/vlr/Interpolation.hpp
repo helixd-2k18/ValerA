@@ -14,16 +14,15 @@ namespace vlr {
     // Now contains multiple geometries
     class Interpolation : public SetBase_T<InterpData>  { protected: //using T = uint8_t;
         vkt::uni_ptr<VertexSet> vertexSet = {};
-        vkt::uni_ptr<Driver> driver = {};
 
     public: 
         Interpolation() : SetBase_T<InterpData>() { this->constructorExtend0(); };
-        Interpolation(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<VertexSet> vertexSet = {}, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<InterpData>(driver, info) { this->constructorExtend0(driver); };
+        Interpolation(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<InterpData>(driver, info) { this->constructorExtend0(vertexSet, info); };
         ~Interpolation() {};
 
         // 
         virtual void constructorExtend0() {};
-        virtual void constructorExtend0(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<VertexSet> vertexSet = {}, vkt::uni_arg<DataSetCreateInfo> info = {}) {
+        virtual void constructorExtend0(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) {
             this->driver = driver;
             this->vertexSet = vertexSet;
         };
