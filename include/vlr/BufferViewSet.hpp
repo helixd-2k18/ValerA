@@ -24,11 +24,11 @@ namespace vlr {
 
         template<class T = uint8_t>
         void pushBufferView(vkt::uni_arg<vkt::Vector<T>> bufferView) {
-            this->pushBufferView_T(dynamic_cast<vkt::Vector<uint8_t>&>(*bufferView));
+            this->pushBufferView_T(vkt::Vector<uint8_t>(bufferView->getAllocation(), bufferView->offset(), bufferView->range(), bufferView->stride()));
         };
 
         virtual void pushBufferView(vkt::uni_arg<vkt::VectorBase> bufferView) {
-            this->pushBufferView_T(dynamic_cast<vkt::Vector<uint8_t>&>(*bufferView));
+            this->pushBufferView_T(vkt::Vector<uint8_t>(bufferView->getAllocation(), bufferView->offset(), bufferView->range(), bufferView->stride()));
         };
 
         // 
