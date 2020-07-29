@@ -363,8 +363,6 @@ int main() {
     vkt::uni_ptr<vlr::InstanceSet> instanseSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
     vkt::uni_ptr<vlr::Acceleration> accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanseSet, .initials = {1u} });
     vkt::uni_ptr<vlr::Acceleration> accelerationBottom = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = {1u} });
-
-    // 
     vkt::uni_ptr<vlr::Framebuffer> framebuffer = std::make_shared<vlr::Framebuffer>(fw);
     vkt::uni_ptr<vlr::PipelineLayout> layout = std::make_shared<vlr::PipelineLayout>(fw);
 
@@ -416,6 +414,10 @@ int main() {
     auto testMaterial = materialSet->get(0u);
 
     // 
+    framebuffer->createFramebuffer(canvasWidth, canvasHeight);
+
+    // 
+    layout->setFramebuffer(framebuffer);
     layout->setBackground(background);
     layout->setMaterials(materialSet, textureSet, samplerSet);
 

@@ -6,6 +6,7 @@ namespace vlr {
     // 
     void Framebuffer::constructor(vkt::uni_ptr<Driver> driver) {
         this->driver = driver;
+        this->createRenderPass();
     };
 
     // 
