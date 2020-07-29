@@ -23,7 +23,7 @@ namespace vlr {
 
     public: 
         GeometrySet() : SetBase_T<GeometryDesc>() { this->constructorExtend0(); };
-        GeometrySet(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<GeometryDesc>(driver, info) { this->constructorExtend0(vertexSet, info); };
+        GeometrySet(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<GeometryDesc>(vertexSet->driver, info) { this->constructorExtend0(vertexSet, info); };
         ~GeometrySet() {};
 
         // 

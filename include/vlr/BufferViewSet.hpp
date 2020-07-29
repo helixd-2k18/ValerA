@@ -28,7 +28,7 @@ namespace vlr {
         };
 
         virtual void pushBufferView(vkt::uni_arg<vkt::VectorBase> bufferView) {
-            this->pushBufferView_T(dynamic_cast<vkt::Vector<uint8_t>&>(*bufferView));
+            this->pushBufferView_T(static_cast<vkt::Vector<uint8_t>&>(*bufferView));
         };
 
         // 

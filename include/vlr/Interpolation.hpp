@@ -17,7 +17,7 @@ namespace vlr {
 
     public: 
         Interpolation() : SetBase_T<InterpData>() { this->constructorExtend0(); };
-        Interpolation(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<InterpData>(driver, info) { this->constructorExtend0(vertexSet, info); };
+        Interpolation(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<InterpData>(vertexSet->driver, info) { this->constructorExtend0(vertexSet, info); };
         ~Interpolation() {};
 
         // 

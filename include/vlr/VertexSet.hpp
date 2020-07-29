@@ -14,7 +14,8 @@ namespace vlr {
         vkt::uni_ptr<BufferViewSet> bufferViews = {};
     };
 
-    class VertexSet : public std::enable_shared_from_this<VertexSet> { protected: friend RayTracing; friend Rasterization; friend PipelineLayout;
+    class VertexSet : public std::enable_shared_from_this<VertexSet> {
+    protected: friend RayTracing; friend Rasterization; friend PipelineLayout; friend Interpolation; friend GeometrySet; friend Geometry;
         vkt::uni_ptr<BufferViewSet> bufferViews = {};
         vkt::uni_ptr<BindingSet> bindings = {};
         vkt::uni_ptr<AttributeSet> attributes = {};

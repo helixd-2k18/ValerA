@@ -292,11 +292,13 @@ int main() {
     auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
 
     // 
+    auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = 4u });
-    auto buffers = std::make_shared<vlr::BufferViewSet>(fw);
-    auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
+    auto buffers = std::make_shared<vlr::BufferViewSet>(fw); buffers->pushBufferView(vertexData->getGpuBuffer());
+
+    // 
     auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
         .bindings = bindings,
         .attributes = accessors,
@@ -327,7 +329,6 @@ int main() {
     });
 
     // 
-    buffers->pushBufferView(vertexData->getGpuBuffer());
     geometrySet->setInterpolation(interpolation);
     geometrySet->pushGeometry(geometry);
 
