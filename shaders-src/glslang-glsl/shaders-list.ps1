@@ -52,8 +52,8 @@ function BuildAllShaders($Pfx = "") {
     # ray-tracing of vector graphics
     #BuildCompute "denoise.comp"         "$INDIR$RNDX" "$HRDDIR$RTPU"
     #BuildCompute "denoise.comp"         "$INDIR$RNDX" "$HRDDIR$RTPU" "-DLATE_STAGE" "reflect.comp" 
-    #BuildCompute "render.frag"          "$INDIR$RNDX" "$HRDDIR$RTPU"
-    #BuildCompute "render.vert"          "$INDIR$RNDX" "$HRDDIR$RTPU"
+    BuildCompute "render.frag"          "$INDIR$RNDX" "$HRDDIR$RTPU"
+    BuildCompute "render.vert"          "$INDIR$RNDX" "$HRDDIR$RTPU"
     
     BuildCompute "rasterize.frag"       "$INDIR$RNDX" "$HRDDIR$RTPU"
     BuildCompute "rasterize.geom"       "$INDIR$RNDX" "$HRDDIR$RTPU"
