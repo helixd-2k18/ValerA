@@ -53,8 +53,13 @@
 
 //
 #define VMA_IMPLEMENTATION
+
+// 
+#define VK_NO_PROTOTYPES
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
+#define VMA_DYNAMIC_VULKAN_FUNCTIONS 0
 //#define TINYEXR_IMPLEMENTATION
 
-//#include "./vlr/Config.hpp"
+#include "./vlr/Config.hpp"
 
 #include "vma/vk_mem_alloc.h"
