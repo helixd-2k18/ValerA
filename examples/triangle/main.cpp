@@ -297,11 +297,16 @@ int main() {
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = 4u });
     auto buffers = std::make_shared<vlr::BufferViewSet>(fw);
     auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
+    auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
+        .bindings = bindings,
+        .attributes = accessors,
+        .bufferViews = buffers
+    });
 
     //
-    auto interpolation = std::make_shared<vlr::Interpolation>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    auto geometrySet = std::make_shared<vlr::GeometrySet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    auto geometry = std::make_shared<vlr::Geometry>(fw, vlr::GeometryDesc{
+    auto interpolation = std::make_shared<vlr::Interpolation>(fw, vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
+    auto geometrySet = std::make_shared<vlr::GeometrySet>(fw, vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
+    auto geometry = std::make_shared<vlr::Geometry>(fw, vertexSet, vlr::GeometryDesc{
         .primitiveCount = 1u,
         .vertexAttribute = 0u
     });

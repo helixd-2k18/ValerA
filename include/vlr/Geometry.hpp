@@ -30,11 +30,11 @@ namespace vlr {
 
     public: 
         Geometry() { this->constructor(); };
-        Geometry(vkt::uni_ptr<Driver> driver, vkt::uni_arg<GeometryDesc> desc = {}) { this->constructor(driver, desc); };
+        Geometry(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<VertexSet> vertexSet = {}, vkt::uni_arg<GeometryDesc> desc = {}) { this->constructor(driver, vertexSet, desc); };
         ~Geometry() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<GeometryDesc> desc = {}) {
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<VertexSet> vertexSet = {}, vkt::uni_arg<GeometryDesc> desc = {}) {
             vkt::Vector<uint8_t> buffer = this->vertexSet->getBuffer_T(this->desc->vertexAttribute);
             this->desc = desc;
             this->desc->primitiveCount = std::min(this->desc->primitiveCount, uint32_t(buffer.range() / (buffer.stride() * 3ull))); // Make Bit Safer

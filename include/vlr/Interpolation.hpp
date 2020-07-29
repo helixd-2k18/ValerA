@@ -18,12 +18,15 @@ namespace vlr {
 
     public: 
         Interpolation() : SetBase_T<InterpData>() { this->constructorExtend0(); };
-        Interpolation(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info) : SetBase_T<InterpData>(driver, info) { this->constructorExtend0(driver); };
+        Interpolation(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<VertexSet> vertexSet = {}, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<InterpData>(driver, info) { this->constructorExtend0(driver); };
         ~Interpolation() {};
 
         // 
         virtual void constructorExtend0() {};
-        virtual void constructorExtend0(vkt::uni_ptr<Driver> driver) {};
+        virtual void constructorExtend0(vkt::uni_ptr<Driver> driver, vkt::uni_ptr<VertexSet> vertexSet = {}, vkt::uni_arg<DataSetCreateInfo> info = {}) {
+            this->driver = driver;
+            this->vertexSet = vertexSet;
+        };
 
         // Call a Virtual Method
         virtual vkt::Vector<uint8_t> getAttributeBuffer_T(const uint32_t& I = 0u, const uint32_t& G = 0u) const { return vertexSet->getAttributeBuffer(this->get(G).data[I]); };

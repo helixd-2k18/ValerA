@@ -8,6 +8,12 @@
 // 
 namespace vlr {
 
+    struct VertexSetCreateInfo {
+        vkt::uni_ptr<BindingSet> bindings = {};
+        vkt::uni_ptr<AttributeSet> attributes = {};
+        vkt::uni_ptr<BufferViewSet> bufferViews = {};
+    };
+
     class VertexSet : public std::enable_shared_from_this<VertexSet> { protected: friend RayTracing; friend Rasterization; friend PipelineLayout;
         vkt::uni_ptr<BufferViewSet> bufferViews = {};
         vkt::uni_ptr<BindingSet> bindings = {};
@@ -16,14 +22,15 @@ namespace vlr {
 
     public: 
         VertexSet() { this->constructor(); };
-        VertexSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        VertexSet(vkt::uni_ptr<Driver> driver, vkt::uni_arg<VertexSetCreateInfo> info = {}) { this->constructor(driver, info); };
         ~VertexSet() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver) {
-            
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<VertexSetCreateInfo> info = {}) {
+            this->bufferViews = info->bufferViews;
+            this->attributes = info->attributes;
+            this->bindings = info->bindings;
         };
-
 
         virtual vkh::VkVertexInputAttributeDescription& getAttribute(const uint32_t& I) { return dynamic_cast<vkt::Vector<vkh::VkVertexInputAttributeDescription>&>(this->attributes->getCpuBuffer())[I]; };
         virtual const vkh::VkVertexInputAttributeDescription& getAttribute(const uint32_t& I) const { return dynamic_cast<const vkt::Vector<vkh::VkVertexInputAttributeDescription>&>(this->attributes->getCpuBuffer())[I]; };
