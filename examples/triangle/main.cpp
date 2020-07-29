@@ -224,9 +224,6 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
 
-    // For OpenGL Context
-    auto& appObj = fw->getAppObject();
-
     // Ininitialize by GlBinding
     //glfwMakeContextCurrent(appObj.opengl = glfwCreateWindow(canvasWidth, canvasHeight, "GLTest", nullptr, nullptr));
 #ifdef ENABLE_OPENGL_INTEROP

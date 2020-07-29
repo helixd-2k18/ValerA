@@ -7,6 +7,7 @@
 #define GLM_SWIZZLE_STQP
 
 // 
+#define VK_NO_PROTOTYPES
 #include <vlr/Config.hpp>
 #include <vlr/Driver.hpp>
 
@@ -15,6 +16,7 @@
 #define WIN32
 #endif
 
+// 
 #ifdef WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif
@@ -27,7 +29,6 @@
 //#define STB_IMAGE_WRITE_IMPLEMENTATION
 
 //
-#include <misc/tiny_gltf.h>
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
@@ -51,4 +52,5 @@
 #include <vlr/RenderCommand.hpp>
 
 // 
+#include <misc/tiny_gltf.h>
 #include <misc/tinyexr.h>

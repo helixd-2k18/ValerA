@@ -1,5 +1,7 @@
 #pragma once
 
+// 
+#define VK_NO_PROTOTYPES
 
 //#ifdef OS_WIN
 #if (defined(_WIN32) || defined(__MINGW32__) || defined(_MSC_VER_) || defined(__MINGW64__)) 
@@ -51,12 +53,11 @@
 #include <string>
 
 // 
-#include <vkh/core.hpp>
-#include <vkh/helpers.hpp>
+#include <vkt3/fw.hpp>
 #include <vkt3/utils.hpp>
 #include <vkt3/vector.hpp>
 #include <vkt3/image.hpp>
-#include <vkt3/fw.hpp>
+#include <vkh/helpers.hpp>
 
 // 
 namespace vlr {

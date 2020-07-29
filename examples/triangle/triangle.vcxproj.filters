@@ -25,14 +25,14 @@
     <Filter Include="Header Files\vlr\additional">
       <UniqueIdentifier>{31f0beb1-9076-4d89-a4fa-1c7aa67264d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\vkt3">
-      <UniqueIdentifier>{aba7112a-f90e-4495-bc4d-e8c85d1647e4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\vkh">
       <UniqueIdentifier>{1d2b8ea1-6b19-4980-8bec-11c5380165f0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\vma">
       <UniqueIdentifier>{06b2609f-bd73-4f9d-af7f-7a3678a6e6d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vkt3">
+      <UniqueIdentifier>{aba7112a-f90e-4495-bc4d-e8c85d1647e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -90,12 +90,6 @@
     <ClCompile Include="..\..\src\vlr\Rasterization.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\vlr\RayTracing.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\RenderCommand.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\vlr\Resampling.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
@@ -122,6 +116,12 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\RayTracing.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vlr\RenderCommand.cpp">
+      <Filter>Source Files\vlr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
