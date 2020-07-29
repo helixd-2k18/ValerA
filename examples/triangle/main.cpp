@@ -294,16 +294,16 @@ int main() {
     auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
 
     // 
-    vkt::uni_ptr<vlr::Constants> constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
-    vkt::uni_ptr<vlr::BindingSet> bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    vkt::uni_ptr<vlr::AttributeSet> accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = 4u });
-    vkt::uni_ptr<vlr::BufferViewSet> buffers = std::make_shared<vlr::BufferViewSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    vkt::uni_ptr<vlr::SetBase_T<FDStruct>> vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
+    auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
+    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = 4u });
+    auto buffers = std::make_shared<vlr::BufferViewSet>(fw);
+    auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
 
     //
-    vkt::uni_ptr<vlr::Interpolation> interpolation = std::make_shared<vlr::Interpolation>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    vkt::uni_ptr<vlr::GeometrySet> geometrySet = std::make_shared<vlr::GeometrySet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    vkt::uni_ptr<vlr::Geometry> geometry = std::make_shared<vlr::Geometry>(fw, vlr::GeometryDesc{
+    auto interpolation = std::make_shared<vlr::Interpolation>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    auto geometrySet = std::make_shared<vlr::GeometrySet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    auto geometry = std::make_shared<vlr::Geometry>(fw, vlr::GeometryDesc{
         .primitiveCount = 1u,
         .vertexAttribute = 0u
     });
@@ -360,23 +360,23 @@ int main() {
     };
 
     // 
-    vkt::uni_ptr<vlr::InstanceSet> instanseSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    vkt::uni_ptr<vlr::Acceleration> accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanseSet, .initials = {1u} });
-    vkt::uni_ptr<vlr::Acceleration> accelerationBottom = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = {1u} });
-    vkt::uni_ptr<vlr::Framebuffer> framebuffer = std::make_shared<vlr::Framebuffer>(fw);
-    vkt::uni_ptr<vlr::PipelineLayout> layout = std::make_shared<vlr::PipelineLayout>(fw);
+    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {1u} });
+    auto accelerationBottom = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = {1u} });
+    auto framebuffer = std::make_shared<vlr::Framebuffer>(fw);
+    auto layout = std::make_shared<vlr::PipelineLayout>(fw);
 
     // 
-    vkt::uni_ptr<vlr::Rasterization> rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
+    auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
         .layout = layout,
         .framebuffer = framebuffer,
-        .instanceSet = instanseSet,
+        .instanceSet = instanceSet,
         .constants = constants,
         .geometrySets = {geometrySet},
     });
 
     // 
-    vkt::uni_ptr<vlr::RayTracing> rayTracing = std::make_shared<vlr::RayTracing>(fw, vlr::RayTracingCreateInfo{
+    auto rayTracing = std::make_shared<vlr::RayTracing>(fw, vlr::RayTracingCreateInfo{
         .layout = layout,
         .framebuffer = framebuffer,
         .accelerationTop = accelerationTop,
@@ -385,30 +385,30 @@ int main() {
     });
 
     //
-    vkt::uni_ptr<vlr::RenderCommand> renderCommand = std::make_shared<vlr::RenderCommand>(fw, vlr::RenderCommandCreateInfo{
+    auto renderCommand = std::make_shared<vlr::RenderCommand>(fw, vlr::RenderCommandCreateInfo{
         .layout = layout,
         .rayTracing = rayTracing,
         .rasterization = rasterization
     });
 
     // 
-    vkt::uni_ptr<vlr::BuildCommand> buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
+    auto buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
         .layout = layout,
         .accelerationTop = accelerationTop,
         .accelerations = {accelerationBottom}
     });
 
     // 
-    rasterization->setDescriptorSets();
-    rayTracing->setDescriptorSets();
-    renderCommand->setDescriptorSets();
-    buildCommand->setDescriptorSets();
+    rasterization->setDescriptorSets(layout);
+    rayTracing->setDescriptorSets(layout);
+    renderCommand->setDescriptorSets(layout);
+    buildCommand->setDescriptorSets(layout);
 
     // 
-    vkt::uni_ptr<vlr::MaterialSet> materialSet = std::make_shared<vlr::MaterialSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    vkt::uni_ptr<vlr::TextureSet> textureSet = std::make_shared<vlr::TextureSet>(fw);
-    vkt::uni_ptr<vlr::SamplerSet> samplerSet = std::make_shared<vlr::SamplerSet>(fw);
-    vkt::uni_ptr<vlr::Background> background = std::make_shared<vlr::Background>(fw);
+    auto materialSet = std::make_shared<vlr::MaterialSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    auto textureSet = std::make_shared<vlr::TextureSet>(fw);
+    auto samplerSet = std::make_shared<vlr::SamplerSet>(fw);
+    auto background = std::make_shared<vlr::Background>(fw);
 
     // 
     auto testMaterial = materialSet->get(0u);
@@ -586,6 +586,7 @@ int main() {
             constants->setCommand(rtCommand, true);
             buildCommand->setCommand(rtCommand);
             renderCommand->setCommand(rtCommand);
+            //break; // FOR DEBUG!!
 
             // Submit command once
             //renderer->setupCommands();
