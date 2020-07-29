@@ -34,9 +34,8 @@ namespace vlr {
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<GeometryDesc> desc = {}) {
-            this->vertexSet = vertexSet;
+            this->vertexSet = vertexSet, this->desc = desc;
             auto buffer = this->vertexSet->getBuffer_T(this->desc->vertexAttribute);
-            this->desc = desc;
             this->desc->primitiveCount = std::min(this->desc->primitiveCount, uint32_t(buffer.range() / (buffer.stride() * 3ull))); // Make Bit Safer
         };
         virtual void setIndexBuffer(uint32_t indexBufferView = ~0u, VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR) {

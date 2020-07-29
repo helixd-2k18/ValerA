@@ -19,7 +19,7 @@ namespace vlr {
         vkt::uni_ptr<Driver> driver = {};
 
         // FOR CREATE (Acceleration Structure)
-        vkt::uni_arg<AccelerationCreateInfo>                               info = {};
+        //vkt::uni_arg<AccelerationCreateInfo>                               info = {};
         vkh::VkAccelerationStructureCreateInfoKHR                          create = {};
         std::vector<vkh::VkAccelerationStructureCreateGeometryTypeInfoKHR> dataCreate = {};
 

@@ -29,13 +29,12 @@ namespace vlr {
         // 
         virtual void constructorExtend0() {};
         virtual void constructorExtend0(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) {
-            interpolations = std::make_shared<Interpolation>(vertexSet, info);
+            this->vertexSet = vertexSet;
+            this->interpolations = std::make_shared<Interpolation>(vertexSet, info);
         };
         virtual void setInterpolation(vkt::uni_ptr<Interpolation> interpolation);
         virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry);
-        virtual void resetGeometries() {
-            geometries.resize(0u);
-        };
+        virtual void resetGeometries() { this->geometries.resize(0u); };
 
         // 
         virtual const vkt::VectorBase& getCpuBuffer() const override { return SetBase_T<GeometryDesc>::getCpuBuffer(); };

@@ -34,11 +34,27 @@ namespace vlr {
             this->bindings = info->bindings;
         };
 
-        virtual vkh::VkVertexInputAttributeDescription& getAttribute(const uint32_t& I) { return dynamic_cast<vkt::Vector<vkh::VkVertexInputAttributeDescription>&>(this->attributes->getCpuBuffer())[I]; };
-        virtual const vkh::VkVertexInputAttributeDescription& getAttribute(const uint32_t& I) const { return dynamic_cast<const vkt::Vector<vkh::VkVertexInputAttributeDescription>&>(this->attributes->getCpuBuffer())[I]; };
+        virtual vkh::VkVertexInputAttributeDescription& getAttribute(const uint32_t& I) { 
+            auto buffer = this->attributes->getCpuBuffer();
+            auto vector = vkt::Vector<vkh::VkVertexInputAttributeDescription>(buffer.getAllocation(), buffer.offset(), buffer.range(), buffer.stride());
+            return vector[I];
+        };
+        virtual const vkh::VkVertexInputAttributeDescription& getAttribute(const uint32_t& I) const {
+            auto buffer = this->attributes->getCpuBuffer();
+            auto vector = vkt::Vector<vkh::VkVertexInputAttributeDescription>(buffer.getAllocation(), buffer.offset(), buffer.range(), buffer.stride());
+            return vector[I];
+        };
 
-        virtual vkh::VkVertexInputBindingDescription& getBinding(const uint32_t& I) { return dynamic_cast<vkt::Vector<vkh::VkVertexInputBindingDescription>&>(this->bindings->getCpuBuffer())[I]; };
-        virtual const vkh::VkVertexInputBindingDescription& getBinding(const uint32_t& I) const { return dynamic_cast<const vkt::Vector<vkh::VkVertexInputBindingDescription>&>(this->bindings->getCpuBuffer())[I]; };
+        virtual vkh::VkVertexInputBindingDescription& getBinding(const uint32_t& I) { 
+            auto buffer = this->bindings->getCpuBuffer();
+            auto vector = vkt::Vector<vkh::VkVertexInputBindingDescription>(buffer.getAllocation(), buffer.offset(), buffer.range(), buffer.stride());
+            return vector[I];
+        };
+        virtual const vkh::VkVertexInputBindingDescription& getBinding(const uint32_t& I) const {
+            auto buffer = this->bindings->getCpuBuffer();
+            auto vector = vkt::Vector<vkh::VkVertexInputBindingDescription>(buffer.getAllocation(), buffer.offset(), buffer.range(), buffer.stride());
+            return vector[I];
+        };
 
         virtual const vkt::Vector<uint8_t>& operator[](const uint32_t& I) const { return this->getBuffer_T(I); };
         virtual vkt::Vector<uint8_t>& operator[](const uint32_t& I) { return this->getBuffer_T(I); };
@@ -47,8 +63,8 @@ namespace vlr {
         virtual vkt::Vector<uint8_t>& getBuffer_T(const uint32_t& I) { return (*this->bufferViews)[I]; };
 
         virtual vkt::Vector<uint8_t> getAttributeBuffer_T(const uint32_t& I) const {
-            const vkh::VkVertexInputAttributeDescription attribute = dynamic_cast<const vkt::Vector<vkh::VkVertexInputAttributeDescription>&>(this->attributes->getCpuBuffer())[I];
-            const vkh::VkVertexInputBindingDescription binding = dynamic_cast<const vkt::Vector<vkh::VkVertexInputBindingDescription>&>(this->bindings->getCpuBuffer())[attribute.binding];
+            const vkh::VkVertexInputAttributeDescription attribute = this->getAttribute(I);
+            const vkh::VkVertexInputBindingDescription binding = this->getBinding(attribute.binding);
             return (*this->bufferViews)[binding.binding];
         };
 

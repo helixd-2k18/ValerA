@@ -27,24 +27,27 @@ namespace vlr {
         buildGPtr.resize(0u);
 
         // 
+        if (info.has()) {
+            this->geometrySet = info->geometrySet;
+            this->instanceSet = info->instanceSet;
+        };
+
+        // 
         if (instanceSet.has()) {
             uint32_t i = 0u;
             {   // 
-                auto geometry = info->geometrySet->geometries[i];
-                auto attribute = geometry->vertexSet->getAttribute(geometry->desc->vertexAttribute);
-                auto binding = geometry->vertexSet->getBinding(attribute.binding);
                 auto offsetDesc = vkh::VkAccelerationStructureBuildOffsetInfoKHR{};
                 auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eNoDuplicateAnyHitInvocation = 1 };
                 auto geometryDesc = vkh::VkAccelerationStructureGeometryKHR{ .flags = buildGeometryFlags };
                 auto instanceDesc = vkh::VkAccelerationStructureGeometryInstancesDataKHR{};
 
                 // 
-                instanceDesc.data = info->instanceSet->getGpuBuffer();
+                instanceDesc.data = instanceSet->getGpuBuffer();
                 geometryDesc.geometry.instances = instanceDesc;
 
                 // 
-                offsetDesc.primitiveCount = uint32_t(info->instanceSet->getGpuBuffer().size());
-                offsetDesc.transformOffset = uint32_t(info->instanceSet->getGpuBuffer().offset());
+                offsetDesc.primitiveCount = uint32_t(instanceSet->getGpuBuffer().size());
+                offsetDesc.transformOffset = uint32_t(instanceSet->getGpuBuffer().offset());
                 offsetDesc.primitiveOffset = 0u;
                 offsetDesc.firstVertex = 0u;
 
@@ -55,9 +58,9 @@ namespace vlr {
         } else 
         if (geometrySet.has()) {
             // Generate Building Info
-            for (uint32_t i=0u;i<info->geometrySet->geometries.size();i++) 
+            for (uint32_t i=0u;i<geometrySet->geometries.size();i++) 
             {   // 
-                auto geometry = info->geometrySet->geometries[i];
+                auto geometry = geometrySet->geometries[i];
                 auto attribute = geometry->vertexSet->getAttribute(geometry->desc->vertexAttribute);
                 auto binding = geometry->vertexSet->getBinding(attribute.binding);
                 auto offsetDesc = vkh::VkAccelerationStructureBuildOffsetInfoKHR{};
@@ -67,7 +70,7 @@ namespace vlr {
                 auto buffer = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
 
                 // 
-                triangleDesc.transformData = info->geometrySet->getGpuBuffer();
+                triangleDesc.transformData = geometrySet->getGpuBuffer();
                 triangleDesc.vertexFormat = attribute.format;
                 triangleDesc.vertexStride = binding.stride;
                 triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
@@ -87,8 +90,8 @@ namespace vlr {
                 geometryDesc.geometry.triangles = triangleDesc;
 
                 // 
-                offsetDesc.firstVertex = (info->geometrySet)->get(i).firstVertex;
-                offsetDesc.primitiveCount = (info->geometrySet)->get(i).primitiveCount;
+                offsetDesc.firstVertex = (geometrySet)->get(i).firstVertex;
+                offsetDesc.primitiveCount = (geometrySet)->get(i).primitiveCount;
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
                 offsetDesc.primitiveOffset = uint32_t(buffer.offset());
 
@@ -99,9 +102,11 @@ namespace vlr {
         };
 
         // 
-        for (uint32_t i=0u;i<info->geometrySet->geometries.size();i++) {
-            buildGPtr.push_back(&buildGInfo[i]);
-            offsetPtr.push_back(&offsetInfo[i]);
+        if (geometrySet.has()) {
+            for (uint32_t i = 0u; i < geometrySet->geometries.size(); i++) {
+                buildGPtr.push_back(&buildGInfo[i]);
+                offsetPtr.push_back(&offsetInfo[i]);
+            };
         };
 
         // FOR BUILD!
@@ -122,7 +127,11 @@ namespace vlr {
 
     // 
     void Acceleration::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info) {
-        this->driver = driver, this->info = info;
+        this->driver = driver;
+        if (info.has()) {
+            this->geometrySet = info->geometrySet;
+            this->instanceSet = info->instanceSet;
+        };
         auto device = this->driver->getDeviceDispatch();
 
         // FOR CREATE!
@@ -190,12 +199,12 @@ namespace vlr {
         };
 
         //
-        this->updateAccelerationStructure(info, false);
+        this->updateAccelerationStructure({}, false);
     };
 
     // buildAccelerationStructureCmd
     void Acceleration::setCommand(const VkCommandBuffer& cmd) {
-        this->updateAccelerationStructure(info, false);
+        this->updateAccelerationStructure({}, false);
         this->driver->getDeviceDispatch()->CmdBuildAccelerationStructureKHR(cmd, 1u, this->bdHeadInfo, reinterpret_cast<VkAccelerationStructureBuildOffsetInfoKHR**>(this->offsetPtr.data()));
     };
 
