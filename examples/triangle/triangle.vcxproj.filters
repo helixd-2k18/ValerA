@@ -34,6 +34,9 @@
     <Filter Include="Header Files\vkt3">
       <UniqueIdentifier>{aba7112a-f90e-4495-bc4d-e8c85d1647e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\xvk">
+      <UniqueIdentifier>{f2331baa-3404-498a-b900-d003716a42fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\vlr\Acceleration.cpp">
@@ -256,6 +259,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp">
       <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\xvk\xvk.hpp">
+      <Filter>Header Files\xvk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\xvk\xvkBase.hpp">
+      <Filter>Header Files\xvk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.h">
+      <Filter>Header Files\xvk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.hpp">
+      <Filter>Header Files\xvk</Filter>
+    </ClInclude>
+    <ClInclude Include="macro.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -173,6 +173,7 @@ inclusion
 .vs/*
 .vs
 *.ilk
+*.idb
 
 # Visual Studio Artifacts
 build/*/.vs/*
