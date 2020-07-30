@@ -69,10 +69,16 @@ namespace vlr {
         };
 
         template<class T = uint8_t>  // Call a Virtual Method
-        const vkt::Vector<T>& getBuffer(const uint32_t& I = 0u) const { return dynamic_cast<const vkt::Vector<T>&>(this->getBuffer_T(I)); };
+        vkt::Vector<T> getBuffer(const uint32_t& I = 0u) const { 
+            auto buffer = this->getBuffer_T(I);
+            return vkt::Vector<T>(buffer.getAllocation(), buffer.offset(), buffer.range(), buffer.stride());
+        };
 
         template<class T = uint8_t>  // Call a Virtual Method
-        const vkt::Vector<T>& getAttributeBuffer(const uint32_t& I = 0u) const { return dynamic_cast<const vkt::Vector<T>&>(this->getAttributeBuffer_T(I)); };
+        vkt::Vector<T> getAttributeBuffer(const uint32_t& I = 0u) const { 
+            auto buffer = this->getAttributeBuffer_T(I);
+            return vkt::Vector<T>(buffer.getAllocation(), buffer.offset(), buffer.range(), buffer.stride());
+        };
 
         // 
         void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
