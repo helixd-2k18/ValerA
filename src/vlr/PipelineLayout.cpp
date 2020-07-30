@@ -124,7 +124,7 @@ namespace vlr {
         layouts.push_back(this->getBufferViewSetLayout());  // [x] Ray Data (FLIP)
         layouts.push_back(this->getSetLayout());            // [x] Hit Data
         layouts.push_back(this->getSetLayout());            // [x] Color-chain Data
-        layouts.push_back(this->getTextureSetLayout());     // [x] Background
+        layouts.push_back(this->getBackgroundSetLayout());  // [x] Background
         layouts.push_back(this->getSetLayout());            // [x] Instance Data
 
         // 
@@ -201,7 +201,10 @@ namespace vlr {
     };
 
     void PipelineLayout::setBackground(vkt::uni_ptr<Background> background) {
-        background->createDescriptorSet(this);
+        if (!background->set) {
+            background->createDescriptorSet(this);
+        };
+        this->bound[15u] = background->set;
     };
 
 };

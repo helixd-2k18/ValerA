@@ -5,7 +5,8 @@
 namespace vlr {
 
     // Not Only Background Images, but Native Samplers
-    class Background : public std::enable_shared_from_this<Background> { protected: 
+    class Background : public std::enable_shared_from_this<Background> {
+    protected: friend PipelineLayout;
         vkt::ImageRegion background = {};
         vkt::uni_ptr<Driver> driver = {};
         VkDescriptorSet set = {}; bool updated = false;
