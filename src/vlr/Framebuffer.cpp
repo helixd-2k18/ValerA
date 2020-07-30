@@ -84,7 +84,10 @@ namespace vlr {
         auto aspect = vkh::VkImageAspectFlags{.eColor = 1};
         auto apres = vkh::VkImageSubresourceRange{.aspectMask = aspect};
         auto device = this->driver->getDeviceDispatch();
-        auto& allocInfo = this->driver->memoryAllocationInfo();
+        //auto allocInfo = this->driver->memoryAllocationInfo();
+        auto allocator = this->driver->getAllocator();
+        auto vmaMemInfo = vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY };
+
 
         // 
         std::vector<VkImageView> rasterAttachments = {};
@@ -97,24 +100,24 @@ namespace vlr {
             dpuse = dpuse | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
             
             //
-            depthStencilImage = vkt::ImageRegion(std::make_shared<vkt::ImageAllocation>(vkh::VkImageCreateInfo{
+            depthStencilImage = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(allocator, vkh::VkImageCreateInfo{
                 .format = VK_FORMAT_D32_SFLOAT_S8_UINT,
                 .extent = {width,height,1u},
                 .usage = dpuse,
-            }, allocInfo), vkh::VkImageViewCreateInfo{
+            }, vmaMemInfo), vkh::VkImageViewCreateInfo{
                 .format = VK_FORMAT_D32_SFLOAT_S8_UINT,
                 .subresourceRange = dpres,
-            }, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+            }, VK_IMAGE_LAYOUT_GENERAL);
 
             // 
-            vkt::submitOnceAsync(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
+            vkt::submitOnce(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
                 depthStencilImage.transfer(cmd);
 
                 // 
                 vkt::imageBarrier(cmd, vkt::ImageBarrierInfo{
                     .image = depthStencilImage.getImage(),
                     .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
-                    .originLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    .originLayout = VK_IMAGE_LAYOUT_GENERAL,
                     .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
                         auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
                         it->aspectMask = aspect;
@@ -143,17 +146,17 @@ namespace vlr {
 
         // 
         auto createImage = [=,this](VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT, uint32_t wide = 1u) {
-            auto image = vkt::ImageRegion(std::make_shared<vkt::ImageAllocation>(vkh::VkImageCreateInfo{
+            auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(allocator, vkh::VkImageCreateInfo{
                 .format = format,
                 .extent = {width*wide,height,1u},
                 .usage = fbusage,
-            }, allocInfo), vkh::VkImageViewCreateInfo{
+            }, vmaMemInfo), vkh::VkImageViewCreateInfo{
                 .format = format,
                 .subresourceRange = apres
             }, VK_IMAGE_LAYOUT_GENERAL);
 
             // 
-            vkt::submitOnceAsync(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
+            vkt::submitOnce(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
                 image.transfer(cmd);
                 this->driver->getDeviceDispatch()->CmdClearColorImage(cmd, image, image.getImageLayout(), vkh::VkClearColorValue{ .float32 = { 0.f,0.f,0.f,0.f } }, 1u, image.getImageSubresourceRange());
             });

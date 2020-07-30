@@ -33,10 +33,10 @@ namespace vlr {
         this->resample = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[4]), layout->pipelineLayout, this->driver->getPipelineCache());
 
         // 
-        this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
-        this->rayDataFlip1 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
-        this->hitData  = std::make_shared<SetBase_T<HitData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
-        this->colorChainData = std::make_shared<SetBase_T<ColorData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096 });
+        this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096, .enableCPU = false });
+        this->rayDataFlip1 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096, .enableCPU = false });
+        this->hitData  = std::make_shared<SetBase_T<HitData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096, .enableCPU = false });
+        this->colorChainData = std::make_shared<SetBase_T<ColorData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096, .enableCPU = false });
         this->counters = std::make_shared<SetBase_T<uint32_t>>(driver, DataSetCreateInfo{ .count = 5 }); // Ray Write, Ray Read, Hit Write, Hit Read, Color Chain counters
 
         // 

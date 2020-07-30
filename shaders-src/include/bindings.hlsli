@@ -43,8 +43,8 @@ layout (binding = 0, set = 0, scalar) uniform Matrices {
 
 // 
 layout (binding = 0, set = 1, scalar) readonly buffer MeshData { uint8_t data[]; } mesh0[];
-layout (binding = 0, set = 2, scalar) uniform Bindings   { Binding   data[8u]; } bindings  [];
-layout (binding = 0, set = 3, scalar) uniform Attributes { Attribute data[8u]; } attributes[];
+layout (binding = 0, set = 2, scalar) readonly buffer Bindings   { Binding   data[8u]; } bindings  [];
+layout (binding = 0, set = 3, scalar) readonly buffer Attributes { Attribute data[8u]; } attributes[];
 
 // Deferred and Rasterization Set
 layout (binding = 0, set = 4,    r32f) uniform image2D prevImages[12u]; // 4x wider

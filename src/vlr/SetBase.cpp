@@ -10,9 +10,11 @@ namespace vlr {
 
         // 
         auto allocator = this->driver->getAllocator();
-        this->getCpuBuffer() = vkt::VectorBase(std::make_shared<vkt::VmaBufferAllocation>(allocator, vkh::VkBufferCreateInfo{ .size = stride * info->count, .usage = hostUsage }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU }), 0ull, stride * info->count, stride);
+        if (info->enableCPU) {
+            this->getCpuBuffer() = vkt::VectorBase(std::make_shared<vkt::VmaBufferAllocation>(allocator, vkh::VkBufferCreateInfo{ .size = stride * info->count, .usage = hostUsage }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU }), 0ull, stride * info->count, stride);
+        };
         this->getGpuBuffer() = vkt::VectorBase(std::make_shared<vkt::VmaBufferAllocation>(allocator, vkh::VkBufferCreateInfo{ .size = stride * info->count, .usage =  gpuUsage }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }), 0ull, stride * info->count, stride);
-        this->uniform = info->uniform;
+        this->uniform = info->uniform, this->enableCPU = info->enableCPU;
     };
 
     void SetBase::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
@@ -29,8 +31,10 @@ namespace vlr {
 
     void SetBase::setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier) {
         auto device = driver->getDeviceDispatch();
-        vkh::VkBufferCopy region = { .srcOffset = 0ull, .dstOffset = 0ull, .size = this->getGpuBuffer().range() };
-        device->CmdCopyBuffer(commandBuffer, this->getCpuBuffer(), this->getGpuBuffer(), 1, region);
+        if (this->getCpuBuffer().has()) {
+            vkh::VkBufferCopy region = { .srcOffset = 0ull, .dstOffset = 0ull, .size = this->getGpuBuffer().range() };
+            device->CmdCopyBuffer(commandBuffer, this->getCpuBuffer(), this->getGpuBuffer(), 1, region);
+        };
         if (barrier) { vkt::commandBarrier(device, commandBuffer); }; // TODO: Advanced Barrier
     };
 

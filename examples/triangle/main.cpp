@@ -422,6 +422,7 @@ int main() {
     layout->setFramebuffer(framebuffer);
     layout->setBackground(background);
     layout->setMaterials(materialSet, textureSet, samplerSet);
+    layout->setVertexSet(vertexSet);
 
 
     {   // 
@@ -563,6 +564,34 @@ int main() {
     //Shared::TimeCallback(double(context->registerTime()->setDrawCount(frameCount++)->drawTime()));
 
     // 
+    VkCommandBuffer rtCommand = {}; //vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
+    
+    // 
+    auto rtSubmitInfo = vkh::VkSubmitInfo{};
+    auto rdSubmitInfo = vkh::VkSubmitInfo{};
+    {
+        std::vector<vkh::VkPipelineStageFlags> waitStages = {
+            vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 },
+            vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
+        };
+        rtSubmitInfo = vkh::VkSubmitInfo{
+            .waitSemaphoreCount = static_cast<uint32_t>(1u), .pWaitSemaphores = nullptr, .pWaitDstStageMask = waitStages.data(),
+            .commandBufferCount = 1u, 
+            .signalSemaphoreCount = static_cast<uint32_t>(1u), .pSignalSemaphores = nullptr
+        };
+    };
+    {
+        std::vector<vkh::VkPipelineStageFlags> waitStages = {
+            vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 },
+            vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
+        };
+        rdSubmitInfo = vkh::VkSubmitInfo{
+            .waitSemaphoreCount = 2u, .pWaitSemaphores = nullptr, .pWaitDstStageMask = waitStages.data(),
+            .commandBufferCount = 1u,
+            .signalSemaphoreCount = 2u, .pSignalSemaphores = nullptr
+        };
+    };
+
     while (!glfwWindowShouldClose(manager.window)) { // 
         glfwPollEvents();
 
@@ -575,41 +604,24 @@ int main() {
         vkh::handleVk(fw->getDeviceDispatch()->WaitForFences(1u, &framebuffers[c_semaphore].waitFence, true, 30ull * 1000ull * 1000ull * 1000ull));
         vkh::handleVk(fw->getDeviceDispatch()->ResetFences(1u, &framebuffers[c_semaphore].waitFence));
         vkh::handleVk(fw->getDeviceDispatch()->AcquireNextImageKHR(swapchain, std::numeric_limits<uint64_t>::max(), framebuffers[c_semaphore].presentSemaphore, nullptr, &currentBuffer));
-        //fw->getDeviceDispatch()->SignalSemaphore(vkh::VkSemaphoreSignalInfo{.semaphore = framebuffers[n_semaphore].semaphore, .value = 1u});
 
         { // submit rendering (and wait presentation in device)
             vkh::VkClearValue clearValues[2] = { {}, {} };
             clearValues[0].color = vkh::VkClearColorValue{}; clearValues[0].color.float32 = glm::vec4(0.f, 0.f, 0.f, 0.f);
             clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.0f, 0 };
 
-            // 
-            //Shared::TimeCallback(double(context->registerTime()->setModelView(glm::mat4x4(cameraController->handle().project()))->drawTime()));
-
-            // Create render submission 
-            std::vector<VkSemaphore> waitSemaphores = { framebuffers[currentBuffer].presentSemaphore }, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
-            std::vector<vkh::VkPipelineStageFlags> waitStages = {
-                vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 },
-                vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
-            };
-
-            // 
-            auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
+            // Ray Tracing with Build Command
+            rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
             materialSet->setCommand(rtCommand);
             constants->setCommand(rtCommand, true);
             buildCommand->setCommand(rtCommand);
             renderCommand->setCommand(rtCommand);
-            //break; // FOR DEBUG!!
 
             // Submit command once
-            //renderer->setupCommands();
-            vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
-                .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
-                .commandBufferCount = 1u, .pCommandBuffers = &rtCommand,
-                .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
-            }, {}));
-
-            // 
-            waitSemaphores = { framebuffers[currentBuffer].computeSemaphore }, signalSemaphores = { framebuffers[currentBuffer].drawSemaphore };
+            rdSubmitInfo.pCommandBuffers = &rtCommand;
+            rtSubmitInfo.pWaitSemaphores = &framebuffers[currentBuffer].computeSemaphore;
+            rtSubmitInfo.pSignalSemaphores = &framebuffers[currentBuffer].drawSemaphore;
+            vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, rtSubmitInfo, {}));
 
             // create command buffer (with rewrite)
             VkCommandBuffer& commandBuffer = framebuffers[currentBuffer].commandBuffer;
@@ -654,13 +666,13 @@ int main() {
             };
 
             // Submit command once
-            vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
-                .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
-                .commandBufferCount = 1u, .pCommandBuffers = &commandBuffer,
-                .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
-            }, framebuffers[currentBuffer].waitFence));
-
-            // 
+            {
+                std::vector<VkSemaphore> waitSemaphores = { framebuffers[currentBuffer].presentSemaphore }, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
+                rdSubmitInfo.pCommandBuffers = &commandBuffer;
+                rdSubmitInfo.pSignalSemaphores = signalSemaphores.data();
+                rdSubmitInfo.pWaitSemaphores = waitSemaphores.data();
+                vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, rdSubmitInfo, framebuffers[currentBuffer].waitFence));
+            };
             constants->get(0u).rdata.x = frameCount++;
         };
 

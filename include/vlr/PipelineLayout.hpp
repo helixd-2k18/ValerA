@@ -45,15 +45,15 @@ namespace vlr {
         virtual VkDescriptorSetLayout getSetLayout() const { return layouts[0u]; };
         virtual VkDescriptorSetLayout getTextureSetLayout() const { return layouts[1u]; };
         virtual VkDescriptorSetLayout getSamplerSetLayout() const { return layouts[2u]; };
-        virtual VkDescriptorSetLayout getUniformSetLayout() const { return layouts[4u]; };
         virtual VkDescriptorSetLayout getBufferViewSetLayout() const { return layouts[3u]; };
+        virtual VkDescriptorSetLayout getUniformSetLayout() const { return layouts[4u]; };
         virtual VkDescriptorSetLayout getBackgroundSetLayout() const { return layouts[5u]; };
         virtual VkDescriptorSetLayout getFramebufferSetLayout() const { return layouts[6u]; };
         virtual VkDescriptorSetLayout getAccelerationSetLayout() const { return layouts[7u]; };
 
         // 
         virtual void setMaterials(vkt::uni_ptr<MaterialSet> materialSet, vkt::uni_ptr<TextureSet> textureSet, vkt::uni_ptr<SamplerSet> samplerSet);
-        virtual void setVertexData(vkt::uni_ptr<VertexSet> vertexData);
+        virtual void setVertexSet(vkt::uni_ptr<VertexSet> vertexData);
         virtual void setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer);
         virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> acceleration);
         virtual void setConstants(vkt::uni_ptr<Constants> constants);
