@@ -418,13 +418,6 @@ int main() {
     // 
     framebuffer->createFramebuffer(canvasWidth, canvasHeight);
 
-    // 
-    layout->setFramebuffer(framebuffer);
-    layout->setBackground(background);
-    layout->setMaterials(materialSet, textureSet, samplerSet);
-    layout->setVertexSet(vertexSet);
-
-
     {   // 
         int width = 0u, height = 0u;
         float* rgba = nullptr;
@@ -496,6 +489,13 @@ int main() {
     };
 
 
+    // 
+    layout->setFramebuffer(framebuffer);
+    layout->setBackground(background);
+    layout->setMaterials(materialSet, textureSet, samplerSet);
+    layout->setVertexSet(vertexSet);
+
+    // 
 
 
     // 

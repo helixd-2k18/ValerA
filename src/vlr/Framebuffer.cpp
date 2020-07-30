@@ -244,7 +244,7 @@ namespace vlr {
     // 
     void Framebuffer::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
         auto device = this->driver->getDeviceDispatch();
-        auto descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getBufferViewSetLayout(), pipelineLayout->getDescriptorPool());
+        auto descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getFramebufferSetLayout(), pipelineLayout->getDescriptorPool());
         auto createDescriptorSetImages = [&,this](const std::vector<vkt::ImageRegion>& images, const uint32_t& binding = 0u) 
         {   // 
             auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{

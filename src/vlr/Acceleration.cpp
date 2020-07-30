@@ -102,11 +102,9 @@ namespace vlr {
         };
 
         // 
-        if (geometrySet.has()) {
-            for (uint32_t i = 0u; i < geometrySet->geometries.size(); i++) {
-                buildGPtr.push_back(&buildGInfo[i]);
-                offsetPtr.push_back(&offsetInfo[i]);
-            };
+        for (uint32_t i = 0u; i < buildGInfo.size(); i++) {
+            buildGPtr.push_back(&buildGInfo[i]);
+            offsetPtr.push_back(&offsetInfo[i]);
         };
 
         // FOR BUILD!

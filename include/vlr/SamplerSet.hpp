@@ -16,7 +16,9 @@ namespace vlr {
         ~SamplerSet() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver) {};
+        virtual void constructor(vkt::uni_ptr<Driver> driver) {
+            this->driver = driver;
+        };
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         //virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
         virtual void pushSampler(const VkSampler& sampler) { this->samplers.push_back(sampler); };

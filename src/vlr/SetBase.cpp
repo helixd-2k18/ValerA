@@ -25,7 +25,7 @@ namespace vlr {
             .descriptorCount = 1u,
             .descriptorType = uniform ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER : VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
         });
-        handle.offset<VkDescriptorBufferInfo>(0) = this->gpuBuffer;
+        handle.offset<VkDescriptorBufferInfo>(0) = this->getGpuBuffer();
         vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));
     };
 

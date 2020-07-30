@@ -48,6 +48,10 @@ namespace vlr {
         this->rayDataSetFlip0->pushBufferView(this->rayDataFlip1->getGpuBuffer()); // Read-only 
         this->rayDataSetFlip1->pushBufferView(this->rayDataFlip1->getGpuBuffer()); // Write-able
         this->rayDataSetFlip1->pushBufferView(this->rayDataFlip0->getGpuBuffer()); // Read-only 
+
+        // Re-Create
+        this->interpolations = std::make_shared<BufferViewSet>(this->driver);
+        this->geometriesDescs = std::make_shared<BufferViewSet>(this->driver);
     };
 
     void RayTracing::setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout) { // 

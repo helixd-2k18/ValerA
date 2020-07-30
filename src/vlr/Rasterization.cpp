@@ -49,6 +49,10 @@ namespace vlr {
 
         // 
         vkh::handleVk(device->CreateGraphicsPipelines(driver->getPipelineCache(), 1u, this->pipelineInfo, nullptr, &this->pipeline));
+
+        // Re-Create
+        this->interpolations = std::make_shared<BufferViewSet>(this->driver);
+        this->geometriesDescs = std::make_shared<BufferViewSet>(this->driver);
     };
 
     // 
