@@ -111,22 +111,7 @@ namespace vlr {
 
             // 
             vkt::submitOnce(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&,this](VkCommandBuffer& cmd) {
-                depthStencilImage.transfer(cmd);
-
-                // 
-                vkt::imageBarrier(cmd, vkt::ImageBarrierInfo{
-                    .image = depthStencilImage.getImage(),
-                    .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
-                    .originLayout = VK_IMAGE_LAYOUT_GENERAL,
-                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
-                        auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
-                        it->aspectMask = aspect;
-                        return it;
-                    })
-                });
-
-                //
-                this->driver->getDeviceDispatch()->CmdClearDepthStencilImage(cmd, depthStencilImage, depthStencilImage.getImageLayout(), vkh::VkClearDepthStencilValue{ .depth = 1.0f, .stencil = 0 }, 1u, depthStencilImage.getImageSubresourceRange());
+                this->driver->getDeviceDispatch()->CmdClearDepthStencilImage(cmd, depthStencilImage.transfer(cmd), depthStencilImage.getImageLayout(), vkh::VkClearDepthStencilValue{ .depth = 1.0f, .stencil = 0 }, 1u, depthStencilImage.getImageSubresourceRange());
 
                 // 
                 vkt::commandBarrier(this->driver->getDeviceDispatch(), cmd);

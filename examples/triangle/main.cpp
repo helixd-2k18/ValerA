@@ -692,30 +692,6 @@ int main() {
             if (!commandBuffer) {
                 commandBuffer = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false); // do reference of cmd buffer
 
-                // Already present, prepare to render
-                vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
-                    .image = framebuffers[currentBuffer].image,
-                    .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
-                    .originLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
-                        auto aspect = vkh::VkImageAspectFlags{.eColor = 1u };
-                        it->aspectMask = aspect;
-                        return it;
-                    })
-                });
-
-                // Filling Depth Image
-                vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
-                    .image = fw->getDepthImage(),
-                    .targetLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-                    .originLayout = VK_IMAGE_LAYOUT_GENERAL,
-                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
-                        auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
-                        it->aspectMask = aspect;
-                        return it;
-                    })
-                });
-
                 //
                 decltype(auto) descriptorSets = layout->getDescriptorSets();
 
