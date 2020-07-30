@@ -704,10 +704,10 @@ int main() {
                     })
                 });
 
-                // Already present, prepare to render
+                // Filling Depth Image
                 vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
                     .image = fw->getDepthImage(),
-                    .targetLayout = VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL,
+                    .targetLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                     .originLayout = VK_IMAGE_LAYOUT_GENERAL,
                     .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
                         auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
@@ -729,7 +729,19 @@ int main() {
                 fw->getDeviceDispatch()->CmdEndRenderPass(commandBuffer);
                 vkt::commandBarrier(fw->getDeviceDispatch(), commandBuffer);
 
-                // 
+                // Reuse depth as general
+                vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
+                    .image = fw->getDepthImage(),
+                    .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
+                    .originLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                        auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
+                        it->aspectMask = aspect;
+                        return it;
+                    })
+                });
+
+                // Use as present image
                 vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
                     .image = framebuffers[currentBuffer].image,
                     .targetLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
@@ -751,7 +763,7 @@ int main() {
                 .commandBufferCount = 1u, .pCommandBuffers = &commandBuffer,
                 .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
             }, framebuffers[currentBuffer].waitFence));
-
+            
             // 
             constants->get(0u).rdata.x = frameCount++;
         };
