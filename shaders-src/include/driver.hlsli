@@ -29,9 +29,9 @@
 #extension GL_KHR_shader_subgroup_arithmetic               : require
 #extension GL_KHR_shader_subgroup_ballot                   : require
 
-#ifndef ENABLE_AS
-#define ENABLE_AS
-#endif
+//#ifndef ENABLE_AS
+//#define ENABLE_AS
+//#endif
 
 #ifdef ENABLE_AS
 #extension GL_EXT_ray_tracing          : require
