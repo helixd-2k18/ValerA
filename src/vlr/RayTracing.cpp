@@ -127,10 +127,11 @@ namespace vlr {
 
         // TODO: Using Compute Shader for Indirect Operations
         std::vector<vkh::VkBufferCopy> regions = {
-            { .srcOffset = 0ull                   , .dstOffset = 1ull * sizeof(uint32_t), .size = sizeof(uint32_t) },
-            { .srcOffset = 2ull * sizeof(uint32_t), .dstOffset = 3ull * sizeof(uint32_t), .size = sizeof(uint32_t) }
+            { .srcOffset = 0ull                    + this->counters->getGpuBuffer().offset(), .dstOffset = 1ull * sizeof(uint32_t) + this->counters->getGpuBuffer().offset(), .size = sizeof(uint32_t) },
+            { .srcOffset = 2ull * sizeof(uint32_t) + this->counters->getGpuBuffer().offset(), .dstOffset = 3ull * sizeof(uint32_t) + this->counters->getGpuBuffer().offset(), .size = sizeof(uint32_t) }
         };
-        device->CmdCopyBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer(), regions.size(), reinterpret_cast<const VkBufferCopy*>(regions.data()));
+        device->CmdCopyBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer(), 1u, reinterpret_cast<const VkBufferCopy*>(&regions[0u]));
+        device->CmdCopyBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer(), 1u, reinterpret_cast<const VkBufferCopy*>(&regions[1u]));
         vkt::commandBarrier(this->driver->getDeviceDispatch(), currentCmd);
 
         // 
@@ -146,7 +147,8 @@ namespace vlr {
 
             {   // Re-Setting Counters
                 // TODO: Using Compute Shader for Indirect Operations
-                device->CmdCopyBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer(), regions.size(), reinterpret_cast<const VkBufferCopy*>(regions.data()));
+                device->CmdCopyBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer(), 1u, reinterpret_cast<const VkBufferCopy*>(&regions[0u]));
+                device->CmdCopyBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer(), 1u, reinterpret_cast<const VkBufferCopy*>(&regions[1u]));
                 vkt::commandBarrier(device, currentCmd); // TODO: Advanced Barrier
                 device->CmdUpdateBuffer(currentCmd, this->counters->getGpuBuffer(), 0ull                   , sizeof(uint32_t), &zero); // Reset Ray Counter
                 device->CmdUpdateBuffer(currentCmd, this->counters->getGpuBuffer(), 2ull * sizeof(uint32_t), sizeof(uint32_t), &zero); // Reset Hit Counter
