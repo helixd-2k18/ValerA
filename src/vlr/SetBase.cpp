@@ -32,7 +32,7 @@ namespace vlr {
     void SetBase::setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier) {
         auto device = driver->getDeviceDispatch();
         if (this->getCpuBuffer().has()) {
-            vkh::VkBufferCopy region = { .srcOffset = 0ull, .dstOffset = 0ull, .size = this->getGpuBuffer().range() };
+            vkh::VkBufferCopy region = { .srcOffset = this->getCpuBuffer().offset(), .dstOffset = this->getGpuBuffer().offset(), .size = this->getGpuBuffer().range() };
             device->CmdCopyBuffer(commandBuffer, this->getCpuBuffer(), this->getGpuBuffer(), 1, region);
         };
         if (barrier) { vkt::commandBarrier(device, commandBuffer); }; // TODO: Advanced Barrier
