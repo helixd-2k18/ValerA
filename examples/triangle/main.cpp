@@ -673,6 +673,7 @@ int main() {
             constants->setCommand(rtCommand, true);
             buildCommand->setCommand(rtCommand);
             renderCommand->setCommand(rtCommand);
+            fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
             //break; // FOR DEBUG!!
 
             // Submit command once
@@ -717,6 +718,20 @@ int main() {
 
                 //
                 decltype(auto) descriptorSets = layout->getDescriptorSets();
+
+                // 
+                vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
+                    .image = framebuffers[currentBuffer].image,
+                    .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
+                    .originLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                        auto aspect = vkh::VkImageAspectFlags{.eColor = 1u };
+                        it->aspectMask = aspect;
+                        return it;
+                    })
+                });
+
+                // 
                 fw->getDeviceDispatch()->CmdBeginRenderPass(commandBuffer, vkh::VkRenderPassBeginInfo{ .renderPass = fw->applicationWindow.renderPass, .framebuffer = framebuffers[currentBuffer].frameBuffer, .renderArea = renderArea, .clearValueCount = 2u, .pClearValues = reinterpret_cast<vkh::VkClearValue*>(&clearValues[0]) }, VK_SUBPASS_CONTENTS_INLINE);
                 fw->getDeviceDispatch()->CmdSetViewport(commandBuffer, 0u, 1u, viewport);
                 fw->getDeviceDispatch()->CmdSetScissor(commandBuffer, 0u, 1u, renderArea);
@@ -725,6 +740,19 @@ int main() {
                 fw->getDeviceDispatch()->CmdDraw(commandBuffer, 4, 1, 0, 0);
                 fw->getDeviceDispatch()->CmdEndRenderPass(commandBuffer);
                 vkt::commandBarrier(fw->getDeviceDispatch(), commandBuffer);
+
+                // 
+                vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
+                    .image = framebuffers[currentBuffer].image,
+                    .targetLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                    .originLayout = VK_IMAGE_LAYOUT_GENERAL,
+                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                        auto aspect = vkh::VkImageAspectFlags{ .eColor = 1u };
+                        it->aspectMask = aspect;
+                        return it;
+                    })
+                });
+
                 fw->getDeviceDispatch()->EndCommandBuffer(commandBuffer);
             };
 
