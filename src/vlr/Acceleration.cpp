@@ -114,8 +114,10 @@ namespace vlr {
         this->bdHeadInfo.ppGeometries = buildGPtr.data();
         this->bdHeadInfo.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
         this->bdHeadInfo.flags = bdHeadFlags;
-        this->bdHeadInfo.geometryArrayOfPointers = true;
+        this->bdHeadInfo.geometryArrayOfPointers = false;
         this->bdHeadInfo.dstAccelerationStructure = this->structure;
+        this->bdHeadInfo.srcAccelerationStructure = VK_NULL_HANDLE;
+        this->bdHeadInfo.update = false;
 
         // Only For Supported GPU's
         if (build) {
