@@ -52,7 +52,7 @@ void main()
             const float3x3 TBN = float3x3(geometry.gTangent.xyz,geometry.gBinormal.xyz,mapNormal);
 
             // 
-            RayData outRay;
+            RayData outRay = ray;
             if (xhit.gBarycentric.w > 9999.f) {
                 outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(xhit.direct.xyz, xhit.origin.xyz));
                 outRay.color = half4(0.f);
