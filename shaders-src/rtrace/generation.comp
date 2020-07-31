@@ -71,6 +71,7 @@ void main()
 
             // Nullify Resampling
             superImageStore(resampleImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));
+            //atomicSuperImageAdd3(currImages[IW_RENDERED], curPixel, toLinear(float4(0.f, 0.9f, 1.f, 1.f)));
         };
 
         // Emit Diffuse Indirect Ray

@@ -267,7 +267,7 @@ uint3 textureSize(in Texture3D<float4> tex, in int lod) { uint3 size = uint3(0,0
 #endif
 
 #define superImageLoad(image, texcoord) \
-    uint4(\
+    float4(\
         imageLoad(image, int2(texcoord.x*4u+0u,texcoord.y)).x,\
         imageLoad(image, int2(texcoord.x*4u+1u,texcoord.y)).x,\
         imageLoad(image, int2(texcoord.x*4u+2u,texcoord.y)).x,\
