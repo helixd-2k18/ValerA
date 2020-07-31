@@ -17,6 +17,7 @@
 #define IW_INDICIES 8  // 
 #define IW_POSITION 9  // Ray-Traced Position (for resampling)
 #define IW_RENDERED 10 // 
+#define IW_BARYCENT 11
 
 // From Rasterization Phase!
 #define RS_MATERIAL 0
@@ -436,12 +437,11 @@ XPOL materialize(in XHIT hit, inout XGEO geo) { //
 };
 
 // 
-XHIT rasterize(in float3 origin, in float3 raydir, in float3 normal, float maxT, bool scatterTransparency, float threshold) {
-    uint I = 0, R = 0; float lastMax = maxT, lastMin = 0.001f; float3 lastOrigin = origin + faceforward(normal.xyz, raydir.xyz, normal.xyz) * lastMin + raydir.xyz * lastMin;
+XHIT rasterize(in float3 origin, in float3 raydir, float maxT, bool scatterTransparency, float threshold) {
+    uint I = 0, R = 0; float lastMax = maxT, lastMin = 0.001f; float3 forigin = origin + raydir.xyz * lastMin;
 
     // 
     float fullLength = 0.f;
-    float3 forigin = lastOrigin; // REQUIRED!
     bool restart = false;
 
     // 

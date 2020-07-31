@@ -61,13 +61,17 @@ void main()
         float3 geonrm = float3(0.f.xxx);
 
         // Replacement for rasterization
-        //XHIT RPM = traceRays(    origin.xyz,           (raydir), normal, 10000.f, true, 0.001f);
-          XHIT RPM = rasterize(    origin.xyz,           (raydir), normal, 10000.f, true, 0.001f);
+        //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
+        //XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
+        XHIT RPM; // currImages is Current Frame, prevImages is Previous Frame
+        RPM.origin = superImageLoad(currImages[IW_POSITION], curPixel); // IW_POSITION - transformed, IW_ORIGINAL - not transformed
+        RPM.gBarycentric = superImageLoad(currImages[IW_BARYCENT], curPixel);
+        RPM.gIndices = floatBitsToUint(superImageLoad(currImages[IW_INDICIES], curPixel));
 
         // TODO: Optimize Fetching and Interpolation 
         XGEO GEO = interpolate(RPM);
         XPOL MAT = materialize(RPM, GEO);
-        
+
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
             float4 indirect = cbLoad(IW_INDIRECT, curPixel) + cbLoad(IW_INDIRECT, curPixel);
