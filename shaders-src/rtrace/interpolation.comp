@@ -34,8 +34,8 @@ void main()
         const uint gID = woffset + (i + LocalInvocationIndex);
         packed = gID, seed = uint2(packed, constants.rdata.x);
         if (gID < fcount) {
-            HitData hit = hits[gID];
-            RayData ray = rays[gID];
+            HitData hit = hits[0u].data[gID];
+            RayData ray = rays[1u].data[gID];
 
             XHIT xhit;
             xhit.origin = float4(ray.origin, 1.f);

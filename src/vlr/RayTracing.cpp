@@ -33,10 +33,10 @@ namespace vlr {
         this->resample = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[4]), layout->pipelineLayout, this->driver->getPipelineCache());
 
         // 
-        this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096, .enableCPU = false });
-        this->rayDataFlip1 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096, .enableCPU = false });
-        this->hitData  = std::make_shared<SetBase_T<HitData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096, .enableCPU = false });
-        this->colorChainData = std::make_shared<SetBase_T<ColorData>>(driver, DataSetCreateInfo{ .count = 4096 * 4096, .enableCPU = false });
+        this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
+        this->rayDataFlip1 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
+        this->hitData  = std::make_shared<SetBase_T<HitData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
+        this->colorChainData = std::make_shared<SetBase_T<ColorData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
         this->counters = std::make_shared<SetBase_T<uint32_t>>(driver, DataSetCreateInfo{ .count = 5 }); // Ray Write, Ray Read, Hit Write, Hit Read, Color Chain counters
 
         // 
@@ -100,6 +100,8 @@ namespace vlr {
         
     };
 
+    // The architecture is built in such a way that multi - command rendering can be turned into single - command rendering with ease... (i.e. JiviX-style)
+    // Архитектура построена таким образом, чтобы много-коммандный рендеринг можно было превратить в однокоммандный с легкостью... (т.е. JiviX-style)
     void RayTracing::setCommand(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0) {
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
@@ -114,7 +116,7 @@ namespace vlr {
         };
 
         // nullify counters
-        device->CmdUpdateBuffer(currentCmd, this->counters->getGpuBuffer(), 0u, 5ull * sizeof(uint32_t), &zero);
+        device->CmdFillBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer().offset(), 5ull * sizeof(uint32_t), zero);
         vkt::commandBarrier(device, currentCmd);
 
         {   // Denoise diffuse data

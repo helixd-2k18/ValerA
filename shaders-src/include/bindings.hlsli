@@ -78,8 +78,8 @@ layout (binding = 0, set = 16, scalar) readonly buffer Instances { RTInstance in
 
 // 
 layout (binding = 0, set = 11, scalar) buffer Counters { uint counters[5u]; };
-layout (binding = 0, set = 12, scalar) buffer RayDatas { RayData rays[]; };
-layout (binding = 0, set = 13, scalar) buffer HitDatas { HitData hits[]; };
+layout (binding = 0, set = 12, scalar) buffer RayDatas { RayData data[]; } rays[2u];
+layout (binding = 0, set = 13, scalar) buffer HitDatas { HitData data[]; } hits[1u];
 
 // 
 layout (push_constant) uniform pushConstants { uint4 pushed; };

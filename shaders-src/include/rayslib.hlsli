@@ -59,7 +59,7 @@ RayData finishRay(inout RayData ray) {
 // 
 RayData finishBy(inout RayData ray) {
 #ifdef GLSL
-    if (dot(ray.color.xyz, 0.hf.xxx) <= 0.001f || lifetime(ray) <= 0u) { finishRay(ray); };
+    if (dot(ray.color.xyz, 1.hf.xxx) <= 0.001f || lifetime(ray) <= 0u) { finishRay(ray); };
 #endif
     return ray;
 };
@@ -67,7 +67,7 @@ RayData finishBy(inout RayData ray) {
 // 
 void storeRay(in RayData ray, in uint rayID) {
 #ifdef GLSL
-    if (rayID != ~0u && rayID < LIMITS) { lifetime(ray, lifetime(ray)-1u); rays[rayID] = ray; };
+    if (rayID != ~0u && rayID < LIMITS) { lifetime(ray, lifetime(ray)-1u); rays[0u].data[rayID] = ray; };
 #endif
 };
 
@@ -75,7 +75,8 @@ void storeRay(in RayData ray, in uint rayID) {
 uint emitRay(inout RayData ray) {
     uint rayID = ~0u; finishBy(ray);
 #ifdef GLSL
-    if (counters[RAY_COUNTER] < LIMITS && !finished(ray) && lifetime(ray) > 0u) { 
+    if (counters[RAY_COUNTER] < LIMITS && !finished(ray)) 
+    {
         rayID = incrementCnt(RAY_COUNTER);
         storeRay(ray, rayID);
     };
@@ -85,7 +86,7 @@ uint emitRay(inout RayData ray) {
 
 // 
 void storeHit(in HitData hit, in uint hitID) { 
-    if (hitID != ~0u && hitID < LIMITS) { hits[hitID] = hit; };
+    if (hitID != ~0u && hitID < LIMITS) { hits[0u].data[hitID] = hit; };
 };
 
 // 

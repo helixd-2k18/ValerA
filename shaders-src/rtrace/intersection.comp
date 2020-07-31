@@ -33,7 +33,7 @@ void main()
         const uint gID = woffset + (i + LocalInvocationIndex);
         packed = gID, seed = uint2(packed, constants.rdata.x);
         if (gID < fcount) {
-            RayData ray = rays[gID];
+            RayData ray = rays[0u].data[gID];
             XHIT xhit = traceRays(ray.origin, ray.direct, 10000.f, true, 0.001f);
 
             HitData hit;

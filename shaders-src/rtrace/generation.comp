@@ -92,7 +92,7 @@ void main()
             //outRay.color = f16vec4(0.f.xxxx);
 
             kind(outRay, DIFFUSE_RAY);
-            lifetime(outRay, 2);
+            lifetime(outRay, 2u);
             finished(outRay, false);
         } else { // SkyBox
             outRay.origin = origin;
@@ -101,11 +101,20 @@ void main()
             outRay.color = half4(1.f.xxxx);
             outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(raydir.xyz, origin.xyz));
             outRay.color = half4(0.f.xxxx);
+            outRay.meta = u8vec4(0u);
+            
             kind(outRay, DIFFUSE_RAY);
             lifetime(outRay, 0u);
             finished(outRay, true);
         };
-        emitRay(outRay);
+
+        uint ID = emitRay(outRay);
+
+        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
+        { // Exist Debug
+            //RayData ray = rays[0u].data[ID];
+            //atomicSuperImageAdd3(currImages[IW_RENDERED], curPixel, toLinear(ray.color));
+        };
     };
 
 };
