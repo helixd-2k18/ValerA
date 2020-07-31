@@ -400,7 +400,7 @@ int main() {
         .customId = 0u,
         .mask = 0xFFu,
         .instanceOffset = 0u,
-        .flags = 0u,
+        .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
         .accelerationStructureHandle = accelerationBottom->getHandle()
     };
     instanceSet->get(0u) = testInstance;
