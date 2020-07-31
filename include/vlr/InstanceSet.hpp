@@ -10,10 +10,12 @@ namespace vlr {
 
     public: 
         InstanceSet() : SetBase_T<vkh::VsGeometryInstance>() { this->constructorExtend0(); };
-        InstanceSet(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info) : SetBase_T<vkh::VsGeometryInstance>(driver, info) { this->constructorExtend0(driver); };
+        InstanceSet(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<vkh::VsGeometryInstance>(driver, info) { this->constructorExtend0(driver, info); };
 
         virtual void constructorExtend0() {};
-        virtual void constructorExtend0(vkt::uni_ptr<Driver> driver) {};
+        virtual void constructorExtend0(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) {
+            this->driver = driver;
+        };
 
         // 
         virtual const vkt::VectorBase& getCpuBuffer() const override { return SetBase_T<vkh::VsGeometryInstance>::getCpuBuffer(); };

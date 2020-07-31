@@ -43,7 +43,7 @@ namespace vlr {
 
                 // 
                 //std::cout << "Instance Sizeof = " << sizeof(vkh::VsGeometryInstance) << std::endl;
-                instanceDesc.data = instanceSet->getGpuBuffer();
+                instanceDesc.data = instanceSet->getGpuBuffer()->deviceAddress();
                 instanceDesc.arrayOfPointers = false;
                 geometryDesc.geometry.instances = instanceDesc;
                 geometryDesc.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
@@ -73,10 +73,10 @@ namespace vlr {
                 auto buffer = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
 
                 // 
-                triangleDesc.transformData = geometrySet->getGpuBuffer();
+                triangleDesc.transformData = geometrySet->getGpuBuffer()->deviceAddress();
                 triangleDesc.vertexFormat = attribute.format;
                 triangleDesc.vertexStride = binding.stride;
-                triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
+                triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute)->deviceAddress();
 
                 // 
                 if (geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1 && geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR) {
