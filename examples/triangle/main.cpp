@@ -356,15 +356,17 @@ int main() {
     };
 
     // 
+    geometrySet->setInterpolation(interpolation);
+    geometrySet->pushGeometry(geometry);
+
+    // 
     fw->submitOnce([&](VkCommandBuffer cmd) {
         vertexData->setCommand(cmd);
         bindings->setCommand(cmd);
         accessors->setCommand(cmd);
+        geometrySet->setCommand(cmd);
+        interpolation->setCommand(cmd);
     });
-
-    // 
-    geometrySet->setInterpolation(interpolation);
-    geometrySet->pushGeometry(geometry);
 
     // 
     auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
@@ -427,6 +429,7 @@ int main() {
 
     // 
     auto testMaterial = materialSet->get(0u);
+    testMaterial.diffuse = glm::vec4(1.f,1.f,1.f,1.f);
 
     // 
     framebuffer->createFramebuffer(canvasWidth, canvasHeight);

@@ -10,7 +10,7 @@ namespace vlr {
     };
 
     void GeometrySet::pushGeometry(vkt::uni_ptr<Geometry> geometry) {
-        uintptr_t I = this->getCpuBuffer().size();
+        uintptr_t I = geometries.size();//this->getCpuBuffer().size();
         geometries.push_back(geometry);
 
         vkt::Vector<uint8_t> buffer = this->vertexSet->getBuffer_T(geometry->desc->vertexAttribute);

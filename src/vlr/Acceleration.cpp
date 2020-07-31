@@ -77,7 +77,6 @@ namespace vlr {
                 triangleDesc.vertexFormat = attribute.format;
                 triangleDesc.vertexStride = binding.stride;
                 triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
-                
 
                 // 
                 if (geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1 && geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR) {
@@ -95,8 +94,8 @@ namespace vlr {
                 geometryDesc.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
 
                 // 
-                offsetDesc.firstVertex = (geometrySet)->get(i).firstVertex;
-                offsetDesc.primitiveCount = (geometrySet)->get(i).primitiveCount;
+                offsetDesc.firstVertex = geometry->desc->firstVertex;
+                offsetDesc.primitiveCount = geometry->desc->primitiveCount;
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
                 offsetDesc.primitiveOffset = uint32_t(buffer.offset());
 
