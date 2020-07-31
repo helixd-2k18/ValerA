@@ -162,14 +162,11 @@ uint packUnorm4x8(in float4 color) {
     return ((colors.x>>0)|(colors.y<<8)|(colors.z<<16)|(colors.w<<24));
 };
 
-#define SHARED groupshared
-#define STATIC static 
+
 #define mix lerp
 #define fract frac
 #else // GLSL-side
 
-#define SHARED shared
-#define STATIC  
 float3 mul(in float3 a, in float3x3 m) { return m * a; };
 float3 mul(in float3x3 m, in float3 a) { return a * m; };
 

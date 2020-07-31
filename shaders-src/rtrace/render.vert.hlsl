@@ -1,3 +1,4 @@
+#define DRIVER_INCLUDE_H
 #include "../include/driver.hlsli"
 
 // 

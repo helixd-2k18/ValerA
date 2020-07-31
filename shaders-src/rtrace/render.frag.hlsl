@@ -1,3 +1,4 @@
+//#define DRIVER_INCLUDE_H
 #include "../include/driver.hlsli"
 
 //#define FXAA_PC 1
@@ -59,7 +60,7 @@ PSOutput main(in PSInput inp)
 
     int2 size = imageSize(currImages[IW_RENDERED]); size.x >> 2;//
     outp.uFragColor = fromLinear(superImageLoad(currImages[IW_RENDERED], int2(inp.position)));
-
+    //outp.uFragColor = float4(1.f, 0.5f, 0.f, 1.f);
 
 #ifdef GLSL
     uFragColor = outp.uFragColor;

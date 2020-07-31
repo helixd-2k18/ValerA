@@ -372,6 +372,12 @@ int main() {
     auto layout = std::make_shared<vlr::PipelineLayout>(fw);
 
     // 
+    instanceSet->get(0u) = vkh::VsGeometryInstance{
+        .customId = 0u,
+        .accelerationStructureHandle = accelerationBottom->getHandle()
+    };
+
+    // 
     auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
         .layout = layout,
         .framebuffer = framebuffer,
@@ -669,10 +675,11 @@ int main() {
 
             // 
             auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
+            instanceSet->setCommand(rtCommand);
             materialSet->setCommand(rtCommand);
             constants->setCommand(rtCommand, true);
             buildCommand->setCommand(rtCommand);
-            renderCommand->setCommand(rtCommand);
+            //renderCommand->setCommand(rtCommand);
             fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
             //break; // FOR DEBUG!!
 
@@ -694,6 +701,18 @@ int main() {
 
                 //
                 decltype(auto) descriptorSets = layout->getDescriptorSets();
+
+                // Reuse depth as general
+                vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
+                    .image = fw->getDepthImage(),
+                    .targetLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                    .originLayout = VK_IMAGE_LAYOUT_GENERAL,
+                    .subresourceRange = vkh::VkImageSubresourceRange{ {}, 0u, 1u, 0u, 1u }.also([=](auto* it) {
+                        auto aspect = vkh::VkImageAspectFlags{.eDepth = 1u, .eStencil = 1u };
+                        it->aspectMask = aspect;
+                        return it;
+                    })
+                });
 
                 // 
                 fw->getDeviceDispatch()->CmdBeginRenderPass(commandBuffer, vkh::VkRenderPassBeginInfo{ .renderPass = fw->applicationWindow.renderPass, .framebuffer = framebuffers[currentBuffer].frameBuffer, .renderArea = renderArea, .clearValueCount = 2u, .pClearValues = reinterpret_cast<vkh::VkClearValue*>(&clearValues[0]) }, VK_SUBPASS_CONTENTS_INLINE);

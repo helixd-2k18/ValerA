@@ -84,6 +84,14 @@ precision highp int;
 #define f16vec4 half4
 #endif
 
+#ifdef GLSL 
+#define SHARED shared
+#define STATIC  
+#else
+#define SHARED groupshared
+#define STATIC static 
+#endif
+
 #endif
 
 #ifndef DRIVER_INCLUDE_H
