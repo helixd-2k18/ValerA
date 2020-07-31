@@ -71,6 +71,7 @@ PS_INPUT main(in triangle GS_INPUT inp[3], inout TriangleStream<TS_OUTPUT> Outpu
     XTRI tri = geometrical(hit);
     for (uint i=0;i<3;i++) {
         gl_Position = mul(getMT4x4(constants.projection), float4(mul(getMT3x4(constants.modelview), float4(tri.gPosition[i].xyz, 1.f)), 1.f));
+        gl_Position.y *= -1.f;
         fPosition = tri.gPosition[i];
         fTexcoord = tri.gTexcoord[i];
         fBarycent = float4(bary[i], 0.f);
