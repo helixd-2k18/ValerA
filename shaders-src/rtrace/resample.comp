@@ -30,8 +30,6 @@ void main()
 
     // Previous Frame Indices
     uint4 wIndices = floatBitsToUint(superImageLoad(prevImages[IW_INDICIES], curPixel));
-
-    // 
     uint globalInstanceID = wIndices.x;
     uint geometrySetID = getMeshID(globalInstanceID);
     uint geometryInstanceID = wIndices.y;
@@ -54,7 +52,7 @@ void main()
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
     float3x4 matra4 = instances[nonuniformEXT(globalInstanceID)].transform;
-    if (hasTransform(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { matras = node.transform; };
+    if (hasTransform(node)) { matras = node.transform; };
 
     // WARNING! Quality may critically drop when move! 
     const bool checker = bool(((curPixel.x ^ curPixel.y) ^ (constants.rdata.x^1u))&1u);
@@ -66,17 +64,18 @@ void main()
 
     // 
     float4 wPosition = float4(superImageLoad(prevImages[IW_ORIGINAL], curPixel).xyz, 1.f);
-    wPosition = float4(mul(matra4, float4(mul(matras, float4(wPosition.xyz, 1.f)), 1.f)), 1.f); // Transform As Current
+           wPosition = float4(mul(matra4, float4(mul(matras, wPosition), 1.f)), 1.f); // Transform As Current
     float3 screenpos = world2screen(wPosition.xyz);
 
     // Where Will Re-Located
-    const int2 topix = int2((screenpos.xy * 0.5f + 0.5f) * launchSize);
+    const int2 topix = int2((screenpos.xy * 0.5f + 0.5f) * float2(sizPixel));
     float4 worldspos = float4(superImageLoad(currImages[IW_POSITION], topix).xyz, 1.f);
     float3 screensmp = world2screen(worldspos.xyz);
 
     // 
     if (
-        dot(imageLoad(rasteredImages[RS_BARYCENT], curPixel).xyz, 1.f.xxx) > 0.f && 
+        //true
+        //dot(imageLoad(prevImages[IW_BARYCENT], curPixel).xyz, 1.f.xxx) > 0.f && 
         abs(screenpos.z - screensmp.z) < 0.0001f && 
         distance(wPosition.xyz, worldspos.xyz) < 0.1f
     ) 

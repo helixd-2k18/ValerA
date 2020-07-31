@@ -347,7 +347,7 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     // 
     for (uint32_t i=0u;i<3u;i++) {
         geometry.oPosition[i] = geometry.gPosition[i];
-        geometry.gPosition[i] = float4(mul(matra4, float4(mul(matras, float4(geometry.gPosition[i].xyz, 1.f)), 1.f)), 1.f);
+        geometry.gPosition[i] = float4(mul(matra4, float4(mul(matras, float4(geometry.oPosition[i].xyz, 1.f)), 1.f)), 1.f);
 
         // 
         geometry.gNormal[i] = float4(geometry.gNormal[i].xyz, 0.f);

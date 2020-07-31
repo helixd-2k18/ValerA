@@ -21,16 +21,17 @@ namespace vlr {
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/generation.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/intersection.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/interpolation.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/finalize.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/resample.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT)
+            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/resample.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/finalize.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT)
         };
 
         // 
         this->generation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[0]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->intersection = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[1]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->interpolation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[2]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->finalize = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[3]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->resample = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[4]), layout->pipelineLayout, this->driver->getPipelineCache());
+        this->resample = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[3]), layout->pipelineLayout, this->driver->getPipelineCache());
+        this->finalize = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[4]), layout->pipelineLayout, this->driver->getPipelineCache());
+        
 
         // 
         this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
