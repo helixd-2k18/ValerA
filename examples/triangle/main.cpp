@@ -327,6 +327,8 @@ int main() {
     // 
     fw->submitOnce([&](VkCommandBuffer cmd) {
         vertexData->setCommand(cmd);
+        bindings->setCommand(cmd);
+        accessors->setCommand(cmd);
     });
 
     // 
