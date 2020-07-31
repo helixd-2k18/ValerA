@@ -447,8 +447,10 @@ int main() {
 
 
     // 
-    auto testMaterial = materialSet->get(0u);
+    auto& testMaterial = materialSet->get(0u);
+    testMaterial = vlr::MaterialUnit{};
     testMaterial.diffuse = glm::vec4(1.f,1.f,1.f,1.f);
+
 
     // 
     framebuffer->createFramebuffer(canvasWidth, canvasHeight);

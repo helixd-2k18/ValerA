@@ -24,6 +24,24 @@ float4 cbLoad(const int ID, in int2 samplep) {
     return fixedt;
 };
 
+// TODO: CheckerBoard fixing for reflection and diffuse
+float4 pbLoad(const int ID, in int2 samplep) {
+    float4 center = superImageLoad(prevImages[ID], samplep);
+    float4 fixedt = center;
+    int2 cxt = samplep + int2(1, 0);
+    int2 cyt = samplep + int2(0, 1);
+    float4 xt = superImageLoad(prevImages[ID], cxt);
+    float4 yt = superImageLoad(prevImages[ID], cyt);
+#ifndef HIGH_QUALITY_TRANSPARENCY
+    if (dot(fixedt.xyz,1.f.xxx) < 0.0001f) { 
+        if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else 
+                                                                            { fixedt =  max(xt, yt); };
+    };
+#endif
+    return fixedt;
+};
+
+
 // TODO: HLSL
 #ifdef GLSL
 layout ( local_size_x = 32u, local_size_y = 24u ) in; 
@@ -74,11 +92,9 @@ void main()
 
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            float4 indirect = cbLoad(IW_INDIRECT, curPixel) + cbLoad(IW_INDIRECT, curPixel);
+            float4 indirect = cbLoad(IW_INDIRECT, curPixel);
             float4 refleclr = cbLoad(IW_REFLECLR, curPixel); refleclr /= indirect.w; // Premultiplied alpha and has no sampling ratio
-
-            // 
-            float4 shadows = cbLoad(IW_SHADOWCL, curPixel) + cbLoad(IW_SHADOWCL, curPixel); indirect += shadows;
+            float4 shadows = cbLoad(IW_SHADOWCL, curPixel); //indirect += shadows;
             float4 diffuse = float4(MAT.diffuseColor.xyz * (indirect.xyz/max(indirect.w,1.f)), 1.f);
 
             // 
@@ -89,6 +105,8 @@ void main()
             float4 indirect = cbLoad(IW_INDIRECT, curPixel);
             superImageStore(currImages[IW_RENDERED], curPixel, indirect);
         };
+
+        //superImageStore(currImages[IW_RENDERED], curPixel, cbLoad(IW_INDIRECT, curPixel));
     };
 
     // 
