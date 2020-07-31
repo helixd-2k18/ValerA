@@ -609,7 +609,10 @@ int main() {
 
     // 
     constants->get(0u).modelview = glm::transpose(glm::mat4x3(glm::lookAt(eye, foc, glm::dvec3(0.f, 1.f, 0.f))));
-    constants->get(0u).projection = glm::transpose(glm::mat4x3(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
+    constants->get(0u).projection = glm::transpose(glm::mat4x4(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
+    constants->get(0u).modelviewInv = glm::transpose(glm::mat4x3(glm::inverse(glm::lookAt(eye, foc, glm::dvec3(0.f, 1.f, 0.f)))));
+    constants->get(0u).projectionInv = glm::transpose(glm::mat4x4(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
+
 
     // 
     vkh::VsGraphicsPipelineCreateInfoConstruction pipelineInfo = {};
