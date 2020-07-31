@@ -214,8 +214,8 @@ int main() {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     // DEBUG!
-    std::cout << "GLFW-Hint Initialized" << std::endl;
-    system("PAUSE");
+    //std::cout << "GLFW-Hint Initialized" << std::endl;
+    //system("PAUSE");
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
