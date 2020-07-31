@@ -339,9 +339,9 @@ int main() {
     interpolation->get(0u).data[2u] = 3u;
 
     // 
-    vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f), .fBinormal = glm::vec4(1.f, 0.f, 0.f, 0.f) };
-    vertexData->get(1u) = FDStruct{ .fPosition = glm::vec4(-1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f), .fBinormal = glm::vec4(1.f, 0.f, 0.f, 0.f) };
-    vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f), .fBinormal = glm::vec4(1.f, 0.f, 0.f, 0.f) };
+    vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
+    vertexData->get(1u) = FDStruct{ .fPosition = glm::vec4(-1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
+    vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
 
     // 
     bindings->get(0u) = vkh::VkVertexInputBindingDescription{

@@ -348,11 +348,29 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     for (uint32_t i=0u;i<3u;i++) {
         geometry.oPosition[i] = geometry.gPosition[i];
         geometry.gPosition[i] = float4(mul(matra4, float4(mul(matras, float4(geometry.oPosition[i].xyz, 1.f)), 1.f)), 1.f);
+    };
 
-        // 
+    const float4 dp1 = geometry.gPosition[1] - geometry.gPosition[0], dp2 = geometry.gPosition[2] - geometry.gPosition[0];
+    const float4 tx1 = geometry.gTexcoord[1] - geometry.gTexcoord[0], tx2 = geometry.gTexcoord[2] - geometry.gTexcoord[0];
+    const float3 normal = normalize(cross(dp1.xyz, dp2.xyz));
+
+    const float coef = 1.f / (tx1.x * tx2.y - tx2.x * tx1.y);
+    const float3 tangent = (dp1.xyz * tx2.yyy - dp2.xyz * tx1.yyy) * coef;
+    const float3 binorml = (dp1.xyz * tx2.xxx - dp2.xyz * tx1.xxx) * coef;
+
+    for (uint32_t i=0u;i<3u;i++) { // 
         geometry.gNormal[i] = float4(geometry.gNormal[i].xyz, 0.f);
         geometry.gTangent[i] = float4(geometry.gTangent[i].xyz, 0.f);
         geometry.gBinormal[i] = float4(geometry.gBinormal[i].xyz, 0.f);
+
+        // 
+        if (!hasNormal(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { geometry.gNormal[i]  = float4(normal, 0.f); };
+        if (!hasTangent(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { 
+            geometry.gTangent[i].xyz = tangent - dot(geometry.gNormal[i].xyz,tangent.xyz)*geometry.gNormal[i].xyz;
+            geometry.gBinormal[i].xyz = binorml - dot(geometry.gNormal[i].xyz,binorml.xyz)*geometry.gNormal[i].xyz;
+        } else {
+            geometry.gBinormal[i].xyz = cross(geometry.gNormal[i].xyz, geometry.gTangent[i].xyz);
+        };
 
         // 
         geometry.gNormal[i].xyz = mul(normInTransform, mul(normalTransform, geometry.gNormal[i].xyz));
