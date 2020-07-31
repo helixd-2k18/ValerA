@@ -51,11 +51,12 @@ layout (binding = 0, set = 4,    r32f) uniform image2D prevImages[12u]; // 4x wi
 layout (binding = 1, set = 4,    r32f) uniform image2D currImages[12u]; // 4x wider
 layout (binding = 2, set = 4,    r32f) uniform image2D resampleImages[8u]; 
 layout (binding = 3, set = 4, rgba32f) uniform image2D rasteredImages[8u]; // used by rasterization
-layout (binding = 4, set = 4         ) uniform sampler samplers[8u];
+layout (binding = 4, set = 4         ) uniform sampler staticSamplers[8u];
 
 // Material Set
 layout (binding = 0, set = 5, scalar) readonly buffer Materials { MaterialUnit materials[]; };
 layout (binding = 0, set = 6) uniform texture2D textures[];
+layout (binding = 0, set = 7) uniform texture2D samplers[];
 // TODO: Samplers Set
 
 layout (binding = 0, set = 8, scalar) readonly buffer Geometries { GeometryDesc data[]; } geometries[];
@@ -125,7 +126,7 @@ RWTexture2D<float4> prevImages[12u]    : register(u0 , space4); // Pre-resampled
 RWTexture2D<float4> currImages[12u]    : register(u12, space4); // Used by rasterization
 RWTexture2D<float4> resampleImages[8u] : register(u24, space4);
 RWTexture2D<float4> rasteredImages[8u] : register(u32, space4);
-SamplerState              samplers[8u] : register(t0, space4);
+SamplerState        staticSamplers[8u] : register(t0, space4);
 
 // 
 RWStructuredBuffer<MaterialUnit> materials : register(u0, space5);
@@ -289,7 +290,7 @@ float4 triangulate(in uint3 indices, in uint loc, in uint geometrySetID, in floa
 #define EMISSION_COLOR emissionColor.xyz
 
 float4 gSkyShader(in float3 raydir, in float3 origin) {
-    return float4(textureSample(background, samplers[3u], flip(lcts(raydir.xyz))).xyz, 1.f);
+    return float4(textureSample(background, staticSamplers[3u], flip(lcts(raydir.xyz))).xyz, 1.f);
 };
 
 // 
@@ -418,10 +419,10 @@ XPOL materialize(in XHIT hit, inout XGEO geo) { //
 
     // 
     if (hit.gBarycentric.w < 9999.f) {
-        material. diffuseColor = toLinear(unit. diffuseTexture >= 0 ? textureSample(textures[nonuniformEXT(unit. diffuseTexture)],samplers[2u],gTexcoord.xy) : unit.diffuse);
-        material.emissionColor = toLinear(unit.emissionTexture >= 0 ? textureSample(textures[nonuniformEXT(unit.emissionTexture)],samplers[2u],gTexcoord.xy) : unit.emission);
-        material. normalsColor = unit. normalsTexture >= 0 ? textureSample(textures[nonuniformEXT(unit. normalsTexture)],samplers[2u],gTexcoord.xy) : unit.normals;
-        material.specularColor = unit.specularTexture >= 0 ? textureSample(textures[nonuniformEXT(unit.specularTexture)],samplers[2u],gTexcoord.xy) : unit.specular;
+        material. diffuseColor = toLinear(unit. diffuseTexture >= 0 ? textureSample(textures[nonuniformEXT(unit. diffuseTexture)],staticSamplers[2u],gTexcoord.xy) : unit.diffuse);
+        material.emissionColor = toLinear(unit.emissionTexture >= 0 ? textureSample(textures[nonuniformEXT(unit.emissionTexture)],staticSamplers[2u],gTexcoord.xy) : unit.emission);
+        material. normalsColor = unit. normalsTexture >= 0 ? textureSample(textures[nonuniformEXT(unit. normalsTexture)],staticSamplers[2u],gTexcoord.xy) : unit.normals;
+        material.specularColor = unit.specularTexture >= 0 ? textureSample(textures[nonuniformEXT(unit.specularTexture)],staticSamplers[2u],gTexcoord.xy) : unit.specular;
 
         // Mapping
         material.mapNormal = float4(normalize(mul(normalize(material.normalsColor.xyz * 2.f - 1.f), float3x3(geo.gTangent.xyz, geo.gBinormal.xyz, geo.gNormal.xyz))), 1.f);

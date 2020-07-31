@@ -129,7 +129,7 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
 #endif
 
     const MaterialUnit unit = materials[MatID]; // NEW! 20.04.2020
-    const float4 diffuseColor = toLinear(unit. diffuseTexture >= 0 ? textureSample(textures[nonuniformEXT(unit. diffuseTexture)], samplers[2u], inp.fTexcoord.xy) : unit.diffuse);
+    const float4 diffuseColor = toLinear(unit. diffuseTexture >= 0 ? textureSample(textures[nonuniformEXT(unit. diffuseTexture)], staticSamplers[2u], inp.fTexcoord.xy) : unit.diffuse);
 
     // 
     PS_OUTPUT outp;
