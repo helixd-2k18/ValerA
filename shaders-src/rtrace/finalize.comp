@@ -81,6 +81,9 @@ void main()
             //diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, vec3(0.f));
             diffuse.xyz += refleclr.xyz; // Already Pre-Multiplied with Coef
             superImageStore(currImages[IW_RENDERED], curPixel, diffuse);
+        } else {
+            float4 indirect = cbLoad(IW_INDIRECT, curPixel);
+            superImageStore(currImages[IW_RENDERED], curPixel, indirect);
         };
     };
 

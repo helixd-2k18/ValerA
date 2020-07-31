@@ -45,7 +45,7 @@ const uint SHADOWS_RAY = 2u;
 RayData finishRay(inout RayData ray) {
 #ifdef GLSL
     finished(ray, true);
-    if (dot(ray.emission.xyz, 0.hf.xxx) > 0.001hf) {
+    if (dot(ray.emission.xyz, 1.hf.xxx) > 0.001hf) {
         uint kindof = kind(ray);
         if (kindof == DIFFUSE_RAY) { atomicSuperImageAdd(currImages[IW_INDIRECT], int2(ray.pixelID), ray.emission); }; // WARNING: Ray Color should be Pre-Multiplied with Alpha (for example, 0.5f reflection, 0.5f diffuse, 1.f shadows)
         if (kindof == REFLECT_RAY) { atomicSuperImageAdd(currImages[IW_REFLECLR], int2(ray.pixelID), ray.emission); }; // WARNING: Ray Color should be Pre-Multiplied with Alpha 

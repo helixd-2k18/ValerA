@@ -86,12 +86,17 @@ void main()
             kind(outRay, DIFFUSE_RAY);
             lifetime(outRay, 2);
             finished(outRay, false);
-            emitRay(outRay);
         } else { // SkyBox
+            outRay.color = half4(1.f.xxxx);
             outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(raydir.xyz, origin.xyz));
-            outRay.color = half4(0.f);
+            outRay.color = half4(0.f.xxxx);
+            kind(outRay, DIFFUSE_RAY);
             lifetime(outRay, 0u);
+            finished(outRay, true);
+
+            superImageStore(currImages[IW_RENDERED], curPixel, float4(outRay.emission));
         };
+        emitRay(outRay);
     };
 
 };

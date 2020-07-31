@@ -54,9 +54,9 @@ PSOutput main(in PSInput inp)
     // Final Result Rendering
     PSOutput outp;
     outp.uFragColor = 0.f.xxxx;
-    
+
     int2 size = imageSize(currImages[IW_RENDERED]); size.x >> 2;//
-    outp.uFragColor = fromLinear(superImageLoad(currImages[IW_RENDERED], int2(inp.position)));
+    outp.uFragColor = fromLinear(superImageLoad(currImages[IW_RENDERED], int2(inp.position.xy)));
 
 #ifdef GLSL
     uFragColor = outp.uFragColor;
