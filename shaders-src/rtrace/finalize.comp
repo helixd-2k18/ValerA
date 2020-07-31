@@ -112,7 +112,7 @@ void main()
     // 
     for (uint i=0;i<12;i++) {
         const float4 pixof = superImageLoad(currImages[i], curPixel);
-        superImageStore(currImages[i], curPixel, pixof);
+        superImageStore(prevImages[i], curPixel, pixof);
     };
 
 };
