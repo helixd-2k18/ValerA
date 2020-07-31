@@ -64,6 +64,7 @@ public:
     glm::dvec3* eyePos = nullptr;
     glm::dvec3* upVector = nullptr;
     glm::uvec2* canvasSize = nullptr;
+    double mX = 1e-5, mY = 1e-5, dX = 0.0, dY = 0.0;
 
     // create relative control matrice
     auto project() { return glm::lookAt(*eyePos, (*eyePos + *viewVector), *upVector); };
@@ -71,7 +72,7 @@ public:
     // event handler
     CameraController& handle() {
         //auto mPtr = (glm::dvec2*)&Shared::active.mX, mDiff = *mPtr - mousePosition;
-        auto mDiff = glm::dvec2(Shared::active.dX, Shared::active.dY);
+        auto mDiff = glm::dvec2(Shared::active.mX - this->mX, Shared::active.mY - this->mY); this->mX = Shared::active.mX, this->mY = Shared::active.mY;
         auto tDiff = Shared::active.tDiff;
 
         glm::dmat4 viewm = this->project();
@@ -81,8 +82,12 @@ public:
 
         if (Shared::active.mouse.size() > 0 && Shared::active.mouse[GLFW_MOUSE_BUTTON_LEFT] && isFocus)
         {
-            if (glm::abs(mDiff.x) > 0.0) this->rotateX(vi, mDiff.x);
-            if (glm::abs(mDiff.y) > 0.0) this->rotateY(vi, mDiff.y);
+            if (glm::abs(mDiff.x) > 0.0) {
+                this->rotateX(vi, mDiff.x);
+            };
+            if (glm::abs(mDiff.y) > 0.0) {
+                this->rotateY(vi, mDiff.y);
+            };
         }
 
         if (Shared::active.keys.size() > 0 && Shared::active.keys[GLFW_KEY_W] && isFocus)
@@ -634,13 +639,6 @@ int main() {
     cameraController->viewVector = &evc;
 
     // 
-    constants->get(0u).modelview = glm::transpose(glm::mat4x3(glm::lookAt(eye, foc, glm::dvec3(0.f, 1.f, 0.f))));
-    constants->get(0u).projection = glm::transpose(glm::mat4x4(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
-    constants->get(0u).modelviewInv = glm::transpose(glm::mat4x3(glm::inverse(glm::lookAt(eye, foc, glm::dvec3(0.f, 1.f, 0.f)))));
-    constants->get(0u).projectionInv = glm::transpose(glm::mat4x4(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
-
-
-    // 
     vkh::VsGraphicsPipelineCreateInfoConstruction pipelineInfo = {};
     pipelineInfo.stages = {
         vkt::makePipelineStageInfo(fw->getDeviceDispatch(), vkt::readBinary(std::string("./shaders/render.vert.spv")), VK_SHADER_STAGE_VERTEX_BIT),
@@ -674,7 +672,7 @@ int main() {
     Shared::active.tDiff = 0.0; // reset diff to near-zero (avoid critical math errors)
     Shared::active.keys.resize(1024, uint8_t(0u));
     Shared::active.mouse.resize(128, uint8_t(0u));
-    //Shared::TimeCallback(double(context->registerTime()->setDrawCount(frameCount++)->drawTime()));
+    Shared::TimeCallback(glfwGetTime() * 1000.0);
 
     // 
     auto counters = rayTracing->getCounters();
@@ -700,15 +698,20 @@ int main() {
         // 
         std::vector<uint32_t> cdata = { counters->get(0u), counters->get(1u), counters->get(2u), counters->get(3u), counters->get(4u) };
 
-
-
         { // submit rendering (and wait presentation in device)
             vkh::VkClearValue clearValues[2] = { {}, {} };
             clearValues[0].color = vkh::VkClearColorValue{}; clearValues[0].color.float32 = glm::vec4(0.f, 0.f, 0.f, 0.f);
             clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.0f, 0 };
 
             // 
-            //Shared::TimeCallback(double(context->registerTime()->setModelView(glm::mat4x4(cameraController->handle().project()))->drawTime()));
+            Shared::TimeCallback(glfwGetTime()*1000.0);
+            glm::mat4 proj = cameraController->handle().project();
+
+            // 
+            constants->get(0u).modelview = glm::transpose(glm::mat4x3(proj));
+            constants->get(0u).projection = glm::transpose(glm::mat4x4(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
+            constants->get(0u).modelviewInv = glm::transpose(glm::mat4x3(glm::inverse(proj)));
+            constants->get(0u).projectionInv = glm::transpose(glm::mat4x4(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
 
             // Create render submission 
             std::vector<VkSemaphore> waitSemaphores = { framebuffers[currentBuffer].presentSemaphore }, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };

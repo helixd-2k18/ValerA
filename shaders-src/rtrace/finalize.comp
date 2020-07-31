@@ -93,9 +93,14 @@ void main()
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
             float4 indirect = cbLoad(IW_INDIRECT, curPixel) + sbLoad(IW_INDIRECT, curPixel);
-            float4 refleclr = cbLoad(IW_REFLECLR, curPixel) + sbLoad(IW_REFLECLR, curPixel); refleclr /= indirect.w; // Premultiplied alpha and has no sampling ratio
+            float4 refleclr = cbLoad(IW_REFLECLR, curPixel) + sbLoad(IW_REFLECLR, curPixel); refleclr /= max(indirect.w, 1.f); // Premultiplied alpha and has no sampling ratio
             float4 shadows  = cbLoad(IW_SHADOWCL, curPixel) + sbLoad(IW_SHADOWCL, curPixel); //indirect += shadows;
             float4 diffuse  = float4(MAT.diffuseColor.xyz * (indirect.xyz/max(indirect.w,1.f)), 1.f);
+
+            // 
+            indirect = max(indirect, 0.f.xxxx);
+            refleclr = max(refleclr, 0.f.xxxx);
+            shadows = max(shadows, 0.f.xxxx);
 
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
