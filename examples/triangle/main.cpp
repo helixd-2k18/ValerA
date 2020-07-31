@@ -325,17 +325,6 @@ int main() {
     vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f) };
 
     // 
-    fw->submitOnce([&](VkCommandBuffer cmd) {
-        vertexData->setCommand(cmd);
-        bindings->setCommand(cmd);
-        accessors->setCommand(cmd);
-    });
-
-    // 
-    geometrySet->setInterpolation(interpolation);
-    geometrySet->pushGeometry(geometry);
-
-    // 
     bindings->get(0u) = vkh::VkVertexInputBindingDescription{
         .binding = 0u,
         .stride = sizeof(FDStruct)
@@ -365,6 +354,17 @@ int main() {
         .format = VK_FORMAT_R32G32B32A32_SFLOAT,
         .offset = offsetof(FDStruct, fTangent)
     };
+
+    // 
+    fw->submitOnce([&](VkCommandBuffer cmd) {
+        vertexData->setCommand(cmd);
+        bindings->setCommand(cmd);
+        accessors->setCommand(cmd);
+    });
+
+    // 
+    geometrySet->setInterpolation(interpolation);
+    geometrySet->pushGeometry(geometry);
 
     // 
     auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
