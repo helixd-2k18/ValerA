@@ -27,8 +27,8 @@ namespace vlr {
 
         // 
         this->generation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[0]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->interpolation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[1]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->intersection = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[2]), layout->pipelineLayout, this->driver->getPipelineCache());
+        this->intersection = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[1]), layout->pipelineLayout, this->driver->getPipelineCache());
+        this->interpolation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[2]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->finalize = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[3]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->resample = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[4]), layout->pipelineLayout, this->driver->getPipelineCache());
 
@@ -111,7 +111,7 @@ namespace vlr {
 
         // 
         for (uint32_t i=0;i<5;i++) {
-            (*this->counters)[i] = zero;
+        //    (*this->counters)[i] = zero;
         //    this->counters->setCommand(currentCmd);
         };
 
@@ -137,7 +137,7 @@ namespace vlr {
         vkt::commandBarrier(this->driver->getDeviceDispatch(), currentCmd);
 
         // 
-        for (uint32_t i=0;i<3;i++) {
+        for (uint32_t i=0;i<1;i++) {
             {   // Intersect All
                 device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->intersection);
                 device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);

@@ -75,7 +75,7 @@ void storeRay(in RayData ray, in uint rayID) {
 uint emitRay(inout RayData ray) {
     uint rayID = ~0u; finishBy(ray);
 #ifdef GLSL
-    if (counters[RAY_COUNTER] < LIMITS && !finished(ray)) 
+    if (counters[RAY_COUNTER] < LIMITS && !finished(ray) && lifetime(ray) > 0u) 
     {
         rayID = incrementCnt(RAY_COUNTER);
         storeRay(ray, rayID);

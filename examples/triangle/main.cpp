@@ -339,9 +339,9 @@ int main() {
     interpolation->get(0u).data[2u] = 3u;
 
     // 
-    vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f) };
-    vertexData->get(1u) = FDStruct{ .fPosition = glm::vec4(-1.f, -1.f, 0.f, 1.f) };
-    vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f) };
+    vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f), .fBinormal = glm::vec4(1.f, 0.f, 0.f, 0.f) };
+    vertexData->get(1u) = FDStruct{ .fPosition = glm::vec4(-1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f), .fBinormal = glm::vec4(1.f, 0.f, 0.f, 0.f) };
+    vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f), .fBinormal = glm::vec4(1.f, 0.f, 0.f, 0.f) };
 
     // 
     bindings->get(0u) = vkh::VkVertexInputBindingDescription{
@@ -675,7 +675,9 @@ int main() {
     //Shared::TimeCallback(double(context->registerTime()->setDrawCount(frameCount++)->drawTime()));
 
     // 
+    auto counters = rayTracing->getCounters();
 
+    // 
     while (!glfwWindowShouldClose(manager.window)) { // 
         glfwPollEvents();
 
@@ -692,6 +694,11 @@ int main() {
         vkh::handleVk(fw->getDeviceDispatch()->ResetFences(1u, &framebuffers[c_semaphore].waitFence));
         vkh::handleVk(fw->getDeviceDispatch()->AcquireNextImageKHR(swapchain, std::numeric_limits<uint64_t>::max(), framebuffers[c_semaphore].presentSemaphore, nullptr, &currentBuffer));
         //fw->getDeviceDispatch()->SignalSemaphore(vkh::VkSemaphoreSignalInfo{.semaphore = framebuffers[n_semaphore].semaphore, .value = 1u});
+
+        // 
+        std::vector<uint32_t> cdata = { counters->get(0u), counters->get(1u), counters->get(2u), counters->get(3u), counters->get(4u) };
+
+
 
         { // submit rendering (and wait presentation in device)
             vkh::VkClearValue clearValues[2] = { {}, {} };
@@ -715,6 +722,16 @@ int main() {
             constants->setCommand(rtCommand, true);
             buildCommand->setCommand(rtCommand);
             renderCommand->setCommand(rtCommand);
+            vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
+
+            // 
+            fw->getDeviceDispatch()->CmdCopyBuffer(rtCommand, counters->getGpuBuffer(), counters->getCpuBuffer(), 1u, vkh::VkBufferCopy{
+                counters->getGpuBuffer().offset(),
+                counters->getCpuBuffer().offset(),
+                counters->getCpuBuffer().range()
+            });
+
+
             fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
             //break; // FOR DEBUG!!
 

@@ -95,6 +95,15 @@ namespace vlr {
         virtual void setConstants(vkt::uni_ptr<Constants> constants) {
             this->constants = constants;
         };
+
+        // 
+        virtual vkt::uni_ptr<SetBase_T<uint32_t>>& getCounters() {
+            return this->counters;
+        };
+
+        virtual const vkt::uni_ptr<SetBase_T<uint32_t>>& getCounters() const {
+            return this->counters;
+        };
     };
 
 };
