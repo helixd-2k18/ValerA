@@ -372,10 +372,15 @@ int main() {
     auto layout = std::make_shared<vlr::PipelineLayout>(fw);
 
     // 
-    instanceSet->get(0u) = vkh::VsGeometryInstance{
+    const auto testInstance = vkh::VsGeometryInstance{
+        .transform = glm::mat3x4(1.f),
         .customId = 0u,
+        .mask = 0xFFu,
+        .instanceOffset = 0u,
+        .flags = 0u,
         .accelerationStructureHandle = accelerationBottom->getHandle()
     };
+    instanceSet->get(0u) = testInstance;
 
     // 
     auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
@@ -679,7 +684,7 @@ int main() {
             materialSet->setCommand(rtCommand);
             constants->setCommand(rtCommand, true);
             buildCommand->setCommand(rtCommand);
-            //renderCommand->setCommand(rtCommand);
+            renderCommand->setCommand(rtCommand);
             fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
             //break; // FOR DEBUG!!
 

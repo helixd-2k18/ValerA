@@ -36,6 +36,7 @@ namespace vlr {
             for (uint32_t i=0;i<this->accelerationTop->instanceSet->getCpuBuffer().size();i++) {
                 this->accelerationTop->instanceSet->get(i).accelerationStructureHandle = this->accelerations[this->accelerationTop->instanceSet->get(i).customId]->getHandle();
             };
+            this->accelerationTop->instanceSet->setCommand(buildCommand);
         };
 
         // 

@@ -42,13 +42,16 @@ namespace vlr {
                 auto instanceDesc = vkh::VkAccelerationStructureGeometryInstancesDataKHR{};
 
                 // 
+                //std::cout << "Instance Sizeof = " << sizeof(vkh::VsGeometryInstance) << std::endl;
                 instanceDesc.data = instanceSet->getGpuBuffer();
+                instanceDesc.arrayOfPointers = false;
                 geometryDesc.geometry.instances = instanceDesc;
+                geometryDesc.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
 
                 // 
                 offsetDesc.primitiveCount = uint32_t(instanceSet->getGpuBuffer().size());
-                offsetDesc.transformOffset = uint32_t(instanceSet->getGpuBuffer().offset());
-                offsetDesc.primitiveOffset = 0u;
+                offsetDesc.transformOffset = 0u;
+                offsetDesc.primitiveOffset = instanceSet->getGpuBuffer().offset();
                 offsetDesc.firstVertex = 0u;
 
                 // 
@@ -74,6 +77,7 @@ namespace vlr {
                 triangleDesc.vertexFormat = attribute.format;
                 triangleDesc.vertexStride = binding.stride;
                 triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
+                
 
                 // 
                 if (geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1 && geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR) {
@@ -88,6 +92,7 @@ namespace vlr {
                 if (triangleDesc.vertexFormat == VK_FORMAT_R32G32B32A32_SFLOAT) triangleDesc.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
                 if (triangleDesc.vertexFormat == VK_FORMAT_R16G16B16A16_SFLOAT) triangleDesc.vertexFormat = VK_FORMAT_R16G16B16_SFLOAT;
                 geometryDesc.geometry.triangles = triangleDesc;
+                geometryDesc.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
 
                 // 
                 offsetDesc.firstVertex = (geometrySet)->get(i).firstVertex;
@@ -112,12 +117,13 @@ namespace vlr {
         this->bdHeadInfo = vkh::VkAccelerationStructureBuildGeometryInfoKHR{};
         this->bdHeadInfo.geometryCount = uint32_t(buildGPtr.size());
         this->bdHeadInfo.ppGeometries = buildGPtr.data();
-        this->bdHeadInfo.type = instanceSet.has() ? VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR : VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
-        this->bdHeadInfo.flags = bdHeadFlags;
+        this->bdHeadInfo.type = this->create.type;
+        this->bdHeadInfo.flags = this->create.flags;
         this->bdHeadInfo.geometryArrayOfPointers = false;
         this->bdHeadInfo.dstAccelerationStructure = this->structure;
         this->bdHeadInfo.srcAccelerationStructure = VK_NULL_HANDLE;
         this->bdHeadInfo.update = false;
+        this->bdHeadInfo.scratchData = this->gpuScratchBuffer.deviceAddress();
 
         // Only For Supported GPU's
         if (build) {
@@ -137,12 +143,24 @@ namespace vlr {
         // FOR CREATE!
         this->dataCreate.resize(info->initials.size()); uintptr_t I = 0ull;
         for (auto& BC : this->dataCreate) {
-            BC.geometryType = instanceSet.has() ? VK_GEOMETRY_TYPE_INSTANCES_KHR : VK_GEOMETRY_TYPE_TRIANGLES_KHR;
-            BC.maxVertexCount = static_cast<uint32_t>(info->initials[I] * 3u);
-            BC.maxPrimitiveCount = static_cast<uint32_t>(info->initials[I]);
-            BC.indexType = VK_INDEX_TYPE_NONE_KHR;
-            BC.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
-            BC.allowsTransforms = true; I++;
+            BC = vkh::VkAccelerationStructureCreateGeometryTypeInfoKHR{};
+            if (instanceSet.has()) {
+                BC.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
+                BC.maxVertexCount = 0u;
+                BC.maxPrimitiveCount = static_cast<uint32_t>(info->initials[I]);
+                BC.indexType = VK_INDEX_TYPE_NONE_KHR;
+                BC.vertexFormat = VK_FORMAT_UNDEFINED;
+                BC.allowsTransforms = false;
+            } else 
+            {
+                BC.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
+                BC.maxVertexCount = static_cast<uint32_t>(info->initials[I] * 3u);
+                BC.maxPrimitiveCount = static_cast<uint32_t>(info->initials[I]);
+                BC.indexType = VK_INDEX_TYPE_NONE_KHR;
+                BC.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
+                BC.allowsTransforms = true;
+            };
+            I++;
         };
 
         // FOR CREATE! 
