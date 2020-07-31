@@ -34,13 +34,14 @@ namespace vlr {
         this->pipelineInfo.depthStencilState = vkh::VkPipelineDepthStencilStateCreateInfo{ .depthTestEnable = true, .depthWriteEnable = true };
         this->pipelineInfo.dynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
         this->pipelineInfo.dynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
-        this->pipelineInfo.dynamicStates.push_back(VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY_EXT);          // NEW!
-        this->pipelineInfo.dynamicStates.push_back(VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT); // NEW!
+        //this->pipelineInfo.dynamicStates.push_back(VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY_EXT);          // NEW!
+        //this->pipelineInfo.dynamicStates.push_back(VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT); // NEW!
         this->pipelineInfo.graphicsPipelineCreateInfo.renderPass = framebuffer->rasterFBO.renderPass;
         this->pipelineInfo.graphicsPipelineCreateInfo.layout = layout->pipelineLayout;
         this->pipelineInfo.rasterizationState.pNext = &this->conserv;
         this->pipelineInfo.viewportState.pViewports = viewport;
         this->pipelineInfo.viewportState.pScissors = renderArea;
+        this->pipelineInfo.inputAssemblyState.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 
         // 
         for (uint32_t i = 0u; i < 8u; i++) {
@@ -84,7 +85,7 @@ namespace vlr {
             // 
             this->interpolations->createDescriptorSet(layout);
             this->geometriesDescs->createDescriptorSet(layout);
-        
+
             // TODO: Decise by PipelineLayout class
             this->layout->bound[8u] = this->geometriesDescs->set;
             this->layout->bound[9u] = this->interpolations->set;

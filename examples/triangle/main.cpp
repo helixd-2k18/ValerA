@@ -5,6 +5,7 @@
 
 // 
 #include "./stdafx.h"
+#include "renderdoc_app.h"
 
 //
 namespace vkx {
@@ -208,17 +209,13 @@ int main() {
     uint32_t canvasWidth = SCR_WIDTH, canvasHeight = SCR_HEIGHT; // For 3840x2160 Resolutions
     //uint32_t canvasWidth = 1920, canvasHeight = 1080;
     glfwDefaultWindowHints();
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
-
-    // TODO: SPECIFIC GL_API
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    // OpenGL IS NOT MAIN! IT FOR TEST ONLY!
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    // DEBUG!
+    std::cout << "GLFW-Hint Initialized" << std::endl;
+    system("PAUSE");
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
@@ -269,6 +266,28 @@ int main() {
     glfwSetFramebufferSizeCallback(manager.window, framebuffer_size_callback);
     //vkt::initializeGL(); // PentaXIL
 
+
+    RENDERDOC_API_1_1_2* rdoc_api = NULL;
+
+    // At init, on windows
+    if (HMODULE mod = GetModuleHandleA("renderdoc.dll"))
+    {
+        pRENDERDOC_GetAPI RENDERDOC_GetAPI =
+            (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+        int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&rdoc_api);
+        assert(ret == 1);
+    }
+
+    /* 
+    // At init, on linux/android.
+    // For android replace librenderdoc.so with libVkLayer_GLES_RenderDoc.so
+    if (void* mod = dlopen("librenderdoc.so", RTLD_NOW | RTLD_NOLOAD))
+    {
+        pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)dlsym(mod, "RENDERDOC_GetAPI");
+        int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&rdoc_api);
+        assert(ret == 1);
+    }
+    */
 
 
     // BUT FOR NOW REQUIRED GPU BUFFERS! NOT JUST COPY DATA!
@@ -655,10 +674,13 @@ int main() {
     Shared::active.mouse.resize(128, uint8_t(0u));
     //Shared::TimeCallback(double(context->registerTime()->setDrawCount(frameCount++)->drawTime()));
 
-
     // 
+
     while (!glfwWindowShouldClose(manager.window)) { // 
         glfwPollEvents();
+
+        // 
+        if (rdoc_api) rdoc_api->StartFrameCapture(NULL, NULL);
 
         // 
         int64_t n_semaphore = currSemaphore, c_semaphore = (currSemaphore + 1) % framebuffers.size(); // Next Semaphore
@@ -784,6 +806,8 @@ int main() {
             .pImageIndices = &currentBuffer, .pResults = nullptr
         }));
 
+        // 
+        if (rdoc_api) rdoc_api->EndFrameCapture(NULL, NULL);
     };
 
     // 

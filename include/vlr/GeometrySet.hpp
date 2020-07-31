@@ -11,7 +11,6 @@ namespace vlr {
         std::vector<vkt::uni_ptr<Geometry>> geometries = {};
         vkt::uni_ptr<Interpolation> interpolations = {}; // Now contain multiple values
         vkt::uni_ptr<VertexSet> vertexSet = {};
-        vkt::uni_ptr<Driver> driver = {};
 
         // 
         //vkt::uni_ptr<BufferViewSet> interpBufs = {};
