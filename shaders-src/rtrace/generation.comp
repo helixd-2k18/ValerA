@@ -113,7 +113,7 @@ void main()
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
         { // Exist Debug
             //RayData ray = rays[0u].data[ID];
-            //atomicSuperImageAdd3(currImages[IW_RENDERED], curPixel, toLinear(ray.color));
+            //atomicSuperImageAdd3(currImages[IW_RENDERED], curPixel, toLinear(ray.direct.xyz * 0.5f + 0.5f));
         };
     };
 
