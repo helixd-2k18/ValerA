@@ -86,6 +86,11 @@ void main()
             outRay.emission = f16vec4(0.f.xxxx);
             outRay.color = f16vec4(1.f.xxxx);
             outRay.meta = u8vec4(0u);
+
+            // Debug-Only
+            //outRay.emission = f16vec4(toLinear(float4(1.f, 0.5f, 0.f, 1.f)));
+            //outRay.color = f16vec4(0.f.xxxx);
+
             kind(outRay, DIFFUSE_RAY);
             lifetime(outRay, 2);
             finished(outRay, false);
