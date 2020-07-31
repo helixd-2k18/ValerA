@@ -28,7 +28,7 @@ void main()
 #endif
 
     const uint fcount = counters[RAY_COUNTER_READ];
-    const uint wcount = tiled(tiled(fcount, NumWorkGroups.x), WorkGroupSize.x) * WorkGroupSize.x;
+    const uint wcount = tiled(tiled(fcount, NumWorkGroups.x), WorkGroupSize.x) * WorkGroupSize.x * (fcount > 0u ? 1u : 0u);
     const uint woffset = WorkGroupID.x * wcount;
     for (uint i=0;i<wcount;i+=WorkGroupSize.x) {
         const uint gID = woffset + (i + LocalInvocationIndex);

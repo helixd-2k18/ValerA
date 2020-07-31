@@ -137,7 +137,7 @@ namespace vlr {
         vkt::commandBarrier(this->driver->getDeviceDispatch(), currentCmd);
 
         // 
-        for (uint32_t i=0;i<1;i++) {
+        for (uint32_t i=0;i<3;i++) {
             {   // Intersect All
                 device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->intersection);
                 device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
