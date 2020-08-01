@@ -17,7 +17,7 @@ Classic-like batch ray tracing, but based on `VK_KHR_ray_tracing` ideas... vRt r
 - [ ] More and efficient ray-tracing 
 - [ ] DirectX 12 Ultimate support and HLSL (under consideration)
 - [ ] RDNA-2 support
-- ...
+- [ ] ...
 
 
 ## Additional Links
