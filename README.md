@@ -7,16 +7,16 @@ Classic-like batch ray tracing, but based on `VK_KHR_ray_tracing` ideas... vRt r
 
 ### Planned Features: 
 
-- Fully refactored and rewrited code (and shorter)
-- More performance and, probably, multi-threading
-- Lower-Level API (than JiviX)
-- Object and Data oriented
-- Partial modularity and faster compilation
-- No CMAKE, more direct compilation
-- Multiple compute shaders rendering (include Ray Query)
-- More and efficient ray-tracing 
-- DirectX 12 Ultimate support and HLSL (under consideration)
-- RDNA-2 support
+- [x] Fully refactored and rewrited code (and shorter)
+- [x] Lower-Level API (than JiviX)
+- [x] Object and Data oriented
+- [x] Partial modularity and faster compilation
+- [x] No CMAKE, more direct compilation
+- [x] Multiple compute shaders rendering (include Ray Query)
+- [ ] More performance and, probably, multi-threading
+- [ ] More and efficient ray-tracing 
+- [ ] DirectX 12 Ultimate support and HLSL (under consideration)
+- [ ] RDNA-2 support
 - ...
 
 
