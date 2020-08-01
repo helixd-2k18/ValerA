@@ -103,11 +103,11 @@ int main() {
     const float unitScale = 1.f, unitHeight = -0.f;
     const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
 
-    //
+    // 
     //const float unitScale = 100.f, unitHeight = -0.f;
     //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "BoomBoxWithAxes.gltf");
 
-    //
+    // 
     //const float unitScale = 1.f, unitHeight = -32.f;
     //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "lost_empire.gltf"); // (May) have VMA memory issues
 
@@ -316,7 +316,7 @@ int main() {
 
     // Set by counted meshes
     auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = instanceCounter });
-    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {1u} });
+    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = { instanceCounter } });
 
     // Set Instance Filler
     std::shared_ptr<std::function<void(const tinygltf::Node&, glm::dmat4, int)>> vertexLoader = {};

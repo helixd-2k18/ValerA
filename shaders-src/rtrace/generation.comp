@@ -51,8 +51,8 @@ void main()
         float3 geonrm = float3(0.f.xxx);
 
         // Replacement for rasterization
-        //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
-          XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
+          XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
+        //XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
 
         // TODO: Optimize Fetching and Interpolation 
         XGEO GEO = interpolate(RPM);
