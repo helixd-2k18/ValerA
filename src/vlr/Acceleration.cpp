@@ -117,6 +117,11 @@ namespace vlr {
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
                 offsetDesc.primitiveOffset = uint32_t(buffer.offset());
 
+                // Shift for Index Data
+                if (triangleDesc.indexType != VK_INDEX_TYPE_NONE_KHR) {
+                    offsetDesc.firstVertex += geometry->vertexSet->getBuffer(geometry->desc->indexBufferView).offset() / (triangleDesc.indexType == VK_INDEX_TYPE_UINT32 ? 4u : (triangleDesc.indexType == VK_INDEX_TYPE_UINT16 ? 2u : 1u));
+                };
+
                 // 
                 buildGInfo.push_back(geometryDesc);
                 offsetInfo.push_back(offsetDesc);

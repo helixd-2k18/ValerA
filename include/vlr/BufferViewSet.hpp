@@ -34,8 +34,12 @@ namespace vlr {
         };
 
         // 
-        vkt::Vector<uint8_t>& operator[](const uint32_t& I) { return buffers[I]; };
-        const vkt::Vector<uint8_t>& operator[](const uint32_t& I) const { return buffers[I]; };
+        vkt::Vector<uint8_t>& get(const uint32_t& I = 0u) { return buffers[I]; };
+        const vkt::Vector<uint8_t>& get(const uint32_t& I = 0u) const { return buffers[I]; };
+
+        // 
+        vkt::Vector<uint8_t>& operator[](const uint32_t& I) { return get(I); };
+        const vkt::Vector<uint8_t>& operator[](const uint32_t& I) const { return get(I); };
     };
 
 };
