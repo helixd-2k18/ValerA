@@ -100,12 +100,12 @@ int main() {
     tinygltf::TinyGLTF loader = {};
 
     // 
-    //const float unitScale = 1.f, unitHeight = -0.f;
-    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "microphone.gltf");
+    const float unitScale = 1.f, unitHeight = -0.f;
+    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
 
     //
-    const float unitScale = 100.f, unitHeight = -0.f;
-    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "BoomBoxWithAxes.gltf");
+    //const float unitScale = 100.f, unitHeight = -0.f;
+    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "BoomBoxWithAxes.gltf");
 
     //
     //const float unitScale = 1.f, unitHeight = -32.f;
@@ -153,18 +153,18 @@ int main() {
 
     //buffers->pushBufferView(vertexData->getGpuBuffer());
     std::vector<vkt::uni_ptr<vlr::SetBase_T<uint8_t>>> sets = {};
-    for (uint32_t i = 0; i < model.buffers.size(); i++) {
-        auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = model.buffers[i].data.size() }); sets.push_back(buffer);
-        memcpy(&buffer->get(0u), model.buffers[i].data.data(), model.buffers[i].data.size());
-        
-    };
+    //for (uint32_t i = 0; i < model.buffers.size(); i++) {
+        //auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = model.buffers[i].data.size() }); sets.push_back(buffer);
+        //memcpy(&buffer->get(0u), model.buffers[i].data.data(), model.buffers[i].data.size());
+    //};
 
     // bindings
     for (uint32_t i = 0; i < model.bufferViews.size(); i++) {
         auto bview = model.bufferViews[i];
-        auto buffer = sets[bview.buffer];
-        buffers->pushBufferView(vkt::VectorBase(buffer->getGpuBuffer().getAllocation(), buffer->getGpuBuffer().offset() + bview.byteOffset, bview.byteLength, bview.byteStride));
+        auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = bview.byteLength }); sets.push_back(buffer);
+        buffers->pushBufferView(buffer->getGpuBuffer());
         bindings->get(i) = vkh::VkVertexInputBindingDescription{ .binding = i, .stride = uint32_t(bview.byteStride) };
+        memcpy(&buffer->get(0u), model.buffers[bview.buffer].data.data() + bview.byteOffset, bview.byteLength);
     };
 
     // accessors
@@ -282,7 +282,7 @@ int main() {
 
     // 
     fw->submitOnce([&](VkCommandBuffer cmd) {
-        for (uint32_t i = 0; i < model.buffers.size(); i++) {
+        for (uint32_t i = 0; i < sets.size(); i++) {
             sets[i]->setCommand(cmd);
         };
 
@@ -330,7 +330,7 @@ int main() {
         // 
         if (gnode.mesh >= 0) {
             instanceSet->get(instanceCounter++) = vkh::VsGeometryInstance{
-                .transform = glm::mat3x4(glm::transpose(glm::dmat4(inTransform) * glm::dmat4(localTransform))),
+                .transform = glm::mat3x4(1.f),//glm::mat3x4(glm::transpose(glm::dmat4(inTransform) * glm::dmat4(localTransform))),
                 .customId = uint32_t(gnode.mesh), // MeshID
                 .mask = 0xff,
                 .instanceOffset = 0u,

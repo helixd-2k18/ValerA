@@ -382,8 +382,8 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
         geometry.gBinormal[i] = float4(geometry.gBinormal[i].xyz, 0.f);
 
         // 
-        if (!hasNormal(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { geometry.gNormal[i]  = float4(normal, 0.f); };
-        if (!hasTangent(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { 
+        if (!hasNormal(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID]) || dot(abs(geometry.gNormal[i].xyz), 1.f.xxx) < 0.0001f) { geometry.gNormal[i]  = float4(normal, 0.f); };
+        if (!hasTangent(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID]) || dot(abs(geometry.gTangent[i].xyz), 1.f.xxx) < 0.0001f) { 
             geometry.gTangent[i].xyz = tangent - dot(geometry.gNormal[i].xyz,tangent.xyz)*geometry.gNormal[i].xyz;
             geometry.gBinormal[i].xyz = binorml - dot(geometry.gNormal[i].xyz,binorml.xyz)*geometry.gNormal[i].xyz;
         } else {
