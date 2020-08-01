@@ -127,7 +127,7 @@ int main() {
     
 
     //
-    std::string inputfile = "sphere.obj";
+    std::string inputfile = "cube.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -178,10 +178,10 @@ int main() {
         auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
         auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
         auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer[s] });
+        geometrySet->setInterpolation(interpolation);
 
         // 
         sets.push_back(vertexData);
-        geometrySet->setInterpolation(interpolation);
         accelerations.push_back(acceleration);
         geometries.push_back(geometrySet);
         interpolations.push_back(interpolation);
@@ -207,7 +207,7 @@ int main() {
         auto gdesc = vlr::GeometryDesc{
             .firstVertex = 0u,//indexOffset,
             .primitiveCount = uint32_t(indexOffset / 3u),
-            .material = uint32_t(shapes[s].mesh.material_ids[0u]),
+            .material = uint32_t(shapes[s].mesh.material_ids[0u] != -1 ? shapes[s].mesh.material_ids[0u] : 0u),
             .vertexAttribute = 0u
         };
 
