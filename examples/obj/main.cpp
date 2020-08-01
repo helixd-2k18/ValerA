@@ -1,5 +1,8 @@
 #include "../include/main.hpp"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tinyobjloader/tiny_obj_loader.h>
+
 int main() {
     glfwSetErrorCallback(error);
     glfwInit();
@@ -94,36 +97,6 @@ int main() {
     */
 
 
-    // 
-    std::string err = "", wrn = "";
-    tinygltf::Model model = {};
-    tinygltf::TinyGLTF loader = {};
-
-    // 
-    const float unitScale = 1.f, unitHeight = -0.f;
-    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
-
-    // 
-    //const float unitScale = 100.f, unitHeight = -0.f;
-    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "BoomBoxWithAxes.gltf");
-
-    // 
-    //const float unitScale = 1.f, unitHeight = -32.f;
-    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "lost_empire.gltf"); // (May) have VMA memory issues
-
-    //const float unitScale = 1.f, unitHeight = -0.f;
-    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Chess_Set.gltf");
-    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "DamagedHelmet.gltf");
-
-    //const bool ret = loader.LoadBinaryFromFile(&model, &err, &warn, argv[1]); // for binary glTF(.glb)
-
-    //
-    if (!wrn.empty()) { printf("Warn : %s\n", wrn.c_str()); }
-    if (!err.empty()) { printf("Error: %s\n", err.c_str()); }
-    if (!ret) { printf("Failed to parse glTF\n"); return -1; }
-
-
-
     // BUT FOR NOW REQUIRED GPU BUFFERS! NOT JUST COPY DATA!
     const auto  imageUsage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
     const auto  bufferUsage = vkh::VkBufferUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eUniformTexelBuffer = 1, .eStorageTexelBuffer = 1, .eUniformBuffer = 1, .eStorageBuffer = 1, .eIndexBuffer = 1, .eVertexBuffer = 1, .eTransformFeedbackBuffer = 1 };
@@ -145,38 +118,47 @@ int main() {
     auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
 
     // 
+    auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
-    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = model.bufferViews.size() });
-    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = model.accessors.size() });
     auto buffers = std::make_shared<vlr::BufferViewSet>(fw); 
-
-
     //buffers->pushBufferView(vertexData->getGpuBuffer());
-    std::vector<vkt::uni_ptr<vlr::SetBase_T<uint8_t>>> sets = {};
-    //for (uint32_t i = 0; i < model.buffers.size(); i++) {
-        //auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = model.buffers[i].data.size() }); sets.push_back(buffer);
-        //memcpy(&buffer->get(0u), model.buffers[i].data.data(), model.buffers[i].data.size());
-    //};
 
-    // bindings
-    for (uint32_t i = 0; i < model.bufferViews.size(); i++) {
-        auto bview = model.bufferViews[i];
-        auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = bview.byteLength }); sets.push_back(buffer);
-        buffers->pushBufferView(buffer->getGpuBuffer());
-        bindings->get(i) = vkh::VkVertexInputBindingDescription{ .binding = i, .stride = uint32_t(bview.byteStride) };
-        memcpy(&buffer->get(0u), model.buffers[bview.buffer].data.data() + bview.byteOffset, bview.byteLength);
+
+    
+
+    //
+    std::string inputfile = "sphere.obj";
+    tinyobj::attrib_t attrib = {};
+    std::vector<tinyobj::shape_t> shapes = {};
+    std::vector<tinyobj::material_t> materials = {};
+
+    //
+    std::string warn = "";
+    std::string err = "";
+
+    //
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile.c_str());
+    if (!warn.empty()) { std::cout << warn << std::endl; }
+    if (!err.empty()) { std::cerr << err << std::endl; }
+    if (!ret) { exit(1); }
+
+    // Loop over shapes
+    VkDeviceSize accessorCount = 0u;
+    std::vector<std::vector<VkDeviceSize>> primitiveCountPer = {};
+    std::vector<VkDeviceSize> vertexCountAll = {};
+    for (size_t s = 0; s < shapes.size(); s++) {
+        vertexCountAll.push_back(0ull);
+        primitiveCountPer.push_back({});
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
+            primitiveCountPer.back().push_back(shapes[s].mesh.num_face_vertices[f]);
+            vertexCountAll.back() += shapes[s].mesh.num_face_vertices[f];
+            accessorCount++;
+        };
     };
 
-    // accessors
-    for (uint32_t i = 0; i < model.accessors.size(); i++) {
-        auto accessor = model.accessors[i];
-        auto type = VK_FORMAT_R32G32B32_SFLOAT;
-        if (accessor.type == TINYGLTF_TYPE_VEC4) type = VK_FORMAT_R32G32B32A32_SFLOAT;
-        if (accessor.type == TINYGLTF_TYPE_VEC3) type = VK_FORMAT_R32G32B32_SFLOAT;
-        if (accessor.type == TINYGLTF_TYPE_VEC2) type = VK_FORMAT_R32G32_SFLOAT;
-        if (accessor.type == TINYGLTF_TYPE_SCALAR) type = VK_FORMAT_R32_SFLOAT;
-        accessors->get(i) = vkh::VkVertexInputAttributeDescription{ .binding = uint32_t(accessor.bufferView), .format = type, .offset = uint32_t(accessor.byteOffset) }; // Location NOT supported...
-    };
+    // 
+    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
+    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = accessorCount * 3u });
 
     // 
     auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
@@ -185,180 +167,163 @@ int main() {
         .bufferViews = buffers
     });
 
-
-    //
-    std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometrySets = {};
-    std::vector<vkt::uni_ptr<vlr::Interpolation>> interpolations = {};
+    // 
+    accessorCount = 0u;
+    std::vector<vkt::uni_ptr<vlr::SetBase_T<FDStruct>>> sets = {};
     std::vector<vkt::uni_ptr<vlr::Acceleration>> accelerations = {};
+    std::vector<vkt::uni_ptr<vlr::Interpolation>> interpolations = {};
+    std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
+    for (size_t s = 0; s < shapes.size(); s++) { // 
+        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = vertexCountAll[s] });
+        auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
+        auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
+        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer[s] });
+
+        // 
+        sets.push_back(vertexData);
+        geometrySet->setInterpolation(interpolation);
+        accelerations.push_back(acceleration);
+        geometries.push_back(geometrySet);
+        interpolations.push_back(interpolation);
+        buffers->pushBufferView(vertexData->getGpuBuffer());
+
+        // 
+        size_t indexOffset = 0; // Loop over faces(polygon)
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
+
+            // 
+            auto verticeCount = shapes[s].mesh.num_face_vertices[f];
+            for (size_t v = 0; v < verticeCount; v++) { //
+                tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + v];
+                vertexData->get(indexOffset + v).fPosition = glm::vec4(attrib.vertices[3 * idx.vertex_index + 0], attrib.vertices[3 * idx.vertex_index + 1], attrib.vertices[3 * idx.vertex_index + 2], 1.f);
+                vertexData->get(indexOffset + v).fNormal = glm::vec4(attrib.normals[3 * idx.normal_index + 0], attrib.normals[3 * idx.normal_index + 1], attrib.normals[3 * idx.normal_index + 2], 0.f);
+                vertexData->get(indexOffset + v).fTexcoord = glm::vec4(attrib.texcoords[2 * idx.texcoord_index + 0], attrib.texcoords[2 * idx.texcoord_index + 1], 0.f, 0.f);
+            };
+
+            indexOffset += verticeCount;
+        };
+
+        // 
+        auto gdesc = vlr::GeometryDesc{
+            .firstVertex = 0u,//indexOffset,
+            .primitiveCount = uint32_t(indexOffset / 3u),
+            .material = uint32_t(shapes[s].mesh.material_ids[0u]),
+            .vertexAttribute = 0u
+        };
+
+        // 
+        uint32_t bID = uint32_t(s);
+        bindings->get(bID) = vkh::VkVertexInputBindingDescription{
+            .binding = uint32_t(s), .stride = sizeof(FDStruct)
+        };
+
+        // 
+        accessors->get(gdesc.vertexAttribute = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+            .location = 0u, .binding = bID,
+            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+            .offset = uint32_t(indexOffset * sizeof(FDStruct) + offsetof(FDStruct, fPosition))
+        };
+
+        // 
+        accessors->get(interpolation->get(s).data[0u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+            .location = 0u, .binding = bID,
+            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+            .offset = uint32_t(indexOffset * sizeof(FDStruct) + offsetof(FDStruct, fTexcoord))
+        };
+
+        // 
+        accessors->get(interpolation->get(s).data[1u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+            .location = 0u, .binding = bID,
+            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+            .offset = uint32_t(indexOffset * sizeof(FDStruct) + offsetof(FDStruct, fNormal))
+        };
+
+        // 
+        auto geometry = std::make_shared<vlr::Geometry>(vertexSet, gdesc);
+        
+        // 
+        geometrySet->pushGeometry(geometry);
+
+
+    };
+
+
+
+    /*
+
+    // use attributes
+    interpolation->get(0u).data[0u] = 1u;
+    interpolation->get(0u).data[1u] = 2u;
+    interpolation->get(0u).data[2u] = 3u;
 
     // 
-    for (uint32_t j = 0; j < model.meshes.size(); j++) {
-        const auto& meshData = model.meshes[j];
+    vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
+    vertexData->get(1u) = FDStruct{ .fPosition = glm::vec4(-1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
+    vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
 
-        // 
-        std::vector<uintptr_t> primitiveCountPer = {};
-        uintptr_t vertexCountAll = 0u; bool ctype = true;//false;
-        for (uint32_t v = 0; v < meshData.primitives.size(); v++) {
-            const auto& primitive = meshData.primitives[v];
-            uintptr_t vertexCount = 0u;
-            if (primitive.indices >= 0) {
-                vertexCount = model.accessors[primitive.indices].count;
-                if (model.accessors[primitive.indices].componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT) { ctype = true; };
-            } else
-            if (primitive.attributes.find("POSITION") != primitive.attributes.end()) { // Vertices
-                vertexCount = model.accessors[primitive.attributes.find("POSITION")->second].count;
-            };
-            vertexCountAll += vertexCount;
-            primitiveCountPer.push_back(vkt::tiled(uint64_t(vertexCount), uint64_t(3ull)));
-        };
-
-        // 
-        const VkDeviceSize PrimitiveCount = std::max(vkt::tiled(uint64_t(vertexCountAll), uint64_t(3ull)), uint64_t(1ull));
-        auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = primitiveCountPer.size() });
-        auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = primitiveCountPer.size() });
-        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer });
-        geometrySet->setInterpolation(interpolation);
-
-        // 
-        for (uint32_t v = 0; v < meshData.primitives.size(); v++) {
-            auto geometryDesc = vlr::GeometryDesc{
-                .primitiveCount = uint32_t(primitiveCountPer[v]),
-                .vertexAttribute = 0u
-            };
-
-            const auto& primitive = meshData.primitives[v];
-            std::array<std::string, 4u> NM = { "POSITION" , "TEXCOORD_0" , "NORMAL" , "TANGENT" };
-            for (uint32_t i = 0u; i < NM.size(); i++) {
-                if (primitive.attributes.find(NM[i]) != primitive.attributes.end()) { // Vertices
-                    auto& attribute = model.accessors[primitive.attributes.find(NM[i])->second];
-                    auto  stride = attribute.ByteStride(model.bufferViews[attribute.bufferView]);
-
-                    // 
-                    uint32_t location = 0u;
-                    if (NM[i] == "POSITION") { location = 0u; };
-                    if (NM[i] == "TEXCOORD_0") { location = 1u; };
-                    if (NM[i] == "NORMAL") { location = 2u; };
-                    if (NM[i] == "TANGENT") { location = 3u; };
-
-                    // 
-                    auto type = VK_FORMAT_R32G32B32_SFLOAT;
-                    if (attribute.type == TINYGLTF_TYPE_VEC4) type = VK_FORMAT_R32G32B32A32_SFLOAT;
-                    if (attribute.type == TINYGLTF_TYPE_VEC3) type = VK_FORMAT_R32G32B32_SFLOAT;
-                    if (attribute.type == TINYGLTF_TYPE_VEC2) type = VK_FORMAT_R32G32_SFLOAT;
-                    if (attribute.type == TINYGLTF_TYPE_SCALAR) type = VK_FORMAT_R32_SFLOAT;
-
-                    // 
-                    if (location == 0u) {
-                        geometryDesc.vertexAttribute = primitive.attributes.find(NM[i])->second;
-                    } else {
-                        interpolation->get(v).data[location - 1u] = primitive.attributes.find(NM[i])->second;
-                    };
-                };
-            };
-
-            // 
-            if (primitive.indices >= 0) { // determine index type
-                auto& attribute = model.accessors[primitive.indices];
-                const auto& BV = model.bufferViews[attribute.bufferView];
-                const auto range = vkt::tiled(uint64_t(BV.byteLength), uint64_t(4ull)) * uint64_t(4ull);
-
-                // 
-                geometryDesc.primitiveCount = primitiveCountPer[v];
-                geometryDesc.material = primitive.material;
-                geometryDesc.indexBufferView = attribute.bufferView;
-                geometryDesc.indexType = attribute.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT ? VK_INDEX_TYPE_UINT16 : (attribute.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE ? VK_INDEX_TYPE_UINT8_EXT : VK_INDEX_TYPE_UINT32);
-            };
-
-            // 
-            auto geometry = std::make_shared<vlr::Geometry>(vertexSet, geometryDesc);
-            geometrySet->pushGeometry(geometry);
-        };
-
-        // 
-        accelerations.push_back(acceleration);
-        interpolations.push_back(interpolation);
-        geometrySets.push_back(geometrySet);
+    // 
+    bindings->get(0u) = vkh::VkVertexInputBindingDescription{
+        .binding = 0u,
+        .stride = sizeof(FDStruct)
     };
+
+    // 
+    accessors->get(0u) = vkh::VkVertexInputAttributeDescription{
+        .location = 0u, .binding = 0u,
+        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+        .offset = offsetof(FDStruct, fPosition)
+    };
+
+    accessors->get(1u) = vkh::VkVertexInputAttributeDescription{
+        .location = 1u, .binding = 0u,
+        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+        .offset = offsetof(FDStruct, fTexcoord)
+    };
+
+    accessors->get(2u) = vkh::VkVertexInputAttributeDescription{
+        .location = 2u, .binding = 0u,
+        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+        .offset = offsetof(FDStruct, fNormal)
+    };
+
+    accessors->get(3u) = vkh::VkVertexInputAttributeDescription{
+        .location = 3u, .binding = 0u,
+        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+        .offset = offsetof(FDStruct, fTangent)
+    };
+
+    // 
+    geometrySet->setInterpolation(interpolation);
+    geometrySet->pushGeometry(geometry);
+    */
 
     // 
     fw->submitOnce([&](VkCommandBuffer cmd) {
-        for (uint32_t i = 0; i < sets.size(); i++) {
-            sets[i]->setCommand(cmd);
-        };
-
-        // 
+        vertexData->setCommand(cmd);
         bindings->setCommand(cmd);
         accessors->setCommand(cmd);
-        
-        // 
-        for (uint32_t i = 0; i < geometrySets.size(); i++) {
-            geometrySets[i]->setCommand(cmd);
-            interpolations[i]->setCommand(cmd);
+        for (size_t s = 0; s < shapes.size(); s++) {
+            sets[s]->setCommand(cmd);
+            geometries[s]->setCommand(cmd);
+            interpolations[s]->setCommand(cmd);
         };
     });
-
-    // Count all Meshes in Scene
-    uint32_t instanceCounter = 0u;
-    std::shared_ptr<std::function<void(const tinygltf::Node&, glm::dmat4, int)>> vertexCounter = {};
-    vertexCounter = std::make_shared<std::function<void(const tinygltf::Node&, glm::dmat4, int)>>([&](const tinygltf::Node& gnode, glm::dmat4 inTransform, int recursive)->void {
-        instanceCounter++;
-    });
-
-    // Counting itself...
-    uint32_t sceneID = 0;
-    if (model.scenes.size() > 0) {
-        instanceCounter = 0u;
-        for (int n = 0; n < model.scenes[sceneID].nodes.size(); n++) {
-            auto& gnode = model.nodes[model.scenes[sceneID].nodes[n]];
-            (*vertexCounter)(gnode, glm::dmat4(glm::translate(glm::dvec3(0., unitHeight, 0.)) * glm::scale(glm::dvec3(unitScale))), 16);
-        };
-    };
-
-    // Set by counted meshes
-    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = instanceCounter });
-    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = { instanceCounter } });
-
-    // Set Instance Filler
-    std::shared_ptr<std::function<void(const tinygltf::Node&, glm::dmat4, int)>> vertexLoader = {};
-    vertexLoader = std::make_shared<std::function<void(const tinygltf::Node&, glm::dmat4, int)>>([&](const tinygltf::Node& gnode, glm::dmat4 inTransform, int recursive)->void {
-        auto localTransform = glm::dmat4(1.0);
-        localTransform *= glm::dmat4(gnode.matrix.size() >= 16 ? glm::make_mat4(gnode.matrix.data()) : glm::dmat4(1.0));
-        localTransform *= glm::dmat4(gnode.translation.size() >= 3 ? glm::translate(glm::make_vec3(gnode.translation.data())) : glm::dmat4(1.0));
-        localTransform *= glm::dmat4(gnode.scale.size() >= 3 ? glm::scale(glm::make_vec3(gnode.scale.data())) : glm::dmat4(1.0));
-        localTransform *= glm::dmat4((gnode.rotation.size() >= 4 ? glm::mat4_cast(glm::make_quat(gnode.rotation.data())) : glm::dmat4(1.0)));
-
-        // 
-        if (gnode.mesh >= 0) {
-            instanceSet->get(instanceCounter++) = vkh::VsGeometryInstance{
-                .transform = glm::mat3x4(1.f),//glm::mat3x4(glm::transpose(glm::dmat4(inTransform) * glm::dmat4(localTransform))),
-                .customId = uint32_t(gnode.mesh), // MeshID
-                .mask = 0xff,
-                .instanceOffset = 0u,
-                .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
-            };
-        };
-
-        // 
-        if (gnode.children.size() > 0 && gnode.mesh < 0) {
-            for (int n = 0; n < gnode.children.size(); n++) {
-                if (recursive >= 0) (*vertexLoader)(model.nodes[gnode.children[n]], glm::dmat4(inTransform) * glm::dmat4(localTransform), recursive - 1);
-            };
-        };
-    });
-
-    // Finally, load scene
-    if (model.scenes.size() > 0) {
-        instanceCounter = 0u;
-        for (int n = 0; n < model.scenes[sceneID].nodes.size(); n++) {
-            auto& gnode = model.nodes[model.scenes[sceneID].nodes[n]];
-            (*vertexLoader)(gnode, glm::dmat4(glm::translate(glm::dvec3(0., unitHeight, 0.)) * glm::scale(glm::dvec3(unitScale))), 16);
-        };
-    };
 
     // 
+    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
+    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {1u} }); // shapes.size()
     auto framebuffer = std::make_shared<vlr::Framebuffer>(fw);
     auto layout = std::make_shared<vlr::PipelineLayout>(fw);
-    framebuffer->createFramebuffer(canvasWidth, canvasHeight);
+
+    // 
+    instanceSet->get(0u) = vkh::VsGeometryInstance{
+        .transform = glm::mat3x4(1.f),
+        .customId = 0u,
+        .mask = 0xFFu,
+        .instanceOffset = 0u,
+        .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
+        .accelerationStructureHandle = accelerations[0u]->getHandle()
+    };
 
     // 
     auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
@@ -366,7 +331,7 @@ int main() {
         .framebuffer = framebuffer,
         .instanceSet = instanceSet,
         .constants = constants,
-        .geometrySets = geometrySets,
+        .geometrySets = geometries,
     });
 
     // 
@@ -392,112 +357,44 @@ int main() {
         .accelerations = accelerations
     });
 
-    // 
-    auto materialSet = std::make_shared<vlr::MaterialSet>(fw, vlr::DataSetCreateInfo{ .count = model.materials.size() });
+    
+
+    //  
+    auto materialSet = std::make_shared<vlr::MaterialSet>(fw, vlr::DataSetCreateInfo{ .count = std::max(uint32_t(materials.size()), 1u) });
     auto textureSet = std::make_shared<vlr::TextureSet>(fw);
     auto samplerSet = std::make_shared<vlr::SamplerSet>(fw);
     auto background = std::make_shared<vlr::Background>(fw);
 
-    // Material 
-    for (uint32_t i = 0; i < model.materials.size(); i++) {
-        const auto& mat = model.materials[i]; vlr::MaterialUnit& mdk = materialSet->get(0u);
+
+    // Material (TODO: Textures, Needs Loader and Storage)
+    for (uint32_t i = 0; i < materials.size(); i++) {
+        const auto& mat = materials[i]; vlr::MaterialUnit& mdk = materialSet->get(i);
         mdk = vlr::MaterialUnit{};
-        mdk.diffuseTexture = mat.pbrMetallicRoughness.baseColorTexture.index;
-        mdk.normalTexture = mat.normalTexture.index;
-        mdk.pbrAGMTexture = mat.pbrMetallicRoughness.metallicRoughnessTexture.index;
-        mdk.emissionTexture = mat.emissiveTexture.index;
-
-        // 
-        mdk.normal = glm::vec4(0.5f, 0.5f, 1.0f, 1.f);
-        mdk.emission = glm::vec4(0.f);
-        mdk.diffuse = glm::vec4(1.f);
-        mdk.pbrAGM = glm::vec4(1.f, mat.pbrMetallicRoughness.roughnessFactor, mat.pbrMetallicRoughness.metallicFactor, 0.f);
-
-        // 
-        if (mat.emissiveFactor.size() > 0) {
-            mdk.emission = glm::vec4(mat.emissiveFactor[0], mat.emissiveFactor[1], mat.emissiveFactor[2], 0.f);
-        };
-
-        // 
-        if (mat.pbrMetallicRoughness.baseColorFactor.size() > 0) {
-            mdk.diffuse = glm::vec4(mat.pbrMetallicRoughness.baseColorFactor[0], mat.pbrMetallicRoughness.baseColorFactor[1], mat.pbrMetallicRoughness.baseColorFactor[2], 1.f);
-        };
-
-        // 
-        materialSet->get(i) = mdk;
+        mdk.diffuseTexture = -1;
+        mdk.normalTexture = -1;
+        mdk.pbrAGMTexture = -1;
+        mdk.emissionTexture = -1;
+        mdk.diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
+        //mdk.pbrAGM = glm::vec4(1.f, mat.roughness, mat.metallic, 0.f);
+        //mdk.normal = glm::vec4(0.5f, 0.5f, 1.0f, 1.f);
+        //mdk.emission = glm::vec4(mat.emission[0], mat.emission[1], mat.emission[2], 0.f);
+        //mdk.diffuse = glm::vec4(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2], 1.f);
     };
 
-    // TODO: GLTF Samplers Support for shaders
-    for (uint32_t i = 0; i < model.samplers.size(); i++) {
-        const auto& smp = model.samplers[i];
-
-        // 
-        VkSampler sampler = {};
-        vkh::handleVk(fw->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
-            .magFilter = VK_FILTER_LINEAR,
-            .minFilter = VK_FILTER_LINEAR,
-            .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-            .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-        }, nullptr, &sampler));
-
-        // 
-        samplerSet->pushSampler(sampler);
+    // Default Material
+    if (materials.size() <= 0) {
+        vlr::MaterialUnit& mdk = materialSet->get(0u);
+        mdk = vlr::MaterialUnit{};
+        mdk.diffuseTexture = -1;
+        mdk.normalTexture = -1;
+        mdk.pbrAGMTexture = -1;
+        mdk.emissionTexture = -1;
+        mdk.diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
     };
+
 
     // 
-    if (model.samplers.size() <= 0u) {
-        VkSampler sampler = {};
-        vkh::handleVk(fw->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
-            .magFilter = VK_FILTER_LINEAR,
-            .minFilter = VK_FILTER_LINEAR,
-            .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-            .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-        }, nullptr, & sampler));
-        samplerSet->pushSampler(sampler);
-    };
-
-    // 
-    for (uint32_t i = 0; i < model.images.size(); i++) {
-        const auto& img = model.images[i];
-
-        //
-        vkh::VkImageCreateFlags flg = {};
-        vkt::unlock32(flg) = 0u;
-
-        // 
-        auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{  // experimental: callify
-            .flags = flg, .format = VK_FORMAT_R8G8B8A8_UNORM, .extent = {uint32_t(img.width),uint32_t(img.height),1u}, .usage = imageUsage,
-        }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }), vkh::VkImageViewCreateInfo{
-            .format = VK_FORMAT_R8G8B8A8_UNORM,
-            .subresourceRange = apres
-        });
-
-        //
-        vkt::Vector<> imageBuf = {};
-        if (img.image.size() > 0u) {
-            imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
-                .size = img.image.size(), .usage = uploadUsage,
-            }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU }));
-            memcpy(imageBuf.data(), &img.image[0u], img.image.size());
-        };
-
-        // 
-        fw->submitOnce([&](VkCommandBuffer& cmd) { image.transfer(cmd);
-            auto buffer = imageBuf.has() ? imageBuf : buffers->get(img.bufferView);
-            fw->getDeviceDispatch()->CmdCopyBufferToImage(cmd, buffer.buffer(), image.getImage(), image.getImageLayout(), 1u, vkh::VkBufferImageCopy{
-                .bufferOffset = buffer.offset(),
-                .bufferRowLength = uint32_t(img.width),
-                .bufferImageHeight = uint32_t(img.height),
-                .imageSubresource = image.subresourceLayers(),
-                .imageOffset = {0u,0u,0u},
-                .imageExtent = {uint32_t(img.width),uint32_t(img.height),1u},
-            });
-        });
-
-        textureSet->pushImage(image);
-    };
-
-
+    framebuffer->createFramebuffer(canvasWidth, canvasHeight);
 
     {   // 
         int width = 0u, height = 0u;
@@ -569,12 +466,86 @@ int main() {
         };
     };
 
+    {   // 
+        int width = 2u, height = 2u;
+        float* rgba = nullptr;
+        const char* err = nullptr;
+
+        //
+        std::vector<glm::vec4> testcolor = {
+            glm::vec4(1.f, 0.f, 1.f, 1.f),
+            glm::vec4(0.f, 0.f, 0.f, 1.f),
+            glm::vec4(0.f, 0.f, 0.f, 1.f),
+            glm::vec4(1.f, 0.f, 1.f, 1.f)
+        };
+        rgba = (float*)testcolor.data();
+
+        {   //
+            vkt::VmaMemoryInfo memInfo = {};
+            memInfo.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+            //
+            auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
+                it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
+                it->usage = imageUsage;
+                return it;
+            }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
+                it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                it->subresourceRange = apres;
+                return it;
+            }));
+
+            //
+            vkt::Vector<> imageBuf = {};
+            if (width > 0u && height > 0u && rgba) {
+                memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+                imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
+                    .size = size_t(width) * size_t(height) * sizeof(glm::vec4), .usage = uploadUsage,
+                }, memInfo));
+                memcpy(imageBuf.data(), rgba, size_t(width) * size_t(height) * sizeof(glm::vec4));
+            };
+
+            //
+            fw->submitOnce([&](VkCommandBuffer& cmd) {
+                image.transfer(cmd);
+
+                auto buffer = imageBuf;
+                fw->getDeviceDispatch()->CmdCopyBufferToImage(cmd, buffer.buffer(), image.getImage(), image.getImageLayout(), 1u, vkh::VkBufferImageCopy{
+                    .bufferOffset = buffer.offset(),
+                    .bufferRowLength = uint32_t(width),
+                    .bufferImageHeight = uint32_t(height),
+                    .imageSubresource = image.subresourceLayers(),
+                    .imageOffset = {0u,0u,0u},
+                    .imageExtent = {uint32_t(width),uint32_t(height),1u},
+                });
+            });
+
+            // 
+            textureSet->pushImage(image);
+        };
+    };
+
+    {   // Test Sampler
+        VkSampler sampler = {};
+        fw->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+            .magFilter = VK_FILTER_LINEAR,
+            .minFilter = VK_FILTER_LINEAR,
+            .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+            .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT
+        }, nullptr, &sampler);
+
+        // 
+        samplerSet->pushSampler(sampler);
+    };
+
 
     // 
     layout->setFramebuffer(framebuffer);
     layout->setBackground(background);
     layout->setMaterials(materialSet, textureSet, samplerSet);
     layout->setVertexSet(vertexSet);
+
 
     // 
     rasterization->setDescriptorSets(layout);
