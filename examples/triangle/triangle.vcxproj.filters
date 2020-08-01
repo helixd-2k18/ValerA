@@ -117,14 +117,14 @@
     <ClCompile Include="..\..\src\vlr\VMA.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\vlr\RayTracing.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vlr\RenderCommand.cpp">
       <Filter>Source Files\vlr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\stdafx.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -254,9 +254,6 @@
     <ClInclude Include="..\..\..\vkt\include\vma\vk_mem_alloc.h">
       <Filter>Header Files\vma</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp">
       <Filter>Header Files\vkt3</Filter>
     </ClInclude>
@@ -273,6 +270,12 @@
       <Filter>Header Files\xvk</Filter>
     </ClInclude>
     <ClInclude Include="macro.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\main.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\stdafx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

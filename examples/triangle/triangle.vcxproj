@@ -200,8 +200,8 @@
     <ClCompile Include="..\..\src\vlr\TextureSet.cpp" />
     <ClCompile Include="..\..\src\vlr\VertexSet.cpp" />
     <ClCompile Include="..\..\src\vlr\VMA.cpp" />
+    <ClCompile Include="..\include\stdafx.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp" />
@@ -251,8 +251,9 @@
     <ClInclude Include="..\..\include\vlr\SetBase.hpp" />
     <ClInclude Include="..\..\include\vlr\TextureSet.hpp" />
     <ClInclude Include="..\..\include\vlr\VertexSet.hpp" />
+    <ClInclude Include="..\include\main.hpp" />
+    <ClInclude Include="..\include\stdafx.h" />
     <ClInclude Include="macro.h" />
-    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\vkt\include\vkt3\readme.md" />
