@@ -33,6 +33,10 @@ namespace vlr {
         return sizeof(uint32_t);
     };
 
+    uint32_t predicate(const uint32_t& stride, const uint32_t& format) {
+        return stride > 0u ? stride : format;
+    };
+
     // 
     void Acceleration::updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build) {
         offsetInfo.resize(0u);
@@ -89,7 +93,7 @@ namespace vlr {
                 // 
                 triangleDesc.transformData = geometrySet->getGpuBuffer()->deviceAddress();
                 triangleDesc.vertexFormat = attribute.format;
-                triangleDesc.vertexStride = std::max(binding.stride, formatStride(triangleDesc.vertexFormat));
+                triangleDesc.vertexStride = predicate(binding.stride, formatStride(triangleDesc.vertexFormat));
                 triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute)->deviceAddress();
 
                 // 

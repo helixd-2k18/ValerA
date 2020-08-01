@@ -246,6 +246,10 @@ uint formatStride(in uint format) {
     return 4u;
 };
 
+uint predicate(in uint stride, in uint format){
+    return stride > 0u ? stride : format;
+};
+
 
 // TODO: Add Uint16_t, uint, Float16_t Support
 float4 get_float4(in uint idx, in uint loc, in uint geometrySetID) {
@@ -257,7 +261,7 @@ float4 get_float4(in uint idx, in uint loc, in uint geometrySetID) {
     Binding  binding = bindings[nonuniformEXT(geometrySetID)][attrib.binding];
 #endif
 
-    uint boffset = max(binding.stride, formatStride(attrib.format)) * idx + attrib.offset;
+    uint boffset = predicate(binding.stride, formatStride(attrib.format)) * idx + attrib.offset;
     float4 vec = float4(0.f.xxxx);
     
     // 
