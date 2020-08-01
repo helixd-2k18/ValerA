@@ -124,7 +124,6 @@ int main() {
 
 
 
-
     // BUT FOR NOW REQUIRED GPU BUFFERS! NOT JUST COPY DATA!
     const auto  imageUsage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
     const auto  bufferUsage = vkh::VkBufferUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eUniformTexelBuffer = 1, .eStorageTexelBuffer = 1, .eUniformBuffer = 1, .eStorageBuffer = 1, .eIndexBuffer = 1, .eVertexBuffer = 1, .eTransformFeedbackBuffer = 1 };
@@ -162,9 +161,10 @@ int main() {
 
     // bindings
     for (uint32_t i = 0; i < model.bufferViews.size(); i++) {
-        auto buffer = sets[i]; auto bview = model.bufferViews[i];
+        auto bview = model.bufferViews[i];
+        auto buffer = sets[bview.buffer];
         buffers->pushBufferView(vkt::VectorBase(buffer->getGpuBuffer().getAllocation(), buffer->getGpuBuffer().offset() + bview.byteOffset, bview.byteLength, bview.byteStride));
-        bindings->get(i) = vkh::VkVertexInputBindingDescription{ .binding = i, .stride = bview.byteStride };
+        bindings->get(i) = vkh::VkVertexInputBindingDescription{ .binding = i, .stride = uint32_t(bview.byteStride) };
     };
 
     // accessors
@@ -175,7 +175,7 @@ int main() {
         if (accessor.type == TINYGLTF_TYPE_VEC3) type = VK_FORMAT_R32G32B32_SFLOAT;
         if (accessor.type == TINYGLTF_TYPE_VEC2) type = VK_FORMAT_R32G32_SFLOAT;
         if (accessor.type == TINYGLTF_TYPE_SCALAR) type = VK_FORMAT_R32_SFLOAT;
-        accessors->get(i) = vkh::VkVertexInputAttributeDescription{ .binding = accessor.bufferView, .format = type, .offset = accessor.byteOffset }; // Location NOT supported...
+        accessors->get(i) = vkh::VkVertexInputAttributeDescription{ .binding = uint32_t(accessor.bufferView), .format = type, .offset = uint32_t(accessor.byteOffset) }; // Location NOT supported...
     };
 
     // 
@@ -222,7 +222,7 @@ int main() {
         // 
         for (uint32_t v = 0; v < meshData.primitives.size(); v++) {
             auto geometryDesc = vlr::GeometryDesc{
-                .primitiveCount = primitiveCountPer[v],
+                .primitiveCount = uint32_t(primitiveCountPer[v]),
                 .vertexAttribute = 0u
             };
 
@@ -249,10 +249,9 @@ int main() {
 
                     // 
                     if (location == 0u) {
-                        interpolation->get(v).data[location - 1u] = primitive.attributes.find(NM[i])->second;
-                    }
-                    else {
                         geometryDesc.vertexAttribute = primitive.attributes.find(NM[i])->second;
+                    } else {
+                        interpolation->get(v).data[location - 1u] = primitive.attributes.find(NM[i])->second;
                     };
                 };
             };
@@ -445,6 +444,18 @@ int main() {
     };
 
     // 
+    if (model.samplers.size() <= 0u) {
+        VkSampler sampler = {};
+        vkh::handleVk(fw->getDeviceDispatch()->CreateSampler(vkh::VkSamplerCreateInfo{
+            .magFilter = VK_FILTER_LINEAR,
+            .minFilter = VK_FILTER_LINEAR,
+            .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+            .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        }, nullptr, & sampler));
+        samplerSet->pushSampler(sampler);
+    };
+
+    // 
     for (uint32_t i = 0; i < model.images.size(); i++) {
         const auto& img = model.images[i];
 
@@ -480,8 +491,9 @@ int main() {
                 .imageOffset = {0u,0u,0u},
                 .imageExtent = {uint32_t(img.width),uint32_t(img.height),1u},
             });
-            textureSet->pushImage(image);
         });
+
+        textureSet->pushImage(image);
     };
 
 
