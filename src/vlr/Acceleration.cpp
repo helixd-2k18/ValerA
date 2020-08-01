@@ -19,6 +19,20 @@ namespace vlr {
         vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));
     };
 
+    // Made implicit due some not-valid GLTF (disable overlap formats)
+    uint32_t formatStride(const VkFormat& format) {
+        // F32_T
+        if (format >= 107 && format <= 109) { return sizeof(glm::vec4); } else
+        if (format >= 104 && format <= 106) { return sizeof(glm::vec3); } else 
+        if (format >= 101 && format <= 103) { return sizeof(glm::vec2); } else 
+        if (format >= 98  && format <= 100) { return sizeof(float); }
+
+        // F16_T
+        // TODO: 
+
+        return sizeof(uint32_t);
+    };
+
     // 
     void Acceleration::updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build) {
         offsetInfo.resize(0u);
@@ -75,7 +89,7 @@ namespace vlr {
                 // 
                 triangleDesc.transformData = geometrySet->getGpuBuffer()->deviceAddress();
                 triangleDesc.vertexFormat = attribute.format;
-                triangleDesc.vertexStride = binding.stride;
+                triangleDesc.vertexStride = std::max(binding.stride, formatStride(triangleDesc.vertexFormat));
                 triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute)->deviceAddress();
 
                 // 
@@ -88,8 +102,8 @@ namespace vlr {
                 };
 
                 // Fix vec4 formats into vec3, without alpha (but still can be passed by stride value)
-                if (triangleDesc.vertexFormat == VK_FORMAT_R32G32B32A32_SFLOAT) triangleDesc.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
-                if (triangleDesc.vertexFormat == VK_FORMAT_R16G16B16A16_SFLOAT) triangleDesc.vertexFormat = VK_FORMAT_R16G16B16_SFLOAT;
+                if (triangleDesc.vertexFormat == VK_FORMAT_R32G32B32A32_SFLOAT) { triangleDesc.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT; triangleDesc.vertexStride = std::max(triangleDesc.vertexStride, sizeof(glm::vec4)); };
+                if (triangleDesc.vertexFormat == VK_FORMAT_R16G16B16A16_SFLOAT) { triangleDesc.vertexFormat = VK_FORMAT_R16G16B16_SFLOAT; triangleDesc.vertexStride = std::max(triangleDesc.vertexStride, sizeof(glm::u16vec4)); };
                 geometryDesc.geometry.triangles = triangleDesc;
                 geometryDesc.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
 

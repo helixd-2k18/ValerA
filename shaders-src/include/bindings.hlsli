@@ -232,6 +232,20 @@ uint load_u32(in uint offset, in uint binding) {
 };
 #endif
 
+// Made implicit due some not-valid GLTF (disable overlap formats)
+uint formatStride(in uint format) {
+    // F32_T
+    if (format >= 107 && format <= 109) { return 16u; } else 
+    if (format >= 104 && format <= 106) { return 12u; } else
+    if (format >= 101 && format <= 103) { return 8u; } else
+    if (format >= 98  && format <= 100) { return 4u; };
+
+    // F16_T
+    // TODO: 
+
+    return 4u;
+};
+
 
 // TODO: Add Uint16_t, uint, Float16_t Support
 float4 get_float4(in uint idx, in uint loc, in uint geometrySetID) {
@@ -243,7 +257,7 @@ float4 get_float4(in uint idx, in uint loc, in uint geometrySetID) {
     Binding  binding = bindings[nonuniformEXT(geometrySetID)][attrib.binding];
 #endif
 
-    uint boffset = binding.stride * idx + attrib.offset;
+    uint boffset = max(binding.stride, formatStride(attrib.format)) * idx + attrib.offset;
     float4 vec = float4(0.f.xxxx);
     
     // 
