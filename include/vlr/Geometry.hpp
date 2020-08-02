@@ -5,6 +5,11 @@
 
 namespace vlr {
 
+    struct MeshIDFlags {
+        uint32_t ID : 24;
+        uint32_t hasTransform : 1, hasNormal : 1, hasTexcoord : 1, hasTangent : 1, reserved : 4;
+    };
+
 #pragma pack(push, 1)
     struct GeometryDesc {
         glm::mat3x4 transform = glm::mat3x4(1.f);
@@ -13,8 +18,10 @@ namespace vlr {
         uint32_t material = 0u;
         
         // 
-        vkh::uint24_t meshID = 0u;
-        uint8_t flags = 0u;
+        union {
+            MeshIDFlags mesh_flags;
+            uint32_t mesh_flags_u32 = 0u;
+        };
 
         // We solved to re-port into... 
         uint32_t vertexAttribute = 0u, indexBufferView = ~0u;

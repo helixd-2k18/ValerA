@@ -77,8 +77,8 @@ void main()
             //atomicSuperImageAdd3(currImages[IW_RENDERED], curPixel, toLinear(float4(0.f, 0.9f, 1.f, 1.f)));
         };
 
-        //
-        const float3 mapNormal = GEO.gNormal.xyz;
+        // 
+        const float3 mapNormal = faceforward(GEO.gNormal.xyz, raydir, GEO.gNormal.xyz);
         const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
         
         // Emit Diffuse Indirect Ray

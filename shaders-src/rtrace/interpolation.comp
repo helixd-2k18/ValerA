@@ -48,7 +48,7 @@ void main()
             XPOL material = materialize(xhit, geometry);
 
             // 
-            const float3 mapNormal = geometry.gNormal.xyz;//material.mapNormal.xyz;
+            const float3 mapNormal = faceforward(geometry.gNormal.xyz, xhit.direct.xyz, geometry.gNormal.xyz);//material.mapNormal.xyz;
             const float3x3 TBN = float3x3(geometry.gTangent.xyz,geometry.gBinormal.xyz,mapNormal);
 
             // 
