@@ -138,7 +138,7 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     if (diffuseColor.w > 0.0001f) { // Only When Opaque!
         outp.gPosition = inp.fPosition; // Save texcoord for Parallax Mapping with alpha channel
         outp.oMaterial = uintBitsToFloat(uint4(0u, 0u, 0u, floatBitsToUint(1.f)));
-        outp.oGeoIndice = uintBitsToFloat(uint4(globalInstanceID, geometryInstanceID, PrimitiveID, floatBitsToUint(1.f)));
+        outp.oGeoIndice = float4(inp.uData.xyz, 1.f);
         outp.oBarycent = float4(max(BaryWeights, 0.0001f.xxx), 1.f);
         outp.FragDepth = inp.FragCoord.z;
     };

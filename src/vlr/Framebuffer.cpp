@@ -59,7 +59,7 @@ namespace vlr {
             vkh::VsRenderPassCreateInfoHelper rpsInfo = {};
             for (uint32_t b = 0u; b < 8u; b++) { 
                 rpsInfo.addColorAttachment(colAttachment);
-                rasterFBO.blendStates.push_back(vkh::VkPipelineColorBlendAttachmentState{ .blendEnable = true });
+                rasterFBO.blendStates.push_back(vkh::VkPipelineColorBlendAttachmentState{ .blendEnable = false });
                 rasterFBO.clearValues.push_back(vkh::VkClearColorValue{}); rasterFBO.clearValues.back().color.float32 = glm::vec4(0.f, 0.f, 0.f, 0.f);
                 resampleFBO.blendStates.push_back(vkh::VkPipelineColorBlendAttachmentState{ .blendEnable = true });
                 resampleFBO.clearValues.push_back(vkh::VkClearColorValue{}); resampleFBO.clearValues.back().color.float32 = glm::vec4(0.f, 0.f, 0.f, 0.f);

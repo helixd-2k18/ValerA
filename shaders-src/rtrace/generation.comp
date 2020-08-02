@@ -51,8 +51,8 @@ void main()
         float3 geonrm = float3(0.f.xxx);
 
         // Replacement for rasterization
-          XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
-        //XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f); // BROKEN!
+        //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
+          XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f); // BROKEN!
 
         // TODO: Optimize Fetching and Interpolation 
         XGEO GEO = interpolate(RPM);
@@ -88,9 +88,17 @@ void main()
             outRay.direct = randomHemisphereCosine(seed, TBN);
             outRay.origin.xyz += faceforward(GEO.gNormal.xyz, outRay.direct, -GEO.gNormal.xyz) * 0.001f;
             outRay.pixelID = u16vec2(LAUNCH_ID);
-            outRay.emission = f16vec4(0.f.xxxx);
-            outRay.color = f16vec4(1.f.xxxx);
+            outRay.emission = half4(gSkyShader(raydir.xyz, origin.xyz));
+            outRay.color = f16vec4(0.f.xxxx);
             outRay.meta = u8vec4(0u);
+
+            if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
+                outRay.emission = half4(float4(float3(RPM.gIndices.xyz) / 12.f, 1.f));
+            };
+
+            kind(outRay, DIFFUSE_RAY);
+            lifetime(outRay, 0u);
+            finished(outRay, true);
         };*/
 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
