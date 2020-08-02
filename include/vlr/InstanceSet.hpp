@@ -7,7 +7,8 @@
 
 namespace vlr {
 
-    class InstanceSet : public SetBase_T<vkh::VsGeometryInstance> { protected: friend Rasterization; friend RayTracing; friend PipelineLayout;
+    class InstanceSet : public SetBase_T<vkh::VsGeometryInstance> {
+    protected: friend Rasterization; friend RayTracing; friend PipelineLayout; friend BuildCommand;
         vkt::uni_ptr<Driver> driver = {};
         std::vector<vkt::uni_ptr<Acceleration>> accelerations = {};
 
