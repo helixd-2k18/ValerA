@@ -2,11 +2,13 @@
 #include "./Config.hpp"
 #include "./Driver.hpp"
 #include "./SetBase.hpp"
+#include "./GeometrySet.hpp"
 
 namespace vlr {
 
-    class InstanceSet : public SetBase_T<vkh::VsGeometryInstance> { protected: 
+    class InstanceSet : public SetBase_T<vkh::VsGeometryInstance> { protected: friend Rasterization; friend RayTracing; friend PipelineLayout;
         vkt::uni_ptr<Driver> driver = {};
+        std::vector<vkt::uni_ptr<GeometrySet>> geometrySets = {};
 
     public: 
         InstanceSet() : SetBase_T<vkh::VsGeometryInstance>() { this->constructorExtend0(); };
@@ -30,6 +32,21 @@ namespace vlr {
         // 
         vkh::VsGeometryInstance& operator[](const uint32_t& I) { return this->get(I); };
         const vkh::VsGeometryInstance& operator[](const uint32_t& I) const { return this->get(I); };
+
+        // 
+        virtual void setGeometrySets(std::vector<vkt::uni_ptr<GeometrySet>> geometrySets) {
+            this->geometrySets = geometrySets;
+        };
+
+        // 
+        virtual void pushGeometrySet(vkt::uni_ptr<GeometrySet> geometrySet) {
+            this->geometrySets.push_back(geometrySet);
+        };
+
+        // 
+        virtual void resetGeometrySets(vkt::uni_ptr<GeometrySet> geometrySet) {
+            this->geometrySets.resize(0u);
+        };
     };
 
 };

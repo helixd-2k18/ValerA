@@ -12,7 +12,7 @@ namespace vlr {
     void Rasterization::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) {
         this->driver = driver; auto device = this->driver->getDeviceDispatch();
         if (info.has()) {
-            this->layout = info->layout, this->framebuffer = info->framebuffer, this->instanceSet = info->instanceSet, this->geometrySets = info->geometrySets, this->constants = info->constants; 
+            this->layout = info->layout, this->framebuffer = info->framebuffer, this->instanceSet = info->instanceSet, this->constants = info->constants; 
         };
         
         // 
@@ -65,13 +65,13 @@ namespace vlr {
             this->layout->bound[0u] = this->constants->set;
         };
 
-        if (this->instanceSet.has() && this->geometrySets.size() > 0) { //
+        if (this->instanceSet.has() && this->instanceSet->geometrySets.size() > 0) { //
             this->geometriesDescs->resetBufferViews();
 
             // 
             for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
                 auto& instanceDesc = this->instanceSet->get(i);
-                auto& geometrySet = this->geometrySets[instanceDesc.customId];
+                auto& geometrySet = this->instanceSet->geometrySets[instanceDesc.customId];
                 this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
             };
 
@@ -100,7 +100,7 @@ namespace vlr {
 
         // 
         auto& instanceDesc = this->instanceSet->get(meta.x);
-        auto& geometrySet = this->geometrySets[instanceDesc.customId];
+        auto& geometrySet = this->instanceSet->geometrySets[instanceDesc.customId];
         auto& desc = geometrySet->get(meta.y);
         //auto geometry = geometrySet->geometries[meta.y];
 
@@ -152,7 +152,7 @@ namespace vlr {
         // 
         for (uint32_t i = 0u; i < this->instanceSet->getGpuBuffer().size(); i++) {
             auto& instanceDesc = this->instanceSet->get(i);
-            auto& geometrySet = this->geometrySets[instanceDesc.customId];
+            auto& geometrySet = this->instanceSet->geometrySets[instanceDesc.customId];
             for (uint32_t j=0;j<geometrySet->geometries.size();j++) {
                 auto& geometry = geometrySet->geometries[j];
                 this->drawCommand(rasterCommand, glm::uvec4(i, j, 0u, 0u));

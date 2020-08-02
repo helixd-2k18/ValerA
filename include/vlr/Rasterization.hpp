@@ -21,7 +21,6 @@ namespace vlr {
         //vkt::uni_ptr<GeometrySet> geometrySet = {};
         //vkt::uni_ptr<InstanceSet> instanceSet = {};
         vkt::uni_ptr<InstanceSet> instanceSet = {}; // Used By Top Level
-        std::vector<vkt::uni_ptr<GeometrySet>> geometrySets = {}; // Not Necessary, inbound with `vkt::uni_ptr<Acceleration>`, Used By Bottom Levels
 
         // 
         VkPipeline pipeline = VK_NULL_HANDLE;
@@ -50,21 +49,6 @@ namespace vlr {
         // 
         virtual void setInstanceSet(vkt::uni_ptr<InstanceSet> instanceSet) {
             this->instanceSet = instanceSet;
-        };
-
-        // 
-        virtual void setGeometrySets(std::vector<vkt::uni_ptr<GeometrySet>> geometrySets) {
-            this->geometrySets = geometrySets;
-        };
-
-        // 
-        virtual void pushGeometrySet(vkt::uni_ptr<GeometrySet> geometrySet) {
-            this->geometrySets.push_back(geometrySet);
-        };
-
-        // 
-        virtual void resetGeometrySets(vkt::uni_ptr<GeometrySet> geometrySet) {
-            this->geometrySets.resize(0u);
         };
 
         // Set Constants Buffer

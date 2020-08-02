@@ -47,10 +47,7 @@ namespace vlr {
         std::vector<vkt::uni_ptr<Acceleration>> accelerations = {};
         VkPipeline generation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE, finalize = VK_NULL_HANDLE, resample = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE;
         // TODO: Accumulation Shader (pick up all hits)
-
-        // 
-        vkt::uni_ptr<BufferViewSet> geometriesDescs = {}; // Buffers with GeometryDesc
-
+        
         // 
         vkt::uni_ptr<SetBase_T<uint32_t>> counters = {};
         vkt::uni_ptr<SetBase_T<ColorData>> colorChainData = {};
@@ -59,10 +56,7 @@ namespace vlr {
         vkt::uni_ptr<SetBase_T<RayData>> rayDataFlip1 = {};
         vkt::uni_ptr<BufferViewSet> rayDataSetFlip0 = {};
         vkt::uni_ptr<BufferViewSet> rayDataSetFlip1 = {};
-
-        // For TOP Level
-        //vkt::uni_ptr<InstanceSet> instanceSet = {}; // Used By Top Level
-        //std::vector<vkt::uni_ptr<GeometrySet>> geometries = {}; // Not Necessary, inbound with `vkt::uni_ptr<Acceleration>`, Used By Bottom Levels
+        vkt::uni_ptr<BufferViewSet> geometriesDescs = {}; // Buffers with GeometryDesc
 
     public: 
         RayTracing() { this->constructor(); };

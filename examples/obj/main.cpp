@@ -156,7 +156,6 @@ int main() {
     std::vector<vkt::uni_ptr<vlr::SetBase_T<FDStruct>>> sets = {};
     std::vector<vkt::uni_ptr<vlr::Acceleration>> accelerations = {};
     std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
-    std::vector<uint32_t> offsets = {};
 
     // 
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
@@ -169,6 +168,10 @@ int main() {
         .attributes = accessors,
         .bufferViews = buffers
     });
+
+    // 
+    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 2u });
+    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {2u} }); // shapes.size()
 
     // 
     for (size_t s = 0; s < shapes.size(); s++) { // 
@@ -184,7 +187,6 @@ int main() {
 
         // 
         size_t indexOffset = 0; // Loop over faces(polygon)
-        offsets.push_back(indexOffset);
 
         // 
         auto gdesc = vlr::GeometryDesc{
@@ -228,21 +230,21 @@ int main() {
         accessors->get(gdesc.vertexAttribute = accessorCount++) = vkh::VkVertexInputAttributeDescription{
             .location = 0u, .binding = bID,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fPosition))
+            .offset = uint32_t(offsetof(FDStruct, fPosition))
         };
 
         // 
         accessors->get(gdesc.attributes[0u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
             .location = 0u, .binding = bID,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fTexcoord))
+            .offset = uint32_t(offsetof(FDStruct, fTexcoord))
         };
 
         // 
         accessors->get(gdesc.attributes[1u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
             .location = 0u, .binding = bID,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fNormal))
+            .offset = uint32_t(offsetof(FDStruct, fNormal))
         };
 
         // 
@@ -250,6 +252,7 @@ int main() {
 
         // 
         geometrySet->pushGeometry(geometry);
+        instanceSet->pushGeometrySet(geometrySet);
 
         // 
         auto geometryData = geometrySet->getVector();
@@ -270,8 +273,6 @@ int main() {
     });
 
     // 
-    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 2u });
-    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {2u} }); // shapes.size()
     auto framebuffer = std::make_shared<vlr::Framebuffer>(fw);
     auto layout = std::make_shared<vlr::PipelineLayout>(fw);
 
@@ -299,8 +300,7 @@ int main() {
         .layout = layout,
         .framebuffer = framebuffer,
         .instanceSet = instanceSet,
-        .constants = constants,
-        .geometrySets = geometries,
+        .constants = constants
     });
 
     // 
