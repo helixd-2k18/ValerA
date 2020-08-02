@@ -124,10 +124,10 @@ int main() {
     //buffers->pushBufferView(vertexData->getGpuBuffer());
 
 
-    
+
 
     //
-    std::string inputfile = "cube.obj";
+    std::string inputfile = "sphere.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -283,22 +283,11 @@ int main() {
         interpolations.push_back(interpolation);
         buffers->pushBufferView(vertexData->getGpuBuffer());
 
+
+
         // 
         size_t indexOffset = 0; // Loop over faces(polygon)
         offsets.push_back(indexOffset);
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
-
-            // 
-            auto verticeCount = shapes[s].mesh.num_face_vertices[f];
-            for (size_t v = 0; v < verticeCount; v++) { //
-                tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + v];
-                vertexData->get(indexOffset + v).fPosition = glm::vec4(attrib.vertices[3 * idx.vertex_index + 0], attrib.vertices[3 * idx.vertex_index + 1], attrib.vertices[3 * idx.vertex_index + 2], 1.f);
-                vertexData->get(indexOffset + v).fNormal = glm::vec4(attrib.normals[3 * idx.normal_index + 0], attrib.normals[3 * idx.normal_index + 1], attrib.normals[3 * idx.normal_index + 2], 0.f);
-                vertexData->get(indexOffset + v).fTexcoord = glm::vec4(attrib.texcoords[2 * idx.texcoord_index + 0], attrib.texcoords[2 * idx.texcoord_index + 1], 0.f, 0.f);
-            };
-
-            indexOffset += verticeCount;
-        };
 
         // 
         auto gdesc = vlr::GeometryDesc{
@@ -307,6 +296,30 @@ int main() {
             .material = uint32_t(shapes[s].mesh.material_ids[0u] != -1 ? shapes[s].mesh.material_ids[0u] : 0u),
             .vertexAttribute = 0u
         };
+
+        // 
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
+
+            // 
+            auto verticeCount = shapes[s].mesh.num_face_vertices[f];
+            for (size_t v = 0; v < verticeCount; v++) { //
+                tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + v];
+                vertexData->get(indexOffset + v).fPosition = glm::vec4(attrib.vertices[3 * idx.vertex_index + 0], attrib.vertices[3 * idx.vertex_index + 1], attrib.vertices[3 * idx.vertex_index + 2], 1.f);
+                if (idx.normal_index >= 0) { 
+                    vertexData->get(indexOffset + v).fNormal = glm::vec4(attrib.normals[3 * idx.normal_index + 0], attrib.normals[3 * idx.normal_index + 1], attrib.normals[3 * idx.normal_index + 2], 0.f); 
+                    gdesc.mesh_flags.hasNormal = 1;
+                };
+                if (idx.texcoord_index >= 0) {
+                    vertexData->get(indexOffset + v).fTexcoord = glm::vec4(attrib.texcoords[2 * idx.texcoord_index + 0], attrib.texcoords[2 * idx.texcoord_index + 1], 0.f, 0.f);
+                    gdesc.mesh_flags.hasTexcoord = 1;
+                };
+            };
+
+            indexOffset += verticeCount;
+        };
+
+        // 
+        gdesc.primitiveCount = uint32_t(indexOffset / 3u);
 
         // 
         uint32_t bID = uint32_t(s);
@@ -375,7 +388,7 @@ int main() {
         .instanceOffset = 0u,
         .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
     };
-
+    /*
     // 
     glm::mat4x4 traslated = glm::translate(glm::vec3(1.1f, 0.f, 0.f));
     instanceSet->get(1u) = vkh::VsGeometryInstance{
@@ -385,7 +398,7 @@ int main() {
         .instanceOffset = 0u,
         .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
     };
-
+    */
     // 
     auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
         .layout = layout,
