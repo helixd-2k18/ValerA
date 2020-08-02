@@ -5,12 +5,13 @@
 
 namespace vlr {
 
+#pragma pack(push, 1)
     struct MeshIDFlags {
         uint32_t ID : 24;
         uint32_t hasTransform : 1, hasNormal : 1, hasTexcoord : 1, hasTangent : 1, reserved : 4;
     };
+#pragma pack(pop)
 
-#pragma pack(push, 1)
     struct GeometryDesc {
         glm::mat3x4 transform = glm::mat3x4(1.f);
         uint32_t firstVertex = 0u;
@@ -24,11 +25,9 @@ namespace vlr {
         };
 
         // We solved to re-port into... 
-        uint32_t vertexAttribute = 0u, indexBufferView = ~0u;
-        VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
-        uint32_t reserved; // ?? 
+        uint32_t vertexAttribute = 0u, indexBufferView = ~0u, indexType = VK_INDEX_TYPE_NONE_KHR, reserved = 0u;
+        //VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
     };
-#pragma pack(pop)
 
     class Geometry : public std::enable_shared_from_this<Geometry> { protected: friend GeometrySet; friend Acceleration; friend Rasterization;
         vkt::uni_ptr<VertexSet> vertexSet = {};

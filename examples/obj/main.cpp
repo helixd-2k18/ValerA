@@ -142,6 +142,9 @@ int main() {
     if (!err.empty()) { std::cerr << err << std::endl; }
     if (!ret) { exit(1); }
 
+    // 
+    shapes.push_back(shapes[0]);
+
     // Loop over shapes
     VkDeviceSize accessorCount = 0u;
     std::vector<std::vector<VkDeviceSize>> primitiveCountPer = {};
@@ -283,8 +286,6 @@ int main() {
         interpolations.push_back(interpolation);
         buffers->pushBufferView(vertexData->getGpuBuffer());
 
-
-
         // 
         size_t indexOffset = 0; // Loop over faces(polygon)
         offsets.push_back(indexOffset);
@@ -388,17 +389,17 @@ int main() {
         .instanceOffset = 0u,
         .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
     };
-    /*
+
     // 
     glm::mat4x4 traslated = glm::translate(glm::vec3(1.1f, 0.f, 0.f));
     instanceSet->get(1u) = vkh::VsGeometryInstance{
         .transform = glm::mat3x4(glm::transpose(traslated)),
-        .customId = 0u,
+        .customId = 1u,
         .mask = 0xFFu,
         .instanceOffset = 0u,
         .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
     };
-    */
+    
     // 
     auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
         .layout = layout,

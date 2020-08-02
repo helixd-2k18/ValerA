@@ -72,8 +72,8 @@ namespace vlr {
 
             // 
             for (uint32_t i=0;i<accelerations.size();i++) {
-                vkt::uni_ptr<GeometrySet> geometrySet = accelerations[i]->geometrySet;
-                vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
+                auto& geometrySet = accelerations[i]->geometrySet;
+                auto& interpolation = geometrySet->interpolations;
 
                 // 
                 this->interpolations->pushBufferView(interpolation->getGpuBuffer());

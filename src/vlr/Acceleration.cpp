@@ -99,7 +99,7 @@ namespace vlr {
                 // 
                 if (geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1 && geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR) {
                     triangleDesc.indexData = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
-                    triangleDesc.indexType = geometry->desc->indexType;
+                    triangleDesc.indexType = VkIndexType(geometry->desc->indexType);
                 } else {
                     triangleDesc.indexType = VK_INDEX_TYPE_NONE_KHR;
                     triangleDesc.indexData = VK_NULL_HANDLE;

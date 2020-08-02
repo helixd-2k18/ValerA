@@ -73,9 +73,9 @@ namespace vlr {
 
             // 
             for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
-                auto instanceDesc = this->instanceSet->get(i);
-                auto geometrySet = this->geometrySets[instanceDesc.customId];
-                vkt::uni_ptr<Interpolation> interpolation = geometrySet->interpolations;
+                auto& instanceDesc = this->instanceSet->get(i);
+                auto& geometrySet = this->geometrySets[instanceDesc.customId];
+                auto& interpolation = geometrySet->interpolations;
 
                 // 
                 this->interpolations->pushBufferView(interpolation->getGpuBuffer());
@@ -110,18 +110,19 @@ namespace vlr {
         device->CmdBeginRenderPass(rasterCommand, vkh::VkRenderPassBeginInfo{ .renderPass = framebuffer->rasterFBO.renderPass, .framebuffer = framebuffer->rasterFBO.framebuffer, .renderArea = renderArea, .clearValueCount = static_cast<uint32_t>(framebuffer->rasterFBO.clearValues.size()), .pClearValues = framebuffer->rasterFBO.clearValues.data() }, VK_SUBPASS_CONTENTS_INLINE);
 
         // 
-        auto instanceDesc = this->instanceSet->get(meta.x);
-        auto geometrySet = this->geometrySets[instanceDesc.customId];
-        auto geometry = geometrySet->geometries[meta.y];
+        auto& instanceDesc = this->instanceSet->get(meta.x);
+        auto& geometrySet = this->geometrySets[instanceDesc.customId];
+        auto& desc = geometrySet->get(meta.y);
+        //auto geometry = geometrySet->geometries[meta.y];
 
         // 
-        if (geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR && geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1) {
-            const auto& buffer = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
-            device->CmdBindIndexBuffer(rasterCommand, buffer, buffer.offset(), geometry->desc->indexType);
-            device->CmdDrawIndexed(rasterCommand, geometry->desc->primitiveCount * 3u, 1u, geometry->desc->firstVertex, 0u, 0u);
-        } else {
-            device->CmdDraw(rasterCommand, geometry->desc->primitiveCount * 3u, 1u, geometry->desc->firstVertex, 0u); // TODO: Instanced Support
-        };
+        //if (geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR && geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1) {
+            //const auto& buffer = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
+            //device->CmdBindIndexBuffer(rasterCommand, buffer, buffer.offset(), VkIndexType(geometry->desc->indexType));
+            //device->CmdDrawIndexed(rasterCommand, geometry->desc->primitiveCount * 3u, 1u, geometry->desc->firstVertex, 0u, 0u);
+        //} else {
+            device->CmdDraw(rasterCommand, desc.primitiveCount * 3u, 1u, desc.firstVertex, 0u); // TODO: Instanced Support
+        //};
 
         // 
         device->CmdEndRenderPass(rasterCommand);
@@ -160,11 +161,11 @@ namespace vlr {
         });
 
         // 
-        for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
-            auto instanceDesc = this->instanceSet->get(i);
-            auto geometrySet = this->geometrySets[instanceDesc.customId];
+        for (uint32_t i = 0u; i < this->instanceSet->getGpuBuffer().size(); i++) {
+            auto& instanceDesc = this->instanceSet->get(i);
+            auto& geometrySet = this->geometrySets[instanceDesc.customId];
             for (uint32_t j=0;j<geometrySet->geometries.size();j++) {
-                auto geometry = geometrySet->geometries[j];
+                auto& geometry = geometrySet->geometries[j];
                 this->drawCommand(rasterCommand, glm::uvec4(i, j, 0u, 0u));
             };
         };
