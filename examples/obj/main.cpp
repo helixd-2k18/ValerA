@@ -349,54 +349,6 @@ int main() {
     auto accessorsV = accessors->getVector();
     auto bindingsV = bindings->getVector();
 
-    /*
-
-    // use attributes
-    interpolation->get(0u).data[0u] = 1u;
-    interpolation->get(0u).data[1u] = 2u;
-    interpolation->get(0u).data[2u] = 3u;
-
-    // 
-    vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
-    vertexData->get(1u) = FDStruct{ .fPosition = glm::vec4(-1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
-    vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
-
-    // 
-    bindings->get(0u) = vkh::VkVertexInputBindingDescription{
-        .binding = 0u,
-        .stride = sizeof(FDStruct)
-    };
-
-    // 
-    accessors->get(0u) = vkh::VkVertexInputAttributeDescription{
-        .location = 0u, .binding = 0u,
-        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-        .offset = offsetof(FDStruct, fPosition)
-    };
-
-    accessors->get(1u) = vkh::VkVertexInputAttributeDescription{
-        .location = 1u, .binding = 0u,
-        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-        .offset = offsetof(FDStruct, fTexcoord)
-    };
-
-    accessors->get(2u) = vkh::VkVertexInputAttributeDescription{
-        .location = 2u, .binding = 0u,
-        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-        .offset = offsetof(FDStruct, fNormal)
-    };
-
-    accessors->get(3u) = vkh::VkVertexInputAttributeDescription{
-        .location = 3u, .binding = 0u,
-        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-        .offset = offsetof(FDStruct, fTangent)
-    };
-
-    // 
-    geometrySet->setInterpolation(interpolation);
-    geometrySet->pushGeometry(geometry);
-    */
-
     // 
     fw->submitOnce([&](VkCommandBuffer cmd) {
         vertexData->setCommand(cmd);
