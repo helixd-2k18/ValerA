@@ -19,7 +19,6 @@ namespace vlr {
         vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<Acceleration> accelerationTop = {}; // Top Level for Ray Tracing
         vkt::uni_ptr<Constants> constants = {};
-        std::vector<vkt::uni_ptr<Acceleration>> accelerations = {}; // Bottom Levels
     };
 
     struct RenderPass {

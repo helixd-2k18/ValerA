@@ -286,7 +286,7 @@ int main() {
     };
 
     // 
-    glm::mat4x4 traslated = glm::translate(glm::vec3(1.1f, 0.f, 0.f));
+    glm::mat4x4 traslated = glm::translate(glm::vec3(3.f, 0.f, 0.f));
     instanceSet->get(1u) = vkh::VsGeometryInstance{
         .transform = glm::mat3x4(glm::transpose(traslated)),
         .customId = 1u,
@@ -308,8 +308,7 @@ int main() {
         .layout = layout,
         .framebuffer = framebuffer,
         .accelerationTop = accelerationTop,
-        .constants = constants,
-        .accelerations = accelerations
+        .constants = constants
     });
 
     //
@@ -322,8 +321,7 @@ int main() {
     // 
     auto buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
         .layout = layout,
-        .accelerationTop = accelerationTop,
-        .accelerations = accelerations
+        .accelerationTop = accelerationTop
     });
 
     

@@ -227,7 +227,6 @@ int main() {
         .framebuffer = framebuffer,
         .accelerationTop = accelerationTop,
         .constants = constants,
-        .accelerations = {accelerationBottom}
     });
 
     //
@@ -241,7 +240,6 @@ int main() {
     auto buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
         .layout = layout,
         .accelerationTop = accelerationTop,
-        .accelerations = {accelerationBottom}
     });
 
     
