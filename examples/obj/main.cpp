@@ -160,17 +160,6 @@ int main() {
     //auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = accessorCount });
     //auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = accessorCount * 3u });
 
-    // 
-    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
-    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
-
-    // 
-    auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
-        .bindings = bindings,
-        .attributes = accessors,
-        .bufferViews = buffers
-    });
-
     /* Crash from 11th...
     // 
     accessorCount = 0u;
@@ -267,6 +256,19 @@ int main() {
     std::vector<vkt::uni_ptr<vlr::Interpolation>> interpolations = {};
     std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
     std::vector<uint32_t> offsets = {};
+
+    // 
+    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
+    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
+
+    // 
+    auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
+        .bindings = bindings,
+        .attributes = accessors,
+        .bufferViews = buffers
+    });
+
+    // 
     for (size_t s = 0; s < shapes.size(); s++) { // 
         auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = vertexCountAll[s] });
         auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
@@ -342,7 +344,6 @@ int main() {
         // 
         auto geometryData = geometrySet->getVector();
     };
-
 
     // 
     auto accessorsV = accessors->getVector();
@@ -421,18 +422,16 @@ int main() {
         .mask = 0xFFu,
         .instanceOffset = 0u,
         .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
-        .accelerationStructureHandle = accelerations[0u]->getHandle()
     };
 
     // 
     glm::mat4x4 traslated = glm::translate(glm::vec3(1.1f, 0.f, 0.f));
     instanceSet->get(1u) = vkh::VsGeometryInstance{
         .transform = glm::mat3x4(glm::transpose(traslated)),
-        .customId = 0u,
+        .customId = 1u,
         .mask = 0xFFu,
         .instanceOffset = 0u,
         .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
-        .accelerationStructureHandle = accelerations[0u]->getHandle()
     };
 
     // 
