@@ -20,6 +20,11 @@ Classic-like batch ray tracing, but based on `VK_KHR_ray_tracing` ideas... vRt r
 - [ ] ...
 
 
+### Why OBJ instead of GLTF?
+
+GLTF is much complex format, very complex for support and Debug. Do not misunderstand me, I have already spent my energy, the monetary equivalent of which exceeds the permissible limits in the amount of over 50$... and GLTF support also requires fucking with dances, and this is also $ 10 in a similar equivalent... now my strength is enough a maximum of 1$ per day, which is extremely small. I already barely met the monthly limit for the first version (for a library or framework, this is just an early alpha)... It's just that OBJ is easier to maintain and debug, and costs about only 1$ per day of work...
+
+
 ## Additional Links
 
 - [VKt/VKh](https://github.com/world8th/vkt), simpler and unified helpers and mini-framework for Vulkan API... **Required** for the project!
