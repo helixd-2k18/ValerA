@@ -428,7 +428,7 @@ int main() {
     glm::mat4x4 traslated = glm::translate(glm::vec3(1.1f, 0.f, 0.f));
     instanceSet->get(1u) = vkh::VsGeometryInstance{
         .transform = glm::mat3x4(glm::transpose(traslated)),
-        .customId = 1u,
+        .customId = 0u,
         .mask = 0xFFu,
         .instanceOffset = 0u,
         .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,

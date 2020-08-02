@@ -326,24 +326,24 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     const float3 baryCoord = hit.gBarycentric.xyz;
 
     // 
-    GeometryDesc node;
+    const GeometryDesc node = 
 #ifdef GLSL
-    node = geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+    geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
 #else
-    node = geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
+    geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
 
-    Interpolations interpol;
+    const Interpolations interpol = 
 #ifdef GLSL
-    interpol = interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+    interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
 #else
-    interpol = interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
+    interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
 
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
     float3x4 matra4 = instances[nonuniformEXT(globalInstanceID)].transform;
-    if (hasTransform(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { matras = node.transform; };
+    if (hasTransform(node)) { matras = node.transform; };
 
     // Native Normal Transform
     const float3x3 normalTransform = inverse(transpose(regen3(matras)));
@@ -369,22 +369,25 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
         geometry.gPosition[i] = float4(mul(matra4, float4(mul(matras, float4(geometry.oPosition[i].xyz, 1.f)), 1.f)), 1.f);
     };
 
+    // 
     const float4 dp1 = geometry.gPosition[1] - geometry.gPosition[0], dp2 = geometry.gPosition[2] - geometry.gPosition[0];
     const float4 tx1 = geometry.gTexcoord[1] - geometry.gTexcoord[0], tx2 = geometry.gTexcoord[2] - geometry.gTexcoord[0];
     const float3 normal = normalize(cross(dp1.xyz, dp2.xyz));
 
+    // 
     const float coef = 1.f / (tx1.x * tx2.y - tx2.x * tx1.y);
     const float3 tangent = (dp1.xyz * tx2.yyy - dp2.xyz * tx1.yyy) * coef;
     const float3 binorml = (dp1.xyz * tx2.xxx - dp2.xyz * tx1.xxx) * coef;
 
+    // 
     for (uint32_t i=0u;i<3u;i++) { // 
         geometry.gNormal[i] = float4(geometry.gNormal[i].xyz, 0.f);
         geometry.gTangent[i] = float4(geometry.gTangent[i].xyz, 0.f);
         geometry.gBinormal[i] = float4(geometry.gBinormal[i].xyz, 0.f);
 
         // 
-        if (!hasNormal(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID]) || dot(abs(geometry.gNormal[i].xyz), 1.f.xxx) < 0.0001f) { geometry.gNormal[i]  = float4(normal, 0.f); };
-        if (!hasTangent(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID]) || dot(abs(geometry.gTangent[i].xyz), 1.f.xxx) < 0.0001f) { 
+        if (!hasNormal (node) || dot(abs(geometry.gNormal [i].xyz), 1.f.xxx) < 0.0001f) { geometry.gNormal[i]  = float4(normal, 0.f); };
+        if (!hasTangent(node) || dot(abs(geometry.gTangent[i].xyz), 1.f.xxx) < 0.0001f) { 
             geometry.gTangent[i].xyz = tangent - dot(geometry.gNormal[i].xyz,tangent.xyz)*geometry.gNormal[i].xyz;
             geometry.gBinormal[i].xyz = binorml - dot(geometry.gNormal[i].xyz,binorml.xyz)*geometry.gNormal[i].xyz;
         } else {
@@ -444,11 +447,11 @@ XPOL materialize(in XHIT hit, inout XGEO geo) { //
     const uint primitiveID = hit.gIndices.z;
     const uint geometrySetID = getGeometrySetID(instances[globalInstanceID]);
 
-    GeometryDesc node;
+    const GeometryDesc node = 
 #ifdef GLSL
-    node = geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+    geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
 #else
-    node = geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
+    geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
 
     const MaterialUnit unit = materials[MatID]; // NEW! 20.04.2020

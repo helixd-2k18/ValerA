@@ -101,24 +101,24 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     const uint globalInstanceID = floatBitsToUint(inp.uData.x);
     const uint geometrySetID = getGeometrySetID(instances[globalInstanceID]);
 
-    Interpolations interpol;
+    const Interpolations interpol = 
 #ifdef GLSL
-    interpol = interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+    interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
 #else
-    interpol = interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
+    interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
 
-    GeometryDesc node;
+    const GeometryDesc node = 
 #ifdef GLSL
-    node = geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
+    geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
 #else
-    node = geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
+    geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
 
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
     float3x4 matra4 = instances[nonuniformEXT(globalInstanceID)].transform;
-    if (hasTransform(geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID])) { matras = node.transform; };
+    if (hasTransform(node)) { matras = node.transform; };
 
 #ifndef MatID
 #define MatID node.material

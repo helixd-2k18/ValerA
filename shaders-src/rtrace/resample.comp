@@ -76,6 +76,7 @@ void main()
     if (
         //true
         //dot(imageLoad(prevImages[IW_BARYCENT], curPixel).xyz, 1.f.xxx) > 0.f && 
+
         abs(screenpos.z - screensmp.z) < 0.0001f && 
         distance(wPosition.xyz, worldspos.xyz) < 0.1f
     ) 
