@@ -316,14 +316,25 @@ int main() {
     });
 
     // 
-    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {1u} }); // shapes.size()
+    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 2u });
+    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {2u} }); // shapes.size()
     auto framebuffer = std::make_shared<vlr::Framebuffer>(fw);
     auto layout = std::make_shared<vlr::PipelineLayout>(fw);
 
     // 
     instanceSet->get(0u) = vkh::VsGeometryInstance{
         .transform = glm::mat3x4(1.f),
+        .customId = 0u,
+        .mask = 0xFFu,
+        .instanceOffset = 0u,
+        .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
+        .accelerationStructureHandle = accelerations[0u]->getHandle()
+    };
+
+    // 
+    glm::mat4x4 traslated = glm::translate(glm::vec3(1.1f, 0.f, 0.f));
+    instanceSet->get(1u) = vkh::VsGeometryInstance{
+        .transform = glm::mat3x4(glm::transpose(traslated)),
         .customId = 0u,
         .mask = 0xFFu,
         .instanceOffset = 0u,
