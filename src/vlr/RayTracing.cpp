@@ -10,7 +10,7 @@ namespace vlr {
 
     void RayTracing::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info) {
         if (info.has()) {
-            this->layout = info->layout, this->framebuffer = info->framebuffer, this->accelerationTop = info->accelerationTop, this->accelerations = info->accelerations, this->constants = info->constants; 
+            this->layout = info->layout, this->framebuffer = info->framebuffer, this->accelerationTop = info->accelerationTop, this->constants = info->constants; 
         };
         this->driver = driver;
         auto device = this->driver->getDeviceDispatch();
@@ -63,13 +63,13 @@ namespace vlr {
         this->counters->createDescriptorSet(layout);
 
         // Check if exist...
-        if (this->accelerationTop.has() && this->accelerations.size() > 0 && this->accelerationTop->instanceSet.has()) { // 
+        if (this->accelerationTop.has() && this->accelerationTop->instanceSet.has()) { // 
             // 
             this->geometriesDescs->resetBufferViews();
 
             // 
-            for (uint32_t i=0;i<accelerations.size();i++) {
-                auto& geometrySet = accelerations[i]->geometrySet;
+            for (uint32_t i=0;i<this->accelerationTop->instanceSet->accelerations.size();i++) {
+                auto& geometrySet = this->accelerationTop->instanceSet->accelerations[i]->geometrySet;
                 this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
             };
 

@@ -252,7 +252,7 @@ int main() {
 
         // 
         geometrySet->pushGeometry(geometry);
-        instanceSet->pushGeometrySet(geometrySet);
+        instanceSet->pushAcceleration(acceleration);
 
         // 
         auto geometryData = geometrySet->getVector();

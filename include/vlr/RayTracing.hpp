@@ -44,7 +44,6 @@ namespace vlr {
         
         // 
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};
-        std::vector<vkt::uni_ptr<Acceleration>> accelerations = {};
         VkPipeline generation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE, finalize = VK_NULL_HANDLE, resample = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE;
         // TODO: Accumulation Shader (pick up all hits)
         
@@ -77,11 +76,6 @@ namespace vlr {
         // Set Top Level Acceleration
         virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> accelerationTop) {
             this->accelerationTop = accelerationTop;
-        };
-
-        // Push Bottom Level Acceleration (with Geometry Set)
-        virtual void pushAcceleration(vkt::uni_ptr<Acceleration> acceleration) {
-            this->accelerations.push_back(acceleration);
         };
 
         // Set Constants Buffer
