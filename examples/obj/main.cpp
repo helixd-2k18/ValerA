@@ -158,7 +158,7 @@ int main() {
 
     // 
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
-    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = accessorCount * 3u });
+    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
 
     // 
     auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
@@ -173,6 +173,7 @@ int main() {
     std::vector<vkt::uni_ptr<vlr::Acceleration>> accelerations = {};
     std::vector<vkt::uni_ptr<vlr::Interpolation>> interpolations = {};
     std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
+    std::vector<uint32_t> offsets = {};
     for (size_t s = 0; s < shapes.size(); s++) { // 
         auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = vertexCountAll[s] });
         auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
@@ -189,6 +190,7 @@ int main() {
 
         // 
         size_t indexOffset = 0; // Loop over faces(polygon)
+        offsets.push_back(indexOffset);
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
 
             // 
@@ -221,21 +223,21 @@ int main() {
         accessors->get(gdesc.vertexAttribute = accessorCount++) = vkh::VkVertexInputAttributeDescription{
             .location = 0u, .binding = bID,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(indexOffset * sizeof(FDStruct) + offsetof(FDStruct, fPosition))
+            .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fPosition))
         };
 
         // 
         accessors->get(interpolation->get(s).data[0u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
             .location = 0u, .binding = bID,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(indexOffset * sizeof(FDStruct) + offsetof(FDStruct, fTexcoord))
+            .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fTexcoord))
         };
 
         // 
         accessors->get(interpolation->get(s).data[1u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
             .location = 0u, .binding = bID,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(indexOffset * sizeof(FDStruct) + offsetof(FDStruct, fNormal))
+            .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fNormal))
         };
 
         // 
@@ -244,10 +246,14 @@ int main() {
         // 
         geometrySet->pushGeometry(geometry);
 
+        // 
+        auto geometryData = geometrySet->getVector();
 
     };
 
-
+    // 
+    auto accessorsV = accessors->getVector();
+    auto bindingsV = bindings->getVector();
 
     /*
 

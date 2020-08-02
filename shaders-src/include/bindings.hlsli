@@ -25,6 +25,7 @@
 #define RS_POSITION 2
 #define RS_BARYCENT 3
 //#define RS_ORIGINAL 4
+//#define RS_ORIGINAL 4
 
 
 
@@ -512,9 +513,12 @@ XHIT rasterize(in float3 origin, in float3 raydir, float maxT, bool scatterTrans
         processing.gIndices = indices;
         processing.gBarycentric = float4(baryCoord, distance(processing.origin.xyz, origin.xyz));
 
-        // TODO: optimize material fetching
+        // Interpolate In Ray-Tracing
         XGEO geometry = interpolate(processing);
         XPOL material = materialize(processing, geometry);
+
+        // 
+        //processing.origin = geometry.gPosition;
 
         // TODO: rasterization direct diffuse access
         if (material.diffuseColor.w > (scatterTransparency ? random(seed) : threshold)) { // Only When Opaque!

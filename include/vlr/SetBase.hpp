@@ -61,6 +61,9 @@ namespace vlr {
         // 
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) override { SetBase::createDescriptorSet(pipelineLayout); };
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false) override { SetBase::setCommand(commandBuffer, barrier); };
+
+        // for DEBUG
+        virtual std::vector<T> getVector() { std::vector<T> acp(this->getCpuBuffer().size()); memcpy(acp.data(), cpuBuffer.data(), acp.size() * sizeof(T)); return acp; };
     };
 
 };

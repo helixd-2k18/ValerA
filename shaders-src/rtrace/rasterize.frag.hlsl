@@ -32,9 +32,8 @@ struct PS_INPUT
 struct PS_OUTPUT {
      float4 oMaterial;
      float4 oGeoIndice; 
-     float4 oPosition;
+     float4 gPosition;
      float4 oBarycent;
-   //float4 oOriginal;
      float FragDepth;
 };
 
@@ -47,9 +46,8 @@ layout (location = 3) flat in float4 uData;
 // 
 layout (location = RS_MATERIAL) out float4 oMaterial;
 layout (location = RS_INDICIES) out float4 oGeoIndice;
-layout (location = RS_POSITION) out float4 oPosition;
+layout (location = RS_POSITION) out float4 gPosition;
 layout (location = RS_BARYCENT) out float4 oBarycent;
-//layout (location = RS_ORIGINAL) out float4 oOriginal;
 
 #else
 
@@ -57,9 +55,9 @@ layout (location = RS_BARYCENT) out float4 oBarycent;
 struct PS_INPUT
 {
     float4 FragCoord             : SV_POSITION;
-               float4 fPosition  : POSITION0;
-               float4 fTexcoord  : TEXCOORD0;     
-               float4 fBarycent  : TEXCOORD1;
+    float4 fPosition             : POSITION0;
+    float4 fTexcoord             : TEXCOORD0;     
+    float4 fBarycent             : TEXCOORD1;
     nointerpolation float4 uData : COLOR0;
     float PointSize              : PSIZE0;
 };
@@ -68,10 +66,8 @@ struct PS_INPUT
 struct PS_OUTPUT {
      float4 oMaterial   : SV_TARGET0;
      float4 oGeoIndice  : SV_TARGET1; 
-     float4 oPosition   : SV_TARGET2;
+     float4 gPosition   : SV_TARGET2;
      float4 oBarycent   : SV_TARGET3;
-   //float4 oOriginal   : SV_TARGET4;
-   //float4 oIndicies   : SV_TARGET5;
      float FragDepth    : SV_Depth;
 };
 
@@ -94,13 +90,13 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
 #endif
 {   // TODO: Re-Interpolate for Randomized Center
 #ifdef GLSL
-    const uint PrimitiveID = gl_PrimitiveID;
     const float4 FragCoord = gl_FragCoord;
     const float3 BaryWeights = BARYCOORD;
 
     PS_INPUT inp = { gl_FragCoord, fPosition, fTexcoord, fBarycent, uData, 0.f };
 #endif
 
+    const uint PrimitiveID = floatBitsToUint(inp.uData.z);
     const uint geometryInstanceID = floatBitsToUint(inp.uData.y);
     const uint globalInstanceID = floatBitsToUint(inp.uData.x);
     const uint geometrySetID = getGeometrySetID(instances[globalInstanceID]);
@@ -133,7 +129,7 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
 
     // 
     PS_OUTPUT outp;
-    outp.oPosition  = float4(0.f.xxxx);
+    outp.gPosition  = float4(0.f.xxxx);
     outp.oMaterial  = float4(0.f.xxxx);
     outp.oGeoIndice = float4(0.f.xxxx);
     outp.FragDepth  = 1.1f;
@@ -145,18 +141,17 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
         processing.origin   = float4(inp.fPosition.xyz, 1.f);
 
         // 
-        outp.oPosition = processing.origin; // Save texcoord for Parallax Mapping with alpha channel
+        outp.gPosition = processing.origin; // Save texcoord for Parallax Mapping with alpha channel
         outp.oMaterial = uintBitsToFloat(uint4(0u, 0u, 0u, floatBitsToUint(1.f)));
         outp.oGeoIndice = uintBitsToFloat(uint4(globalInstanceID, geometryInstanceID, PrimitiveID, floatBitsToUint(1.f)));
         outp.oBarycent = float4(max(BaryWeights, 0.0001f.xxx), 1.f);
-        //outp.oOriginal = float4(mul(float4(mul(float4(outp.oPosition.xyz, 1.f), inverse(transpose(regen4(matras)))).xyz, 1.f), inverse(transpose(regen4(matra4)))).xyz, 1.f);
         outp.FragDepth = inp.FragCoord.z;
     };
 
 #ifdef GLSL
     {
         //oOriginal = outp.oOriginal; // Needless
-        oPosition = outp.oPosition;
+        gPosition = outp.gPosition;
         oMaterial = outp.oMaterial;
         oBarycent = outp.oBarycent;
         oGeoIndice = outp.oGeoIndice;
