@@ -13,7 +13,7 @@ namespace vlr {
         uintptr_t I = geometries.size();//this->getCpuBuffer().size();
         geometries.push_back(geometry);
 
-        vkt::Vector<uint8_t> buffer = this->vertexSet->getBuffer_T(geometry->desc->vertexAttribute);
+        vkt::Vector<uint8_t> buffer = this->vertexSet->getAttributeBuffer_T(geometry->desc->vertexAttribute);
         {
             vkt::Vector<GeometryDesc>& geometryDesc = dynamic_cast<vkt::Vector<GeometryDesc>&>(this->getCpuBuffer());
             geometryDesc[I] = geometry->desc;

@@ -157,6 +157,10 @@ int main() {
     };
 
     // 
+    //auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = accessorCount });
+    //auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = accessorCount * 3u });
+
+    // 
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
 
@@ -166,6 +170,95 @@ int main() {
         .attributes = accessors,
         .bufferViews = buffers
     });
+
+    /* Crash from 11th...
+    // 
+    accessorCount = 0u;
+    std::vector<vkt::uni_ptr<vlr::SetBase_T<FDStruct>>> sets = {};
+    std::vector<vkt::uni_ptr<vlr::Acceleration>> accelerations = {};
+    std::vector<vkt::uni_ptr<vlr::Interpolation>> interpolations = {};
+    std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
+
+    // 
+    for (size_t s = 0; s < shapes.size(); s++) { // 
+        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = vertexCountAll[s] });
+        auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes[s].mesh.num_face_vertices.size() });
+        auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes[s].mesh.num_face_vertices.size() });
+        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer[s] });
+        geometrySet->setInterpolation(interpolation);
+
+        // 
+        sets.push_back(vertexData);
+        accelerations.push_back(acceleration);
+        geometries.push_back(geometrySet);
+        interpolations.push_back(interpolation);
+        buffers->pushBufferView(vertexData->getGpuBuffer());
+        std::vector<uint32_t> offsets = {};
+
+        // 
+        uint32_t bID = s;//uint32_t(s * shapes[s].mesh.num_face_vertices.size() + f);
+        bindings->get(bID) = vkh::VkVertexInputBindingDescription{
+            .binding = uint32_t(bID), .stride = sizeof(FDStruct)
+        };
+
+        // 
+        size_t indexOffset = 0; // Loop over faces(polygon)
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
+
+            // 
+            auto verticeCount = shapes[s].mesh.num_face_vertices[f];
+            for (size_t v = 0; v < verticeCount; v++) { //
+                tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + v];
+                vertexData->get(indexOffset + v).fPosition = glm::vec4(attrib.vertices[3 * idx.vertex_index + 0], attrib.vertices[3 * idx.vertex_index + 1], attrib.vertices[3 * idx.vertex_index + 2], 1.f);
+                vertexData->get(indexOffset + v).fNormal = glm::vec4(attrib.normals[3 * idx.normal_index + 0], attrib.normals[3 * idx.normal_index + 1], attrib.normals[3 * idx.normal_index + 2], 0.f);
+                vertexData->get(indexOffset + v).fTexcoord = glm::vec4(attrib.texcoords[2 * idx.texcoord_index + 0], attrib.texcoords[2 * idx.texcoord_index + 1], 0.f, 0.f);
+            };
+
+            // 
+            offsets.push_back(indexOffset);
+            indexOffset += verticeCount;
+
+            // 
+            auto gdesc = vlr::GeometryDesc{
+                .firstVertex = offsets[f],//indexOffset,
+                .primitiveCount = uint32_t(indexOffset / 3u),
+                .material = uint32_t(shapes[s].mesh.material_ids[f] != -1 ? shapes[s].mesh.material_ids[f] : 0u),
+                .vertexAttribute = 0u
+            };
+
+            // 
+            accessors->get(gdesc.vertexAttribute = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+                .location = 0u, .binding = bID,
+                .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fPosition))
+            };
+
+            // 
+            accessors->get(interpolation->get(f).data[0u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+                .location = 0u, .binding = bID,
+                .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fTexcoord))
+            };
+
+            // 
+            accessors->get(interpolation->get(f).data[1u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+                .location = 0u, .binding = bID,
+                .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                .offset = uint32_t(offsets[s] * sizeof(FDStruct) + offsetof(FDStruct, fNormal))
+            };
+
+            // 
+            auto geometry = std::make_shared<vlr::Geometry>(vertexSet, gdesc);
+
+            // 
+            geometrySet->pushGeometry(geometry);
+        };
+
+        // 
+        auto geometryData = geometrySet->getVector();
+    };
+    */
+
 
     // 
     accessorCount = 0u;
@@ -242,14 +335,14 @@ int main() {
 
         // 
         auto geometry = std::make_shared<vlr::Geometry>(vertexSet, gdesc);
-        
+
         // 
         geometrySet->pushGeometry(geometry);
 
         // 
         auto geometryData = geometrySet->getVector();
-
     };
+
 
     // 
     auto accessorsV = accessors->getVector();
