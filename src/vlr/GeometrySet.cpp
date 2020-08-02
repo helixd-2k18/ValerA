@@ -1,13 +1,8 @@
 #include "./vlr/GeometrySet.hpp"
 #include "./vlr/Geometry.hpp"
-#include "./vlr/Interpolation.hpp"
 #include "./vlr/VertexSet.hpp"
 
 namespace vlr {
-
-    void GeometrySet::setInterpolation(vkt::uni_ptr<Interpolation> interpolation) {
-        this->interpolations = interpolation;
-    };
 
     void GeometrySet::pushGeometry(vkt::uni_ptr<Geometry> geometry) {
         uintptr_t I = geometries.size();//this->getCpuBuffer().size();
@@ -17,7 +12,6 @@ namespace vlr {
         {
             vkt::Vector<GeometryDesc>& geometryDesc = dynamic_cast<vkt::Vector<GeometryDesc>&>(this->getCpuBuffer());
             geometryDesc[I] = geometry->desc;
-            geometryDesc[I].primitiveCount = std::min(geometryDesc[I].primitiveCount, uint32_t(buffer.range() / (buffer.stride() * 3ull))); // Make Bit Safer
         };
     };
 
@@ -27,9 +21,11 @@ namespace vlr {
 
         for (uint32_t i=0;i<geometries.size();i++) {
             vkt::uni_ptr<Geometry> geometry = geometries[i];
-            vkt::uni_ptr<Interpolation> interpolation = interpolations[i];
-            
-            //interpBufs->pushBufferView(interpolation->getGpuBuffer());
+            vkt::Vector<uint8_t> buffer = this->vertexSet->getAttributeBuffer_T(geometry->desc->vertexAttribute);
+            {
+                vkt::Vector<GeometryDesc>& geometryDesc = dynamic_cast<vkt::Vector<GeometryDesc>&>(this->getCpuBuffer());
+                geometryDesc[i] = geometry->desc;
+            };
         };
     };
 

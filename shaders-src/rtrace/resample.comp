@@ -35,13 +35,6 @@ void main()
     uint geometryInstanceID = wIndices.y;
     
     // 
-    Interpolations interpol;
-#ifdef GLSL
-    interpol = interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
-#else
-    interpol = interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
-#endif
-
     GeometryDesc node;
 #ifdef GLSL
     node = geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];

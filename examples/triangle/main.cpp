@@ -115,12 +115,10 @@ int main() {
     auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
 
     // 
-    auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = 4u });
     auto buffers = std::make_shared<vlr::BufferViewSet>(fw); 
-    buffers->pushBufferView(vertexData->getGpuBuffer());
 
     // 
     auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
@@ -129,18 +127,25 @@ int main() {
         .bufferViews = buffers
     });
 
-    //
-    auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
-    auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
-    auto geometry = std::make_shared<vlr::Geometry>(vertexSet, vlr::GeometryDesc{
+    // 
+    auto gdesc = vlr::GeometryDesc{
         .primitiveCount = 1u,
         .vertexAttribute = 0u
-    });
+    };
 
     // use attributes
-    interpolation->get(0u).data[0u] = 1u;
-    interpolation->get(0u).data[1u] = 2u;
-    interpolation->get(0u).data[2u] = 3u;
+    gdesc.attributes[0u] = 1u;
+    gdesc.attributes[1u] = 2u;
+    gdesc.attributes[2u] = 3u;
+
+    //
+    auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
+    buffers->pushBufferView(vertexData->getGpuBuffer());
+
+    // 
+    auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
+    auto geometry = std::make_shared<vlr::Geometry>(vertexSet, gdesc);
+    
 
     // 
     vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
@@ -179,7 +184,6 @@ int main() {
     };
 
     // 
-    geometrySet->setInterpolation(interpolation);
     geometrySet->pushGeometry(geometry);
 
     // 
@@ -188,7 +192,6 @@ int main() {
         bindings->setCommand(cmd);
         accessors->setCommand(cmd);
         geometrySet->setCommand(cmd);
-        interpolation->setCommand(cmd);
     });
 
     // 

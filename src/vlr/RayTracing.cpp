@@ -3,7 +3,6 @@
 #include "./vlr/SetBase.hpp"
 #include "./vlr/Acceleration.hpp"
 #include "./vlr/BufferViewSet.hpp"
-#include "./vlr/Interpolation.hpp"
 #include "./vlr/Constants.hpp"
 
 // 
@@ -51,7 +50,6 @@ namespace vlr {
         this->rayDataSetFlip1->pushBufferView(this->rayDataFlip0->getGpuBuffer()); // Read-only 
 
         // Re-Create
-        this->interpolations = std::make_shared<BufferViewSet>(this->driver);
         this->geometriesDescs = std::make_shared<BufferViewSet>(this->driver);
     };
 
@@ -67,27 +65,21 @@ namespace vlr {
         // Check if exist...
         if (this->accelerationTop.has() && this->accelerations.size() > 0 && this->accelerationTop->instanceSet.has()) { // 
             // 
-            this->interpolations->resetBufferViews();
             this->geometriesDescs->resetBufferViews();
 
             // 
             for (uint32_t i=0;i<accelerations.size();i++) {
                 auto& geometrySet = accelerations[i]->geometrySet;
-                auto& interpolation = geometrySet->interpolations;
-
-                // 
-                this->interpolations->pushBufferView(interpolation->getGpuBuffer());
                 this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
             };
 
             // 
-            this->interpolations->createDescriptorSet(layout);
             this->geometriesDescs->createDescriptorSet(layout);
         };
 
         // TODO: Decise by PipelineLayout class
         this->layout->bound[8u] = this->geometriesDescs->set;
-        this->layout->bound[9u] = this->interpolations->set;
+        this->layout->bound[9u] = this->geometriesDescs->set;
 
         // 
         this->layout->setAccelerationTop(this->accelerationTop);
@@ -102,7 +94,7 @@ namespace vlr {
     };
 
     // The architecture is built in such a way that multi - command rendering can be turned into single - command rendering with ease... (i.e. JiviX-style)
-    // Архитектура построена таким образом, чтобы много-коммандный рендеринг можно было превратить в однокоммандный с легкостью... (т.е. JiviX-style)
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ... (пїЅ.пїЅ. JiviX-style)
     void RayTracing::setCommand(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0) {
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
@@ -111,15 +103,14 @@ namespace vlr {
         const uint32_t zero = 0u;
 
         // 
-        for (uint32_t i=0;i<5;i++) {
+        //for (uint32_t i=0;i<5;i++) {
         //    (*this->counters)[i] = zero;
         //    this->counters->setCommand(currentCmd);
-        };
+        //};
 
         // nullify counters
         device->CmdFillBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer().offset(), 5ull * sizeof(uint32_t), zero);
         vkt::commandBarrier(device, currentCmd);
-
         {   // Denoise diffuse data
             device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->generation);
             device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);

@@ -70,10 +70,8 @@ struct GeometryDesc {
     uint indexBufferView;
     uint indexType; // As Vulkan API TypeLogy 
     uint reserved;
-};
 
-struct Interpolations { // Per every geometry for interpolations
-    uint AB[8u];
+    uint attributes[8u];
 };
 
 struct RayData {

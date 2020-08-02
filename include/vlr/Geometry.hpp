@@ -7,8 +7,7 @@ namespace vlr {
 
 #pragma pack(push, 1)
     struct MeshIDFlags {
-        uint32_t ID : 24;
-        uint32_t hasTransform : 1, hasNormal : 1, hasTexcoord : 1, hasTangent : 1, reserved : 4;
+        uint32_t ID : 24, hasTransform : 1, hasNormal : 1, hasTexcoord : 1, hasTangent : 1, reserved : 4;
     };
 #pragma pack(pop)
 
@@ -26,7 +25,7 @@ namespace vlr {
 
         // We solved to re-port into... 
         uint32_t vertexAttribute = 0u, indexBufferView = ~0u, indexType = VK_INDEX_TYPE_NONE_KHR, reserved = 0u;
-        //VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
+        uint32_t attributes[8u] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u };
     };
 
     class Geometry : public std::enable_shared_from_this<Geometry> { protected: friend GeometrySet; friend Acceleration; friend Rasterization;
@@ -41,8 +40,8 @@ namespace vlr {
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<GeometryDesc> desc = {}) {
             this->vertexSet = vertexSet, this->desc = desc;
-            auto buffer = this->vertexSet->getAttributeBuffer_T(this->desc->vertexAttribute);
-            this->desc->primitiveCount = std::min(this->desc->primitiveCount, uint32_t(buffer.range() / (buffer.stride() * 3ull))); // Make Bit Safer
+            //auto buffer = this->vertexSet->getAttributeBuffer_T(this->desc->vertexAttribute);
+            //this->desc->primitiveCount = std::min(this->desc->primitiveCount, uint32_t(buffer.range() / (buffer.stride() * 3ull))); // Make Bit Safer
         };
         virtual void setIndexBuffer(uint32_t indexBufferView = ~0u, VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR) {
             this->desc->indexBufferView = indexBufferView, this->desc->indexType = indexType;

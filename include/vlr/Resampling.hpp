@@ -10,7 +10,6 @@ namespace vlr {
     class Resampling : public std::enable_shared_from_this<Resampling> { protected: friend RayTracing;
         vkt::uni_ptr<VertexSet> vertexSet = {};
         vkt::uni_ptr<Geometry> geometry = {};
-        vkt::uni_ptr<Interpolation> interpolation = {};
         vkt::uni_ptr<PipelineLayout> layout = {};
         //vkt::uni_arg<PipelineCreateInfo> info = {};
         vkt::uni_ptr<TextureSet> textureSet = {};

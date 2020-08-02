@@ -48,7 +48,6 @@
 #include <vlr/Background.hpp>
 
 // 
-#include <vlr/Interpolation.hpp>
 #include <vlr/GeometrySet.hpp>
 #include <vlr/Acceleration.hpp>
 #include <vlr/BuildCommand.hpp>

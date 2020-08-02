@@ -71,7 +71,6 @@ namespace vlr {
     class BufferViewSet;
     class RenderCommand;
     class OthersCommand;
-    class Interpolation;
     class Rasterization;
     class Geometry;
     class GeometrySet;

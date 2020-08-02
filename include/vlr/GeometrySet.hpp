@@ -2,23 +2,13 @@
 #include "./Config.hpp"
 #include "./Driver.hpp"
 #include "./Geometry.hpp"
-#include "./Interpolation.hpp"
 
 // 
 namespace vlr {
 
     class GeometrySet : public SetBase_T<GeometryDesc> { protected: friend Acceleration; friend RayTracing; friend Rasterization;
         std::vector<vkt::uni_ptr<Geometry>> geometries = {};
-        vkt::uni_ptr<Interpolation> interpolations = {}; // Now contain multiple values
         vkt::uni_ptr<VertexSet> vertexSet = {};
-
-        // 
-        //vkt::uni_ptr<BufferViewSet> interpBufs = {};
-
-        // 
-        //VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
-        //vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
-        //vkt::uni_ptr<Driver> driver = {};
 
     public: 
         GeometrySet() : SetBase_T<GeometryDesc>() { this->constructorExtend0(); };
@@ -29,9 +19,7 @@ namespace vlr {
         virtual void constructorExtend0() {};
         virtual void constructorExtend0(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) {
             this->vertexSet = vertexSet;
-            this->interpolations = std::make_shared<Interpolation>(vertexSet, info);
         };
-        virtual void setInterpolation(vkt::uni_ptr<Interpolation> interpolation);
         virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry);
         virtual void resetGeometries() { this->geometries.resize(0u); };
 

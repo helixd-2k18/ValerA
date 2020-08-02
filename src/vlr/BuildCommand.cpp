@@ -2,7 +2,6 @@
 #include "./vlr/Framebuffer.hpp"
 #include "./vlr/Acceleration.hpp"
 #include "./vlr/BufferViewSet.hpp"
-#include "./vlr/Interpolation.hpp"
 #include "./vlr/Constants.hpp"
 #include "./vlr/InstanceSet.hpp"
 

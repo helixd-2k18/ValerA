@@ -62,7 +62,6 @@ layout (binding = 0, set = 7) uniform texture2D samplers[];
 // TODO: Samplers Set
 
 layout (binding = 0, set = 8, scalar) readonly buffer Geometries { GeometryDesc data[]; } geometries[];
-layout (binding = 0, set = 9, scalar) readonly buffer Interpolat { Interpolations data[]; } interpolations[];
 
 
 // 
@@ -333,13 +332,6 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     geometries[nonuniformEXT(geometrySetID)][geometryInstanceID];
 #endif
 
-    const Interpolations interpol = 
-#ifdef GLSL
-    interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
-#else
-    interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
-#endif
-
     // By Geometry Data
     float3x4 matras = float3x4(float4(1.f,0.f.xxx),float4(0.f,1.f,0.f.xx),float4(0.f.xx,1.f,0.f));
     float3x4 matra4 = instances[nonuniformEXT(globalInstanceID)].transform;
@@ -358,10 +350,10 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
     // 
     XTRI geometry;
     geometry.gPosition  = triangled(idx3, node.vertexAttribute, geometrySetID);
-    geometry.gTexcoord  = triangled(idx3, interpol.AB[0u], geometrySetID);
-    geometry.gNormal    = triangled(idx3, interpol.AB[1u], geometrySetID);
-    geometry.gTangent   = triangled(idx3, interpol.AB[2u], geometrySetID);
-    geometry.gBinormal  = triangled(idx3, interpol.AB[3u], geometrySetID);
+    geometry.gTexcoord  = triangled(idx3, node.attributes[0u], geometrySetID);
+    geometry.gNormal    = triangled(idx3, node.attributes[1u], geometrySetID);
+    geometry.gTangent   = triangled(idx3, node.attributes[2u], geometrySetID);
+    geometry.gBinormal  = triangled(idx3, node.attributes[3u], geometrySetID);
 
     // 
     for (uint32_t i=0u;i<3u;i++) {

@@ -30,7 +30,6 @@ namespace vlr {
 
         // 
         vkt::uni_ptr<BufferViewSet> geometriesDescs = {}; // Buffers with GeometryDesc
-        vkt::uni_ptr<BufferViewSet> interpolations = {};
 
         // 
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};

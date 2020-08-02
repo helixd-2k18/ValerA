@@ -101,13 +101,6 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     const uint globalInstanceID = floatBitsToUint(inp.uData.x);
     const uint geometrySetID = getGeometrySetID(instances[globalInstanceID]);
 
-    const Interpolations interpol = 
-#ifdef GLSL
-    interpolations[nonuniformEXT(geometrySetID)].data[geometryInstanceID];
-#else
-    interpolations[nonuniformEXT(geometrySetID)][geometryInstanceID];
-#endif
-
     const GeometryDesc node = 
 #ifdef GLSL
     geometries[nonuniformEXT(geometrySetID)].data[geometryInstanceID];

@@ -187,7 +187,6 @@
     <ClCompile Include="..\..\src\vlr\Geometry.cpp" />
     <ClCompile Include="..\..\src\vlr\GeometrySet.cpp" />
     <ClCompile Include="..\..\src\vlr\InstanceSet.cpp" />
-    <ClCompile Include="..\..\src\vlr\Interpolation.cpp" />
     <ClCompile Include="..\..\src\vlr\MaterialSet.cpp" />
     <ClCompile Include="..\..\src\vlr\OthersCommand.cpp" />
     <ClCompile Include="..\..\src\vlr\PipelineLayout.cpp" />
@@ -239,7 +238,6 @@
     <ClInclude Include="..\..\include\vlr\Geometry.hpp" />
     <ClInclude Include="..\..\include\vlr\GeometrySet.hpp" />
     <ClInclude Include="..\..\include\vlr\InstanceSet.hpp" />
-    <ClInclude Include="..\..\include\vlr\Interpolation.hpp" />
     <ClInclude Include="..\..\include\vlr\MaterialSet.hpp" />
     <ClInclude Include="..\..\include\vlr\OthersCommand.hpp" />
     <ClInclude Include="..\..\include\vlr\PipelineLayout.hpp" />

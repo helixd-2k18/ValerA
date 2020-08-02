@@ -5,7 +5,6 @@
 #include "./vlr/Geometry.hpp"
 #include "./vlr/Constants.hpp"
 #include "./vlr/InstanceSet.hpp"
-#include "./vlr/Interpolation.hpp"
 
 namespace vlr {
 
@@ -52,7 +51,6 @@ namespace vlr {
         vkh::handleVk(device->CreateGraphicsPipelines(driver->getPipelineCache(), 1u, this->pipelineInfo, nullptr, &this->pipeline));
 
         // Re-Create
-        this->interpolations = std::make_shared<BufferViewSet>(this->driver);
         this->geometriesDescs = std::make_shared<BufferViewSet>(this->driver);
     };
 
@@ -67,28 +65,19 @@ namespace vlr {
             this->layout->bound[0u] = this->constants->set;
         };
 
-        if (this->instanceSet.has() && this->geometrySets.size() > 0) { // 
-            this->interpolations->resetBufferViews();
+        if (this->instanceSet.has() && this->geometrySets.size() > 0) { //
             this->geometriesDescs->resetBufferViews();
 
             // 
             for (uint32_t i=0;i<this->instanceSet->getGpuBuffer().size();i++) {
                 auto& instanceDesc = this->instanceSet->get(i);
                 auto& geometrySet = this->geometrySets[instanceDesc.customId];
-                auto& interpolation = geometrySet->interpolations;
-
-                // 
-                this->interpolations->pushBufferView(interpolation->getGpuBuffer());
                 this->geometriesDescs->pushBufferView(geometrySet->getGpuBuffer());
             };
 
-            // 
-            this->interpolations->createDescriptorSet(layout);
-            this->geometriesDescs->createDescriptorSet(layout);
-
             // TODO: Decise by PipelineLayout class
+            this->geometriesDescs->createDescriptorSet(layout);
             this->layout->bound[8u] = this->geometriesDescs->set;
-            this->layout->bound[9u] = this->interpolations->set;
         };
 
         this->layout->setConstants(this->constants);
