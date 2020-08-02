@@ -135,13 +135,8 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     outp.FragDepth  = 1.1f;
 
     // 
-    XHIT processing;
     if (diffuseColor.w > 0.0001f) { // Only When Opaque!
-        processing.gIndices = uint4(geometryInstanceID, globalInstanceID, PrimitiveID, 0u); // already geometrySetID used by instance
-        processing.origin   = float4(inp.fPosition.xyz, 1.f);
-
-        // 
-        outp.gPosition = processing.origin; // Save texcoord for Parallax Mapping with alpha channel
+        outp.gPosition = inp.fPosition; // Save texcoord for Parallax Mapping with alpha channel
         outp.oMaterial = uintBitsToFloat(uint4(0u, 0u, 0u, floatBitsToUint(1.f)));
         outp.oGeoIndice = uintBitsToFloat(uint4(globalInstanceID, geometryInstanceID, PrimitiveID, floatBitsToUint(1.f)));
         outp.oBarycent = float4(max(BaryWeights, 0.0001f.xxx), 1.f);

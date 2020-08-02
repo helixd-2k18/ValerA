@@ -483,8 +483,8 @@ XHIT rasterize(in float3 origin, in float3 raydir, float maxT, bool scatterTrans
 
     // 
     XHIT processing, confirmed;
-    processing.origin.xyz = origin.xyz;
-    processing.direct.xyz = raydir.xyz;
+    processing.origin = float4(origin.xyz + raydir.xyz * lastMax, 1.f);
+    processing.direct = float4(raydir.xyz, 0.f);
     processing.gIndices = uint4(0u.xxxx);
     processing.gBarycentric = float4(0.f.xxx, lastMax);
     confirmed = processing;
@@ -492,9 +492,8 @@ XHIT rasterize(in float3 origin, in float3 raydir, float maxT, bool scatterTrans
     // 
     float3 sslr = world2screen(origin);
     const int2 tsize = imageSize(rasteredImages[RS_MATERIAL]);
-    const int2 samplep = int2((sslr.xy*0.5f+0.5f) * imageSize(rasteredImages[RS_MATERIAL]));
+    const int2 samplep = int2((sslr.xy*0.5f+0.5f) * imageSize(rasteredImages[RS_INDICIES]));
     const uint4 indices  = floatBitsToUint(imageLoad(rasteredImages[RS_INDICIES], samplep));
-    const uint4 datapass = floatBitsToUint(imageLoad(rasteredImages[RS_MATERIAL], samplep));
 
     // 
     const float3 baryCoord = imageLoad(rasteredImages[RS_BARYCENT], samplep).xyz;

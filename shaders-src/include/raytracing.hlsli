@@ -48,10 +48,10 @@ XHIT traceRays(in float3 origin, in float3 raydir, float maxT, bool scatterTrans
 
     // 
     XHIT processing, confirmed;
-    processing.origin = float4(origin.xyz, 1.f);
+    processing.origin = float4(origin.xyz + raydir.xyz * lastMax, 1.f);
     processing.direct = float4(raydir.xyz, 0.f);
     processing.gIndices = uint4(0u.xxxx);
-    processing.gBarycentric = float4(0.f.xxx, maxT);
+    processing.gBarycentric = float4(0.f.xxx, lastMax);
     confirmed = processing;
 
     // 
