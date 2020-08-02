@@ -45,8 +45,10 @@ layout (binding = 0, set = 0, scalar) uniform Matrices {
 
 // 
 layout (binding = 0, set = 1, scalar) readonly buffer MeshData { uint8_t data[]; } mesh0[];
-layout (binding = 0, set = 2, scalar) readonly buffer Bindings   { Binding   data[8u]; } bindings  [];
-layout (binding = 0, set = 3, scalar) readonly buffer Attributes { Attribute data[8u]; } attributes[];
+layout (binding = 0, set = 2, scalar) readonly buffer Bindings   { Binding   bindings[]; };
+layout (binding = 0, set = 3, scalar) readonly buffer Attributes { Attribute attributes[]; };
+//layout (binding = 0, set = 2, scalar) readonly buffer Bindings   { Binding   data[8u]; } bindings  [];
+//layout (binding = 0, set = 3, scalar) readonly buffer Attributes { Attribute data[8u]; } attributes[];
 
 // Deferred and Rasterization Set
 layout (binding = 0, set = 4,    r32f) uniform image2D prevImages[12u]; // 4x wider
@@ -252,15 +254,11 @@ uint predicate(in uint stride, in uint format){
 
 
 // TODO: Add Uint16_t, uint, Float16_t Support
-float4 get_float4(in uint idx, in uint loc, in uint geometrySetID) {
-#ifdef GLSL
-    Attribute attrib = attributes[nonuniformEXT(geometrySetID)].data[loc];
-    Binding  binding = bindings[nonuniformEXT(geometrySetID)].data[attrib.binding];
-#else
-    Attribute attrib = attributes[nonuniformEXT(geometrySetID)][loc];
-    Binding  binding = bindings[nonuniformEXT(geometrySetID)][attrib.binding];
-#endif
+float4 get_float4(in uint idx, in uint loc) {
+    Attribute attrib = attributes[loc];
+    Binding  binding = bindings[attrib.binding];
 
+    // 
     uint boffset = predicate(binding.stride, formatStride(attrib.format)) * idx + attrib.offset;
     float4 vec = float4(0.f.xxxx);
     
@@ -291,16 +289,16 @@ float3 screen2world(in float4 origin){
 };
 
 
-float3x4 triangled(in uint3 indices, in uint loc, in uint geometrySetID){
+float3x4 triangled(in uint3 indices, in uint loc){
     return float3x4(
-        get_float4(indices[0],loc,geometrySetID),
-        get_float4(indices[1],loc,geometrySetID),
-        get_float4(indices[2],loc,geometrySetID)
+        get_float4(indices[0],loc),
+        get_float4(indices[1],loc),
+        get_float4(indices[2],loc)
     );
 };
 
-float4 triangulate(in uint3 indices, in uint loc, in uint geometrySetID, in float3 barycenter){
-    return mul(barycenter, triangled(indices, loc, geometrySetID));
+float4 triangulate(in uint3 indices, in uint loc, in float3 barycenter){
+    return mul(barycenter, triangled(indices, loc));
 };
 
 
@@ -349,11 +347,11 @@ XTRI geometrical(in XHIT hit) { // By Geometry Data
 
     // 
     XTRI geometry;
-    geometry.gPosition  = triangled(idx3, node.vertexAttribute, geometrySetID);
-    geometry.gTexcoord  = triangled(idx3, node.attributes[0u], geometrySetID);
-    geometry.gNormal    = triangled(idx3, node.attributes[1u], geometrySetID);
-    geometry.gTangent   = triangled(idx3, node.attributes[2u], geometrySetID);
-    geometry.gBinormal  = triangled(idx3, node.attributes[3u], geometrySetID);
+    geometry.gPosition  = triangled(idx3, node.vertexAttribute);
+    geometry.gTexcoord  = triangled(idx3, node.attributes[0u]);
+    geometry.gNormal    = triangled(idx3, node.attributes[1u]);
+    geometry.gTangent   = triangled(idx3, node.attributes[2u]);
+    geometry.gBinormal  = triangled(idx3, node.attributes[3u]);
 
     // 
     for (uint32_t i=0u;i<3u;i++) {

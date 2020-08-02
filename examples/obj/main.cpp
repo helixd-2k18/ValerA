@@ -116,15 +116,7 @@ int main() {
     // 
     auto aspect = vkh::VkImageAspectFlags{ .eColor = 1 };
     auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
-
-    // 
-    auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
-    auto buffers = std::make_shared<vlr::BufferViewSet>(fw); 
-    //buffers->pushBufferView(vertexData->getGpuBuffer());
-
-
-
 
     //
     std::string inputfile = "sphere.obj";
@@ -169,6 +161,7 @@ int main() {
     // 
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
+    auto buffers = std::make_shared<vlr::BufferViewSet>(fw);
 
     // 
     auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
@@ -268,7 +261,6 @@ int main() {
 
     // 
     fw->submitOnce([&](VkCommandBuffer cmd) {
-        vertexData->setCommand(cmd);
         bindings->setCommand(cmd);
         accessors->setCommand(cmd);
         for (size_t s = 0; s < shapes.size(); s++) {

@@ -32,7 +32,7 @@ namespace vlr {
 
         { // 0. Construct Buffers Set Descriptor Set Layout
             auto helper = vkh::VsDescriptorSetLayoutCreateInfoHelper{};
-            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, .descriptorCount = 256u, .stageFlags = pipusage }, indexedf);
+            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, .descriptorCount = 1u, .stageFlags = pipusage }, indexedf);
             helper.get().flags = dflags;
 
             layouts.push_back({});
@@ -68,7 +68,7 @@ namespace vlr {
 
         { // 4. Construct Uniform Buffer (Set) for Unified Operations
             auto helper = vkh::VsDescriptorSetLayoutCreateInfoHelper{};
-            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, .descriptorCount = 256u, .stageFlags = pipusage }, indexedf);
+            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, .descriptorCount = 1u, .stageFlags = pipusage }, indexedf);
             helper.get().flags = dflags;
 
             layouts.push_back({});
