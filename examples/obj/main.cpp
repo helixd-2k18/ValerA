@@ -180,10 +180,15 @@ int main() {
         auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer[s] });
 
         // 
-        sets.push_back(vertexData);
+        //if (s == 0u) {
+            sets.push_back(vertexData);
+        //} else {
+            //sets.push_back(sets[0]);
+        //};
+
         accelerations.push_back(acceleration);
         geometries.push_back(geometrySet);
-        buffers->pushBufferView(vertexData->getGpuBuffer());
+        buffers->pushBufferView(sets.back()->getGpuBuffer());
 
         // 
         size_t indexOffset = 0; // Loop over faces(polygon)
@@ -223,7 +228,7 @@ int main() {
         // 
         uint32_t bID = uint32_t(s);
         bindings->get(bID) = vkh::VkVertexInputBindingDescription{
-            .binding = 0u, .stride = sizeof(FDStruct)
+            .binding = bID, .stride = sizeof(FDStruct)
         };
 
         // 
