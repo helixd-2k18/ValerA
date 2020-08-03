@@ -188,7 +188,6 @@ int main() {
 
     //
     std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometrySets = {};
-    std::vector<vkt::uni_ptr<vlr::Interpolation>> interpolations = {};
     std::vector<vkt::uni_ptr<vlr::Acceleration>> accelerations = {};
 
     // 
@@ -214,10 +213,8 @@ int main() {
 
         // 
         const VkDeviceSize PrimitiveCount = std::max(vkt::tiled(uint64_t(vertexCountAll), uint64_t(3ull)), uint64_t(1ull));
-        auto interpolation = std::make_shared<vlr::Interpolation>(vertexSet, vlr::DataSetCreateInfo{ .count = primitiveCountPer.size() });
         auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = primitiveCountPer.size() });
         auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer });
-        geometrySet->setInterpolation(interpolation);
 
         // 
         for (uint32_t v = 0; v < meshData.primitives.size(); v++) {
@@ -251,7 +248,7 @@ int main() {
                     if (location == 0u) {
                         geometryDesc.vertexAttribute = primitive.attributes.find(NM[i])->second;
                     } else {
-                        interpolation->get(v).data[location - 1u] = primitive.attributes.find(NM[i])->second;
+                        geometryDesc.attributes[location - 1u] = primitive.attributes.find(NM[i])->second;
                     };
                 };
             };
@@ -276,7 +273,6 @@ int main() {
 
         // 
         accelerations.push_back(acceleration);
-        interpolations.push_back(interpolation);
         geometrySets.push_back(geometrySet);
     };
 
@@ -293,7 +289,6 @@ int main() {
         // 
         for (uint32_t i = 0; i < geometrySets.size(); i++) {
             geometrySets[i]->setCommand(cmd);
-            interpolations[i]->setCommand(cmd);
         };
     });
 
@@ -317,6 +312,9 @@ int main() {
     // Set by counted meshes
     auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = instanceCounter });
     auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = { instanceCounter } });
+
+    //
+    instanceSet->setAccelerations(accelerations);
 
     // Set Instance Filler
     std::shared_ptr<std::function<void(const tinygltf::Node&, glm::dmat4, int)>> vertexLoader = {};
@@ -366,7 +364,6 @@ int main() {
         .framebuffer = framebuffer,
         .instanceSet = instanceSet,
         .constants = constants,
-        .geometrySets = geometrySets,
     });
 
     // 
@@ -375,7 +372,6 @@ int main() {
         .framebuffer = framebuffer,
         .accelerationTop = accelerationTop,
         .constants = constants,
-        .accelerations = accelerations
     });
 
     //
@@ -389,7 +385,6 @@ int main() {
     auto buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
         .layout = layout,
         .accelerationTop = accelerationTop,
-        .accelerations = accelerations
     });
 
     // 
@@ -581,8 +576,6 @@ int main() {
     rayTracing->setDescriptorSets(layout);
     renderCommand->setDescriptorSets(layout);
     buildCommand->setDescriptorSets(layout);
-
-
 
 
 

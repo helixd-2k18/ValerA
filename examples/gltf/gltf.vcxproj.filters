@@ -78,9 +78,6 @@
     <ClCompile Include="..\..\src\vlr\InstanceSet.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Interpolation.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\vlr\MaterialSet.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
@@ -168,9 +165,6 @@
       <Filter>Header Files\vlr</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\vlr\InstanceSet.hpp">
-      <Filter>Header Files\vlr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\vlr\Interpolation.hpp">
       <Filter>Header Files\vlr</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\vlr\MaterialSet.hpp">
