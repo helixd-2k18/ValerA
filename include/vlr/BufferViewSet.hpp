@@ -5,18 +5,18 @@
 namespace vlr {
 
     class BufferViewSet : public std::enable_shared_from_this<BufferViewSet> { protected: friend RayTracing; friend Rasterization; friend Resampling; friend PipelineLayout;
-        VkDescriptorSet set = {}; bool updated = false;
+        VkDescriptorSet set = {}; bool updated = false, texelBuffer = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         std::vector<vkt::Vector<uint8_t>> buffers = {};
         vkt::uni_ptr<Driver> driver = {};
 
     public: 
         BufferViewSet() { this->constructor(); };
-        BufferViewSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
+        BufferViewSet(vkt::uni_ptr<Driver> driver, const bool& texelBuffer = false) { this->constructor(driver, texelBuffer); };
         ~BufferViewSet() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver) {
+        virtual void constructor(vkt::uni_ptr<Driver> driver, const bool& texelBuffer = false) {
             this->driver = driver;
         };
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);

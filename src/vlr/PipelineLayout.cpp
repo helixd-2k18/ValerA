@@ -107,6 +107,15 @@ namespace vlr {
             vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
         };
 
+        { // 8. Construct Buffers Set Descriptor Set Layout
+            auto helper = vkh::VsDescriptorSetLayoutCreateInfoHelper{};
+            helper.pushBinding(vkh::VkDescriptorSetLayoutBinding{ .binding = 0u, .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, .descriptorCount = 256u, .stageFlags = pipusage }, indexedf);
+            helper.get().flags = dflags;
+
+            layouts.push_back({});
+            vkh::handleVk(device->CreateDescriptorSetLayout(helper, nullptr, &layouts.back()));
+        };
+
         // 
         std::vector<VkDescriptorSetLayout> layouts = {};
         layouts.push_back(this->getUniformSetLayout());     // [x] Firstly always constants
@@ -118,7 +127,7 @@ namespace vlr {
         layouts.push_back(this->getTextureSetLayout());     // [x] Textures 
         layouts.push_back(this->getSamplerSetLayout());     // [x] Samplers 
         layouts.push_back(this->getBufferViewSetLayout());  // [x] Multiple Geometries Data 
-        layouts.push_back(this->getBufferViewSetLayout());  // [x] Interpolation Attributes 
+        layouts.push_back(this->getBufferViewSetLayout());  // [x] RESERVED
         layouts.push_back(this->getAccelerationSetLayout());// [x] Acceleration Structure
         layouts.push_back(this->getSetLayout());            // [x] Counters
         layouts.push_back(this->getBufferViewSetLayout());  // [x] Ray Data (FLIP)

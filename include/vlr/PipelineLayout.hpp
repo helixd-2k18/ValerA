@@ -50,6 +50,7 @@ namespace vlr {
         virtual VkDescriptorSetLayout getBackgroundSetLayout() const { return layouts[5u]; };
         virtual VkDescriptorSetLayout getFramebufferSetLayout() const { return layouts[6u]; };
         virtual VkDescriptorSetLayout getAccelerationSetLayout() const { return layouts[7u]; };
+        virtual VkDescriptorSetLayout getByteBufferViewSetLayout() const { return layouts[8u]; };
 
         // 
         virtual void setMaterials(vkt::uni_ptr<MaterialSet> materialSet, vkt::uni_ptr<TextureSet> textureSet, vkt::uni_ptr<SamplerSet> samplerSet);
