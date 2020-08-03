@@ -59,6 +59,7 @@ void main()
         XPOL MAT = materialize(RPM, GEO);
         
         {   // 
+            imageStore(rasteredImages[RS_POSITION], curPixel, GEO.gPosition); // For Interpolation
             superImageStore(currImages[IW_ORIGINAL], curPixel, GEO.oPosition);
             superImageStore(currImages[IW_POSITION], curPixel, RPM.origin);
             superImageStore(currImages[IW_MAPNORML], curPixel, MAT.mapNormal);

@@ -57,6 +57,7 @@ layout (binding = 1, set = 4,    r32f) uniform image2D currImages[12u]; // 4x wi
 layout (binding = 2, set = 4,    r32f) uniform image2D resampleImages[8u]; 
 layout (binding = 3, set = 4, rgba32f) uniform image2D rasteredImages[8u]; // used by rasterization
 layout (binding = 4, set = 4         ) uniform sampler staticSamplers[8u];
+layout (binding = 6, set = 4         ) uniform texture2D rasteredImagesRaw[8u]; 
 
 // Material Set
 layout (binding = 0, set = 5, scalar) readonly buffer Materials { MaterialUnit materials[]; };

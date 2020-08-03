@@ -217,8 +217,7 @@ int main() {
         .layout = layout,
         .framebuffer = framebuffer,
         .instanceSet = instanceSet,
-        .constants = constants,
-        .geometrySets = {geometrySet},
+        .constants = constants
     });
 
     // 

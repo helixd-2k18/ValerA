@@ -230,13 +230,13 @@ namespace vlr {
     void Framebuffer::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
         auto device = this->driver->getDeviceDispatch();
         auto descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getFramebufferSetLayout(), pipelineLayout->getDescriptorPool());
-        auto createDescriptorSetImages = [&,this](const std::vector<vkt::ImageRegion>& images, const uint32_t& binding = 0u) 
+        auto createDescriptorSetImages = [&,this](const std::vector<vkt::ImageRegion>& images, const uint32_t& binding = 0u, const VkDescriptorType& type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
         {   // 
             auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
                 .dstBinding = binding,
                 .dstArrayElement = 0u,
                 .descriptorCount = uint32_t(images.size()),
-                .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE
+                .descriptorType = type
             });
             for (uintptr_t i = 0; i < images.size(); i++) {
                 handle.offset<VkDescriptorImageInfo>(i) = images[i];
@@ -269,7 +269,8 @@ namespace vlr {
         createDescriptorSetImages(currentsImages,0u);
         createDescriptorSetImages(previousImages,1u);
         createDescriptorSetImages(resampleImages,2u);
-        createDescriptorSetImages(rasterImages,3u);
+        createDescriptorSetImages(rasterImages, 3u);
+        createDescriptorSetImages(rasterImages, 6u, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
 
         // 
         vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(device, descriptorSetInfo, this->set, this->updated));
