@@ -100,12 +100,12 @@ int main() {
     tinygltf::TinyGLTF loader = {};
 
     // 
-    const float unitScale = 1.f, unitHeight = -0.f;
-    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
+    //const float unitScale = 1.f, unitHeight = -0.f;
+    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
 
     // 
-    //const float unitScale = 100.f, unitHeight = -0.f;
-    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "BoomBoxWithAxes.gltf");
+    const float unitScale = 100.f, unitHeight = -0.f;
+    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
 
     // 
     //const float unitScale = 1.f, unitHeight = -32.f;
