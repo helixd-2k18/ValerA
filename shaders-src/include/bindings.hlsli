@@ -259,14 +259,15 @@ float4 get_float4(in uint idx, in uint loc) {
     Binding  binding = bindings[attrib.binding];
 
     // 
-    uint boffset = predicate(binding.stride, formatStride(attrib.format)) * idx + attrib.offset;
+    uint stride = predicate(binding.stride, formatStride(attrib.format));
+    uint boffset = stride * idx + attrib.offset;
     float4 vec = float4(0.f.xxxx);
     
     // 
-    if (binding.stride >  0u) vec[0] = uintBitsToFloat(load_u32(boffset +  0u, binding.binding));
-    if (binding.stride >  4u) vec[1] = uintBitsToFloat(load_u32(boffset +  4u, binding.binding));
-    if (binding.stride >  8u) vec[2] = uintBitsToFloat(load_u32(boffset +  8u, binding.binding));
-    if (binding.stride > 12u) vec[3] = uintBitsToFloat(load_u32(boffset + 12u, binding.binding));
+    if (stride >  0u) vec[0] = uintBitsToFloat(load_u32(boffset +  0u, binding.binding));
+    if (stride >  4u) vec[1] = uintBitsToFloat(load_u32(boffset +  4u, binding.binding));
+    if (stride >  8u) vec[2] = uintBitsToFloat(load_u32(boffset +  8u, binding.binding));
+    if (stride > 12u) vec[3] = uintBitsToFloat(load_u32(boffset + 12u, binding.binding));
     
     // 
     return vec;
