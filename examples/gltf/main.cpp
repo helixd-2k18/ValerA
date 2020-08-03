@@ -105,7 +105,7 @@ int main() {
 
     // 
     const float unitScale = 100.f, unitHeight = -0.f;
-    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
+    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Box.gltf");
 
     // 
     //const float unitScale = 1.f, unitHeight = -32.f;
@@ -153,18 +153,20 @@ int main() {
 
     //buffers->pushBufferView(vertexData->getGpuBuffer());
     std::vector<vkt::uni_ptr<vlr::SetBase_T<uint8_t>>> sets = {};
-    //for (uint32_t i = 0; i < model.buffers.size(); i++) {
-        //auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = model.buffers[i].data.size() }); sets.push_back(buffer);
-        //memcpy(&buffer->get(0u), model.buffers[i].data.data(), model.buffers[i].data.size());
-    //};
+    for (uint32_t i = 0; i < model.buffers.size(); i++) {
+        auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = model.buffers[i].data.size() }); sets.push_back(buffer);
+        memcpy(&buffer->get(0u), model.buffers[i].data.data(), model.buffers[i].data.size());
+        //buffers->pushBufferView(buffer->getGpuBuffer());
+    };
 
     // bindings
     for (uint32_t i = 0; i < model.bufferViews.size(); i++) {
         auto bview = model.bufferViews[i];
-        auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = bview.byteLength }); sets.push_back(buffer);
-        buffers->pushBufferView(buffer->getGpuBuffer());
+        auto buffer = sets[bview.buffer];
+
+        // 
+        buffers->pushBufferView(vkt::Vector<uint8_t>(buffer->getGpuBuffer().getAllocation(), buffer->getGpuBuffer().offset()+bview.byteOffset, bview.byteLength, bview.byteStride));
         bindings->get(i) = vkh::VkVertexInputBindingDescription{ .binding = i, .stride = uint32_t(bview.byteStride) };
-        memcpy(&buffer->get(0u), model.buffers[bview.buffer].data.data() + bview.byteOffset, bview.byteLength);
     };
 
     // accessors
@@ -490,6 +492,68 @@ int main() {
         });
 
         textureSet->pushImage(image);
+    };
+
+    // 
+    if (model.images.size() <= 0u) {
+        // 
+        int width = 2u, height = 2u;
+        float* rgba = nullptr;
+        const char* err = nullptr;
+
+        //
+        std::vector<glm::vec4> testcolor = {
+            glm::vec4(1.f, 0.f, 1.f, 1.f),
+            glm::vec4(0.f, 0.f, 0.f, 1.f),
+            glm::vec4(0.f, 0.f, 0.f, 1.f),
+            glm::vec4(1.f, 0.f, 1.f, 1.f)
+        };
+        rgba = (float*)testcolor.data();
+
+        {   //
+            vkt::VmaMemoryInfo memInfo = {};
+            memInfo.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+            //
+            auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
+                it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                    it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
+                    it->usage = imageUsage;
+                return it;
+                }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
+                    it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                        it->subresourceRange = apres;
+                    return it;
+                    }));
+
+            //
+            vkt::Vector<> imageBuf = {};
+            if (width > 0u && height > 0u && rgba) {
+                memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+                imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
+                    .size = size_t(width) * size_t(height) * sizeof(glm::vec4), .usage = uploadUsage,
+                    }, memInfo));
+                memcpy(imageBuf.data(), rgba, size_t(width) * size_t(height) * sizeof(glm::vec4));
+            };
+
+            //
+            fw->submitOnce([&](VkCommandBuffer& cmd) {
+                image.transfer(cmd);
+
+                auto buffer = imageBuf;
+                fw->getDeviceDispatch()->CmdCopyBufferToImage(cmd, buffer.buffer(), image.getImage(), image.getImageLayout(), 1u, vkh::VkBufferImageCopy{
+                    .bufferOffset = buffer.offset(),
+                    .bufferRowLength = uint32_t(width),
+                    .bufferImageHeight = uint32_t(height),
+                    .imageSubresource = image.subresourceLayers(),
+                    .imageOffset = {0u,0u,0u},
+                    .imageExtent = {uint32_t(width),uint32_t(height),1u},
+                    });
+                });
+
+            // 
+            textureSet->pushImage(image);
+        };
     };
 
 
