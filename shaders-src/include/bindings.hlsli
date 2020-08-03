@@ -44,7 +44,7 @@ layout (binding = 0, set = 0, scalar) uniform Matrices {
 } constants;
 
 // 
-layout (binding = 0, set = 1, scalar) readonly buffer MeshData { uint8_t data[]; } mesh0[]; // BROKEN!!! Seen only first! 
+layout (binding = 0, set = 1, scalar) readonly buffer MeshData { uint8_t data[]; } mesh0[];
 //layout (binding = 0, set = 1, r8ui) readonly uniform uimageBuffer mesh0[];
 layout (binding = 0, set = 2, scalar) readonly buffer Bindings   { Binding   bindings[]; };
 layout (binding = 0, set = 3, scalar) readonly buffer Attributes { Attribute attributes[]; };
@@ -218,7 +218,7 @@ float3 refractive(in float3 dir) {
 // Per System Specified
 #ifdef GLSL
 uint8_t load_u8(in uint offset, in uint binding) {
-    return mesh0[nonuniformEXT(binding)].data[offset];
+    return mesh0[nonuniformEXT(binding)].data[offset]; // 03.08.2020 - here is struked...
 };
 
 uint16_t load_u16(in uint offset, in uint binding) {
