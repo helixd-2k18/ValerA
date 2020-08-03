@@ -62,21 +62,25 @@ void main()
 
     // Where Will Re-Located
     const int2 topix = int2((screenpos.xy * 0.5f + 0.5f) * float2(sizPixel) + 0.001f);
+    const int2 shpix = int2((screenpos.xy * 0.5f + 0.5f) * float2(sizPixel) + 0.001f);
     float4 worldspos = float4(superImageLoad(currImages[IW_POSITION], topix).xyz, 1.f);
+    float4 cindirect = float4(superImageLoad(currImages[IW_INDIRECT], topix).xyz, 1.f);
     float3 screensmp = world2screen(worldspos.xyz);
+    uint4 cIndices = floatBitsToUint(superImageLoad(currImages[IW_INDICIES], topix));
 
     // 
     if (
         //true
         //dot(imageLoad(prevImages[IW_BARYCENT], curPixel).xyz, 1.f.xxx) > 0.f && 
-
+        indirect.w > 0.f && cindirect.w > 0.f && 
+        cIndices.x == wIndices.x && cIndices.y == wIndices.y && 
         abs(screenpos.z - screensmp.z) < 0.0001f && 
         distance(wPosition.xyz, worldspos.xyz) < 0.1f
     ) 
     {
-        atomicSuperImageAdd(resampleImages[IW_INDIRECT], topix, indirect); // Atomically Adding Samples
-        atomicSuperImageAdd(resampleImages[IW_SHADOWCL], topix, shadowcl);
-        atomicSuperImageAdd(resampleImages[IW_REFLECLR], topix, float4(refleclr.xyz, 0.f));
+        atomicSuperImageAdd(resampleImages[IW_INDIRECT], shpix, indirect); // Atomically Adding Samples
+        atomicSuperImageAdd(resampleImages[IW_SHADOWCL], shpix, shadowcl);
+        atomicSuperImageAdd(resampleImages[IW_REFLECLR], shpix, float4(refleclr.xyz, 0.f));
     };
 
 };
