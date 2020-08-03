@@ -9,7 +9,7 @@ namespace vlr {
         VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         vkt::uni_ptr<Driver> driver = {};
-        bool uniform = false, enableCPU = true;
+        bool uniform = false, enableCPU = true, enableGL = false;
         
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, const uint32_t& stride = 1u, vkt::uni_arg<DataSetCreateInfo> info = {});

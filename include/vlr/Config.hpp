@@ -90,6 +90,7 @@ namespace vlr {
         VkDeviceSize count = 1u;
         bool uniform = false;
         bool enableCPU = true;
+        bool enableGL = false;
     };
 
     struct AccelerationCreateInfo;
