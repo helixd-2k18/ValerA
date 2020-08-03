@@ -134,8 +134,8 @@ int main() {
     if (!err.empty()) { std::cerr << err << std::endl; }
     if (!ret) { exit(1); }
 
-    // 
-    shapes.push_back(shapes[0]);
+    // For Debug! 
+    //shapes.push_back(shapes[0]);
 
     // Loop over shapes
     VkDeviceSize accessorCount = 0u;
@@ -294,15 +294,15 @@ int main() {
     };
 
     // 
-    glm::mat4x4 traslated = glm::translate(glm::vec3(3.f, 0.f, 0.f));
+    /*glm::mat4x4 traslated = glm::translate(glm::vec3(3.f, 0.f, 0.f));
     instanceSet->get(1u) = vkh::VsGeometryInstance{
         .transform = glm::mat3x4(glm::transpose(traslated)),
         .customId = 1u,
         .mask = 0xFFu,
         .instanceOffset = 0u,
         .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
-    };
-    
+    };*/
+
     // 
     auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
         .layout = layout,
