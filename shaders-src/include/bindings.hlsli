@@ -44,7 +44,7 @@ layout (binding = 0, set = 0, scalar) uniform Matrices {
 } constants;
 
 // 
-layout (binding = 0, set = 1, scalar) readonly buffer MeshData { uint8_t data[]; } mesh0[];
+layout (binding = 0, set = 1, scalar) readonly buffer MeshData { uint8_t data[]; } mesh0[]; // BROKEN!!! Seen only first! 
 layout (binding = 0, set = 2, scalar) readonly buffer Bindings   { Binding   bindings[]; };
 layout (binding = 0, set = 3, scalar) readonly buffer Attributes { Attribute attributes[]; };
 //layout (binding = 0, set = 2, scalar) readonly buffer Bindings   { Binding   data[8u]; } bindings  [];
