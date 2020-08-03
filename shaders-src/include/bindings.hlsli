@@ -24,7 +24,7 @@
 #define RS_INDICIES 1
 #define RS_POSITION 2
 #define RS_BARYCENT 3
-//#define RS_ORIGINAL 4
+#define RS_RENDERED 4
 //#define RS_ORIGINAL 4
 
 
