@@ -99,8 +99,8 @@ void main()
 
             // 
             indirect = max(indirect, 0.f.xxxx);
-            refleclr = max(refleclr, 0.f.xxxx);
-            shadows = max(shadows, 0.f.xxxx);
+            refleclr = max(refleclr, float4(0.f.xxx, 1.f));
+            shadows = max(shadows, float4(0.f.xxx, 1.f));
 
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);

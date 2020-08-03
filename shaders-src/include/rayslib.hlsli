@@ -47,9 +47,9 @@ RayData finishRay(inout RayData ray) {
     finished(ray, true);
     if (dot(ray.emission.xyz, 1.hf.xxx) > 0.001hf) {
         uint kindof = kind(ray);
-        if (kindof == DIFFUSE_RAY) { atomicSuperImageAdd(currImages[IW_INDIRECT], int2(ray.pixelID), ray.emission); }; // WARNING: Ray Color should be Pre-Multiplied with Alpha (for example, 0.5f reflection, 0.5f diffuse, 1.f shadows)
-        if (kindof == REFLECT_RAY) { atomicSuperImageAdd(currImages[IW_REFLECLR], int2(ray.pixelID), ray.emission); }; // WARNING: Ray Color should be Pre-Multiplied with Alpha 
-        if (kindof == SHADOWS_RAY) { atomicSuperImageAdd(currImages[IW_SHADOWCL], int2(ray.pixelID), ray.emission); }; // WARNING: Ray Color should be Pre-Multiplied with Alpha 
+        if (kindof == DIFFUSE_RAY) { atomicSuperImageAdd(currImages[IW_INDIRECT], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); }; // WARNING: Ray Color should be Pre-Multiplied with Alpha (for example, 0.5f reflection, 0.5f diffuse, 1.f shadows)
+        if (kindof == REFLECT_RAY) { atomicSuperImageAdd(currImages[IW_REFLECLR], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); }; // WARNING: Ray Color should be Pre-Multiplied with Alpha 
+        if (kindof == SHADOWS_RAY) { atomicSuperImageAdd(currImages[IW_SHADOWCL], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); }; // WARNING: Ray Color should be Pre-Multiplied with Alpha 
         ray.emission.xyzw = 0.hf.xxxx;
     };
 #endif
