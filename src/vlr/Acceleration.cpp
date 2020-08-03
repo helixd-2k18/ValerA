@@ -94,11 +94,11 @@ namespace vlr {
                 triangleDesc.transformData = geometrySet->getGpuBuffer()->deviceAddress();
                 triangleDesc.vertexFormat = attribute.format;
                 triangleDesc.vertexStride = predicate(binding.stride, formatStride(triangleDesc.vertexFormat));
-                triangleDesc.vertexData = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute)->deviceAddress();
+                triangleDesc.vertexData = buffer->deviceAddress();
 
                 // 
                 if (geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1 && geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR) {
-                    triangleDesc.indexData = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
+                    triangleDesc.indexData = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView)->deviceAddress();
                     triangleDesc.indexType = VkIndexType(geometry->desc->indexType);
                 } else {
                     triangleDesc.indexType = VK_INDEX_TYPE_NONE_KHR;
@@ -115,11 +115,14 @@ namespace vlr {
                 offsetDesc.firstVertex = geometry->desc->firstVertex;
                 offsetDesc.primitiveCount = geometry->desc->primitiveCount;
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
-                offsetDesc.primitiveOffset = uint32_t(buffer.offset());
 
-                // Shift for Index Data
+                // Shifting...
+                // https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccelerationStructureBuildOffsetInfoKHR.html
                 if (triangleDesc.indexType != VK_INDEX_TYPE_NONE_KHR) {
-                    offsetDesc.firstVertex += geometry->vertexSet->getBuffer(geometry->desc->indexBufferView).offset() / (triangleDesc.indexType == VK_INDEX_TYPE_UINT32 ? 4u : (triangleDesc.indexType == VK_INDEX_TYPE_UINT16 ? 2u : 1u));
+                    offsetDesc.firstVertex += buffer.offset() / triangleDesc.vertexStride;
+                    offsetDesc.primitiveOffset += geometry->vertexSet->getBuffer(geometry->desc->indexBufferView).offset();
+                } else {
+                    offsetDesc.primitiveOffset += buffer.offset(); // Vertex Anti-Bug-Tale
                 };
 
                 // 

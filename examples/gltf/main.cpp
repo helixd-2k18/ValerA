@@ -100,12 +100,12 @@ int main() {
     tinygltf::TinyGLTF loader = {};
 
     // 
-    //const float unitScale = 1.f, unitHeight = -0.f;
-    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
+    const float unitScale = 1.f, unitHeight = -0.f;
+    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
 
     // 
-    const float unitScale = 100.f, unitHeight = -0.f;
-    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Box.gltf");
+    //const float unitScale = 100.f, unitHeight = -0.f;
+    //const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Box.gltf");
 
     // 
     //const float unitScale = 1.f, unitHeight = -32.f;
@@ -168,6 +168,17 @@ int main() {
         buffers->pushBufferView(vkt::Vector<uint8_t>(buffer->getGpuBuffer().getAllocation(), buffer->getGpuBuffer().offset()+bview.byteOffset, bview.byteLength, bview.byteStride));
         bindings->get(i) = vkh::VkVertexInputBindingDescription{ .binding = i, .stride = uint32_t(bview.byteStride) };
     };
+
+    /*
+    //buffers->pushBufferView(vertexData->getGpuBuffer());
+    std::vector<vkt::uni_ptr<vlr::SetBase_T<uint8_t>>> sets = {};
+    for (uint32_t i = 0; i < model.bufferViews.size(); i++) {
+        auto bview = model.bufferViews[i];
+        auto buffer = std::make_shared<vlr::SetBase_T<uint8_t>>(fw, vlr::DataSetCreateInfo{ .count = bview.byteLength }); sets.push_back(buffer);
+        buffers->pushBufferView(buffer->getGpuBuffer());
+        bindings->get(i) = vkh::VkVertexInputBindingDescription{ .binding = i, .stride = uint32_t(bview.byteStride) };
+        memcpy(&buffer->get(0u), model.buffers[bview.buffer].data.data() + bview.byteOffset, bview.byteLength);
+    };*/
 
     // accessors
     for (uint32_t i = 0; i < model.accessors.size(); i++) {
