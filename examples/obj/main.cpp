@@ -158,7 +158,7 @@ int main() {
     std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
 
     // 
-    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
+    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 2u });
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
     auto buffers = std::make_shared<vlr::BufferViewSet>(fw);
 
@@ -223,8 +223,11 @@ int main() {
         // 
         uint32_t bID = uint32_t(s);
         bindings->get(bID) = vkh::VkVertexInputBindingDescription{
-            .binding = uint32_t(s), .stride = sizeof(FDStruct)
+            .binding = 0u, .stride = sizeof(FDStruct)
         };
+
+        // 
+        //accessorCount = 0u; // for DEBUG
 
         // 
         accessors->get(gdesc.vertexAttribute = accessorCount++) = vkh::VkVertexInputAttributeDescription{
