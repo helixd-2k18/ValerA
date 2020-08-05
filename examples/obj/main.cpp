@@ -119,7 +119,7 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
 
     //
-    std::string inputfile = "sphere.obj";
+    std::string inputfile = "cube.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -170,8 +170,8 @@ int main() {
     });
 
     // 
-    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 2u });
-    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {2u} }); // shapes.size()
+    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
+    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {shapes.size()} }); // shapes.size()
 
     // 
     for (size_t s = 0; s < shapes.size(); s++) { // 
@@ -285,12 +285,14 @@ int main() {
     auto layout = std::make_shared<vlr::PipelineLayout>(fw);
 
     // 
-    instanceSet->get(0u) = vkh::VsGeometryInstance{
-        .transform = glm::mat3x4(1.f),
-        .customId = 0u,
-        .mask = 0xFFu,
-        .instanceOffset = 0u,
-        .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
+    for (size_t s = 0; s < shapes.size(); s++) {
+        instanceSet->get(s) = vkh::VsGeometryInstance{
+            .transform = glm::mat3x4(1.f),
+            .customId = uint32_t(s),
+            .mask = 0xFFu,
+            .instanceOffset = 0u,
+            .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
+        };
     };
 
     // 
