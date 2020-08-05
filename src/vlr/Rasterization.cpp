@@ -14,12 +14,12 @@ namespace vlr {
         if (info.has()) {
             this->layout = info->layout, this->framebuffer = info->framebuffer, this->instanceSet = info->instanceSet, this->constants = info->constants; 
         };
-        
+
         // 
         this->stages = { // for faster code, pre-initialize
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.vert.spv")), VK_SHADER_STAGE_VERTEX_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.geom.spv")), VK_SHADER_STAGE_GEOMETRY_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/rasterize.frag.spv")), VK_SHADER_STAGE_FRAGMENT_BIT)
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->vertexShader), VK_SHADER_STAGE_VERTEX_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->geometryShader), VK_SHADER_STAGE_GEOMETRY_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->fragmentShader), VK_SHADER_STAGE_FRAGMENT_BIT)
         };
 
         // 

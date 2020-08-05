@@ -17,11 +17,11 @@ namespace vlr {
 
         // 
         this->stages = { // for faster code, pre-initialize
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/generation.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/intersection.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/interpolation.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/resample.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(std::string("./shaders/finalize.comp.spv")), VK_SHADER_STAGE_COMPUTE_BIT)
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->generationShader), VK_SHADER_STAGE_COMPUTE_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->intersectionShader), VK_SHADER_STAGE_COMPUTE_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->interpolationShader), VK_SHADER_STAGE_COMPUTE_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->resampleShader), VK_SHADER_STAGE_COMPUTE_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->finalizeShader), VK_SHADER_STAGE_COMPUTE_BIT)
         };
 
         // 

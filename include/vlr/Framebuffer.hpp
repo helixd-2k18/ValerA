@@ -10,8 +10,9 @@ namespace vlr {
         vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<InstanceSet> instanceSet = {};
         vkt::uni_ptr<Constants> constants = {};
-        uint32_t geometryID = 0u; // For Rasterization, Use That Geometry
-        uint32_t instanceID = 0u; // For Rasterization, Pick Up Transform
+        std::string vertexShader = "./shaders/rasterize.vert.spv";
+        std::string geometryShader = "./shaders/rasterize.geom.spv";
+        std::string fragmentShader = "./shaders/rasterize.frag.spv";
     };
 
     struct RayTracingCreateInfo {
@@ -19,6 +20,11 @@ namespace vlr {
         vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<Acceleration> accelerationTop = {}; // Top Level for Ray Tracing
         vkt::uni_ptr<Constants> constants = {};
+        std::string generationShader = "./shaders/generation.comp.spv";
+        std::string intersectionShader = "./shaders/intersection.comp.spv";
+        std::string interpolationShader = "./shaders/interpolation.comp.spv";
+        std::string resampleShader = "./shaders/resample.comp.spv";
+        std::string finalizeShader = "./shaders/finalize.comp.spv";
     };
 
     struct RenderPass {

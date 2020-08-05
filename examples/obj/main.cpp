@@ -574,7 +574,7 @@ int main() {
     Shared::window = fw->window(); // set GLFW window
     Shared::active.tDiff = 0.0; // reset diff to near-zero (avoid critical math errors)
     Shared::active.keys.resize(1024, uint8_t(0u));
-    Shared::active.mouse.resize(128, uint8_t(0u));
+    Shared::active.mouse.resize(256, uint8_t(0u));
     Shared::TimeCallback(glfwGetTime() * 1000.0);
 
     // 
