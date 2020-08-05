@@ -120,7 +120,7 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
 
     //
-    std::string inputfile = "cube.obj";
+    std::string inputfile = "lost_empire.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -609,7 +609,8 @@ int main() {
             // 
             Shared::TimeCallback(glfwGetTime()*1000.0);
             glm::dmat4 proj = cameraController->handle().project();
-            glm::dmat4 mv = glm::lookAt(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.f, -1.0), glm::vec3(0.0, 1.0, 0.0));
+            glm::dmat4 mv = cameraController->translation();
+            //glm::dmat4 mv = glm::lookAt(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.f, -1.0), glm::vec3(0.0, 1.0, 0.0));
 
             // 
             glm::dvec3 scale;
@@ -645,7 +646,7 @@ int main() {
             // 
             for (size_t s = 0; s < shapes.size(); s++) {
                 instanceSet->get(s) = vkh::VsGeometryInstance{
-                    .transform = glm::mat3x4(trans),
+                    .transform = glm::mat3x4(glm::transpose(glm::inverse(mv))),
                     .customId = uint32_t(s),
                     .mask = 0xFFu,
                     .instanceOffset = 0u,

@@ -69,7 +69,9 @@ public:
     double mX = 1e-5, mY = 1e-5, dX = 0.0, dY = 0.0;
 
     // create relative control matrice
-    auto project() { return glm::lookAt(*eyePos, (*eyePos + *viewVector), *upVector); };
+    //auto project() { return glm::lookAt(*eyePos, (*eyePos + *viewVector), *upVector); };
+    auto project() { return glm::lookAt(glm::dvec3(0.0), *viewVector, *upVector); };
+    auto translation() { return glm::translate(*eyePos); };
 
     // event handler
     CameraController& handle() {
