@@ -638,10 +638,14 @@ int main() {
                 vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
             };
 
+            //
+            double scal = glfwGetTime();
+            glm::dmat4 trans = glm::scale(glm::sin(scal) * 0.1f + glm::dvec3(1.f, 1.f, 1.f));
+
             // 
             for (size_t s = 0; s < shapes.size(); s++) {
                 instanceSet->get(s) = vkh::VsGeometryInstance{
-                    .transform = glm::mat3x4(1.f),
+                    .transform = glm::mat3x4(trans),
                     .customId = uint32_t(s),
                     .mask = 0xFFu,
                     .instanceOffset = 0u,
