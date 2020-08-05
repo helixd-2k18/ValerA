@@ -2,6 +2,7 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tinyobjloader/tiny_obj_loader.h>
+#include <glm/gtx/matrix_decompose.hpp>
 
 int main() {
     glfwSetErrorCallback(error);
@@ -292,18 +293,9 @@ int main() {
             .mask = 0xFFu,
             .instanceOffset = 0u,
             .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
+            .accelerationStructureHandle = accelerations[s]->getHandle() // Broken Feature, Set Manually
         };
     };
-
-    // 
-    /*glm::mat4x4 traslated = glm::translate(glm::vec3(3.f, 0.f, 0.f));
-    instanceSet->get(1u) = vkh::VsGeometryInstance{
-        .transform = glm::mat3x4(glm::transpose(traslated)),
-        .customId = 1u,
-        .mask = 0xFFu,
-        .instanceOffset = 0u,
-        .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
-    };*/
 
     // 
     auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
@@ -616,13 +608,28 @@ int main() {
 
             // 
             Shared::TimeCallback(glfwGetTime()*1000.0);
-            glm::mat4 proj = cameraController->handle().project();
+            glm::dmat4 proj = cameraController->handle().project();
+            glm::dmat4 mv = glm::lookAt(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.f, -1.0), glm::vec3(0.0, 1.0, 0.0));
 
             // 
-            constants->get(0u).modelview = glm::transpose(glm::mat4x3(proj));
-            constants->get(0u).projection = glm::transpose(glm::mat4x4(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
-            constants->get(0u).modelviewInv = glm::transpose(glm::mat4x3(glm::inverse(proj)));
-            constants->get(0u).projectionInv = glm::transpose(glm::mat4x4(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
+            glm::dvec3 scale;
+            glm::dquat rotation;
+            glm::dvec3 translation;
+            glm::dvec3 skew;
+            glm::dvec4 perspective;
+            glm::decompose(proj, scale, rotation, translation, skew, perspective);
+
+            // 
+            //glm::dmat4 trans = glm::translate(translation);
+            //mv = trans * mv;
+            //proj = glm::inverse(trans) * proj;
+
+            // 
+            //constants->get(0u) = vlr::ConstantDesc{};
+            constants->get(0u).modelview = glm::mat3x4(glm::transpose(proj));
+            constants->get(0u).projection = glm::mat4(glm::transpose(glm::perspective(80.0 / 180.0 * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
+            constants->get(0u).modelviewInv = glm::mat3x4(glm::transpose(glm::inverse(proj)));
+            constants->get(0u).projectionInv = glm::mat4(glm::transpose(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
 
             // Create render submission 
             std::vector<VkSemaphore> waitSemaphores = { framebuffers[currentBuffer].presentSemaphore }, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
@@ -632,11 +639,28 @@ int main() {
             };
 
             // 
+            for (size_t s = 0; s < shapes.size(); s++) {
+                instanceSet->get(s) = vkh::VsGeometryInstance{
+                    .transform = glm::mat3x4(1.f),
+                    .customId = uint32_t(s),
+                    .mask = 0xFFu,
+                    .instanceOffset = 0u,
+                    .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
+                    .accelerationStructureHandle = accelerations[s]->getHandle() // Broken Feature, Set Manually
+                };
+            };
+
+            // 
             auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
-            instanceSet->setCommand(rtCommand);
+            
+            // 
+            buildCommand->setCommand(rtCommand);
+            instanceSet->setCommand(rtCommand, true);
+            buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
+
+            // 
             materialSet->setCommand(rtCommand);
             constants->setCommand(rtCommand, true);
-            buildCommand->setCommand(rtCommand);
             renderCommand->setCommand(rtCommand);
             vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
 
