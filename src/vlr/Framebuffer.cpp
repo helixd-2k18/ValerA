@@ -81,7 +81,8 @@ namespace vlr {
 
     // 
     void Framebuffer::createFramebuffer(uint32_t width, uint32_t height) { //
-        auto fbusage = vkh::VkImageUsageFlags{.eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
+        auto fbusage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
+        auto lnusage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1 };
         auto aspect = vkh::VkImageAspectFlags{.eColor = 1};
         auto apres = vkh::VkImageSubresourceRange{.aspectMask = aspect};
         auto device = this->driver->getDeviceDispatch();
@@ -163,6 +164,27 @@ namespace vlr {
         };
 
         // 
+        auto createImageLinear = [=, this](VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT, uint32_t wide = 1u) {
+            auto image = vkt::ImageRegion(std::make_shared<vkt::ImageAllocation>(vkh::VkImageCreateInfo{
+                .format = format,
+                .extent = {width * wide,height,1u},
+                .tiling = VK_IMAGE_TILING_LINEAR, // Required for RGBA32F and OptiX Interaction (Linear)
+                .usage = lnusage,
+            }, almac), vkh::VkImageViewCreateInfo{
+                .format = format,
+                .subresourceRange = apres
+            }, VK_IMAGE_LAYOUT_GENERAL);
+
+            // 
+            vkt::submitOnce(this->driver->getDeviceDispatch(), this->driver->getQueue(), this->driver->getCommandPool(), [&, this](VkCommandBuffer& cmd) {
+                image.transfer(cmd);
+                this->driver->getDeviceDispatch()->CmdClearColorImage(cmd, image, image.getImageLayout(), vkh::VkClearColorValue{ .float32 = { 0.f,0.f,0.f,0.f } }, 1u, image.getImageSubresourceRange());
+            });
+
+            return image;
+        };
+
+        // 
         this->atomicMapping = createImage(VK_FORMAT_R32_UINT);
 
         // 
@@ -191,6 +213,12 @@ namespace vlr {
                 resampleAttachments.push_back(resampleImages.back());
                 rasterAttachments.push_back(rasterImages.back());
             };
+        };
+
+        //
+        for (uint32_t b = 0; b < 4u; b++) {
+            //inoutLinearImages.push_back(createImageLinear(VK_FORMAT_R32_SFLOAT)); // Busy!
+            inoutLinearImages.push_back(createImageLinear(VK_FORMAT_R32G32B32A32_SFLOAT)); // 4x free... 
         };
 
         // 

@@ -159,6 +159,7 @@ int main() {
     std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
 
     // 
+    auto denoiser = std::make_shared<vlr::OptiXDenoise>(fw);
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 2u });
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
     auto buffers = std::make_shared<vlr::BufferViewSet>(fw);
@@ -361,9 +362,9 @@ int main() {
         mdk.diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
     };
 
-
     // 
     framebuffer->createFramebuffer(canvasWidth, canvasHeight);
+    denoiser->setFramebuffer(framebuffer);
 
     {   // 
         int width = 0u, height = 0u;

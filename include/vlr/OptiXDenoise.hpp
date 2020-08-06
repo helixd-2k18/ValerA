@@ -28,6 +28,7 @@ namespace vlr {
         OptixImage2D         mOutput{};
 
         VkDeviceSize         recommendedScratchSizeInBytes = 0u;
+        vkt::uni_ptr<Framebuffer> framebuffer = {};
 
     public: 
         OptiXDenoise() { this->constructor(); };

@@ -84,7 +84,7 @@ namespace vlr {
 
         // 
         mIndirect.pixelStrideInBytes = sizeofPixel;
-        mIndirect.format = OPTIX_PIXEL_FORMAT_FLOAT4;
+        mIndirect.format = OPTIX_PIXEL_FORMAT_FLOAT3;
 
         // 
         mNormal.pixelStrideInBytes = sizeofPixel;
@@ -92,10 +92,14 @@ namespace vlr {
 
         // 
         mAlbedo.pixelStrideInBytes = sizeofPixel;
-        mAlbedo.format = OPTIX_PIXEL_FORMAT_FLOAT4;
+        mAlbedo.format = OPTIX_PIXEL_FORMAT_FLOAT3;
     };
 
     void OptiXDenoise::setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer) {
+        // 
+        this->framebuffer = framebuffer;
+
+        // 
         mIndirect.rowStrideInBytes = framebuffer->width * mIndirect.pixelStrideInBytes;
         mNormal.rowStrideInBytes = framebuffer->width * mNormal.pixelStrideInBytes;
         mAlbedo.rowStrideInBytes = framebuffer->width * mAlbedo.pixelStrideInBytes;
@@ -107,6 +111,7 @@ namespace vlr {
         // 
         auto interopImage = [&,this](vkt::ImageRegion region, OptixImage2D& image){
             cudaExternalMemoryHandleDesc cudaExtMemHandleDesc{};
+            cudaExtMemHandleDesc.size = region->getAllocationInfo().reqSize;
 #ifdef VKT_WIN32_DETECTED
             cudaExtMemHandleDesc.handle.win32.handle = region->getAllocationInfo().handle;
             cudaExtMemHandleDesc.type = cudaExternalMemoryHandleTypeOpaqueWin32;
@@ -120,16 +125,23 @@ namespace vlr {
             // 
             cudaExternalMemoryBufferDesc cudaExtBufferDesc{};
             cudaExtBufferDesc.offset = 0;
-            cudaExtBufferDesc.size = region->getAllocationInfo().reqSize;
+            cudaExtBufferDesc.size = cudaExtMemHandleDesc.size;
             cudaExtBufferDesc.flags = 0;
             CUDA_CHECK(cudaExternalMemoryGetMappedBuffer((void**)&image.data, cudaExtBuffer, &cudaExtBufferDesc));
         };
 
-        // 
-        interopImage(framebuffer->rasterImages[8], mOutput);
-        interopImage(framebuffer->rasterImages[7], mNormal);
-        interopImage(framebuffer->rasterImages[6], mAlbedo);
+        /*
         interopImage(framebuffer->rasterImages[5], mIndirect);
+        interopImage(framebuffer->rasterImages[6], mAlbedo);
+        interopImage(framebuffer->rasterImages[7], mNormal);
+        interopImage(framebuffer->rasterImages[8], mOutput);
+        */
+
+        // Bind With Linear Images
+        interopImage(framebuffer->inoutLinearImages[0], mIndirect);
+        interopImage(framebuffer->inoutLinearImages[1], mAlbedo);
+        interopImage(framebuffer->inoutLinearImages[2], mNormal);
+        interopImage(framebuffer->inoutLinearImages[3], mOutput);
 
         // Computing the amount of memory needed to do the denoiser
         OPTIX_CHECK(optixDenoiserComputeMemoryResources(m_denoiser, framebuffer->width, framebuffer->height, &m_dSizes));

@@ -56,6 +56,7 @@ namespace vlr {
         std::vector<vkt::ImageRegion> previousImages = {};  // Previous Frame
         std::vector<vkt::ImageRegion> resampleImages = {}; // Resampled Previous Frame
         std::vector<vkt::ImageRegion> rasterImages = {};    // Rasterized Frame
+        std::vector<vkt::ImageRegion> inoutLinearImages = {};
         VkRect2D scissor = {}; VkViewport viewport = {};    // 
         uint32_t width = 1920u, height = 1200u;
         vkt::uni_ptr<Driver> driver = {};
