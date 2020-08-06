@@ -100,9 +100,9 @@ void main()
 
             // 
             //indirect += shadows;
-            indirect = max(indirect, float4(0.f.xxx, 1.f));
-            refleclr = max(refleclr, float4(0.f.xxx, 1.f));
-            shadows = max(shadows, float4(0.f.xxx, 1.f));
+            //indirect = max(indirect, float4(0.f.xxx, 1.f));
+            //refleclr = max(refleclr, float4(0.f.xxx, 1.f));
+            //shadows = max(shadows, float4(0.f.xxx, 1.f));
 
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
@@ -110,11 +110,10 @@ void main()
             superImageStore(currImages[IW_SHADOWCL], curPixel, shadows);
 
             // 
-            imageStore(rasteredImages[RS_INDIRECT], curPixel, indirect / indirect.w);
+            imageStore(rasteredImages[RS_INDIRECT], curPixel, indirect.w <= 0.0001f ? 0.f.xxxx : indirect / indirect.w);
             imageStore(rasteredImages[RS_ALBEDOBF], curPixel, MAT.diffuseColor);
-            //imageStore(rasteredImages[RS_ALBEDOBF], curPixel, float4(1.f.xxxx));
             imageStore(rasteredImages[RS_NORMALED], curPixel, MAT.mapNormal);
-            imageStore(rasteredImages[RS_DENOISED], curPixel, indirect / indirect.w);
+            imageStore(rasteredImages[RS_DENOISED], curPixel, indirect.w <= 0.0001f ? 0.f.xxxx : indirect / indirect.w);
         };
 
         //superImageStore(currImages[IW_RENDERED], curPixel, cbLoad(IW_INDIRECT, curPixel));
