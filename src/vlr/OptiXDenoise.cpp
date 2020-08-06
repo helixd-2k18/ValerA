@@ -168,7 +168,7 @@ namespace vlr {
         // 
         OPTIX_CHECK(optixDenoiserInvoke(m_denoiser, stream, &params, m_dState, m_dSizes.stateSizeInBytes, &mIndirect, 3, 0, 0, &mOutput, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
         //CUDA_CHECK(cudaStreamSynchronize(stream));
-        CUDA_CHECK(cudaStreamSynchronize(nullptr));  // Making sure the denoiser is done
+        CUDA_CHECK(cudaStreamSynchronize(stream)); // Making sure the denoiser is done
 
         // Copy from Linear/CUDA into Optimal
         driver->submitOnce([&, this](VkCommandBuffer& cmd) {
