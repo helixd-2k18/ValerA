@@ -25,6 +25,9 @@ namespace vlr {
         OptixImage2D         mIndirect{};
         OptixImage2D         mNormal{};
         OptixImage2D         mAlbedo{};
+        OptixImage2D         mOutput{};
+
+        VkDeviceSize         recommendedScratchSizeInBytes = 0u;
 
     public: 
         OptiXDenoise() { this->constructor(); };
@@ -34,7 +37,8 @@ namespace vlr {
         virtual void constructor(vkt::uni_ptr<Driver> driver);
 
         // 
-        virtual void denoise(vkt::uni_arg<VkCommandBuffer> deferredOp, vkt::uni_ptr<Framebuffer> framebuffer);
+        virtual void setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer);
+        virtual void denoise();
     };
 #endif
 

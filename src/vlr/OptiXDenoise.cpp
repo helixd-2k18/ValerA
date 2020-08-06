@@ -95,7 +95,7 @@ namespace vlr {
         mAlbedo.format = OPTIX_PIXEL_FORMAT_FLOAT4;
     };
 
-    void OptiXDenoise::denoise(vkt::uni_arg<VkCommandBuffer> cmd, vkt::uni_ptr<Framebuffer> framebuffer) {
+    void OptiXDenoise::setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer) {
         mIndirect.rowStrideInBytes = framebuffer->width * mIndirect.pixelStrideInBytes;
         mNormal.rowStrideInBytes = framebuffer->width * mNormal.pixelStrideInBytes;
         mAlbedo.rowStrideInBytes = framebuffer->width * mAlbedo.pixelStrideInBytes;
@@ -126,11 +126,36 @@ namespace vlr {
         };
 
         // 
+        interopImage(framebuffer->rasterImages[8], mOutput);
         interopImage(framebuffer->rasterImages[7], mNormal);
         interopImage(framebuffer->rasterImages[6], mAlbedo);
         interopImage(framebuffer->rasterImages[5], mIndirect);
 
+        // Computing the amount of memory needed to do the denoiser
+        OPTIX_CHECK(optixDenoiserComputeMemoryResources(m_denoiser, framebuffer->width, framebuffer->height, &m_dSizes));
+        CUDA_CHECK(cudaMalloc((void**)&m_dState, m_dSizes.stateSizeInBytes));
+        CUDA_CHECK(cudaMalloc((void**)&m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
+        CUDA_CHECK(cudaMalloc((void**)&m_dIntensity, sizeof(float)));
+        CUDA_CHECK(cudaMalloc((void**)&m_dMinRGB, 4 * sizeof(float)));
+
         // 
+        CUstream stream = nullptr;
+        OPTIX_CHECK(optixDenoiserSetup(m_denoiser, stream, framebuffer->width, framebuffer->height, m_dState, m_dSizes.stateSizeInBytes, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
+    };
+
+    void OptiXDenoise::denoise() {
+        CUstream stream = nullptr;
+        OPTIX_CHECK(optixDenoiserComputeIntensity(m_denoiser, stream, &mIndirect, m_dIntensity, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
+
+        // 
+        OptixDenoiserParams params{};
+        params.denoiseAlpha = 0;
+        params.hdrIntensity = m_dIntensity;
+
+        // 
+        OPTIX_CHECK(optixDenoiserInvoke(m_denoiser, stream, &params, m_dState, m_dSizes.stateSizeInBytes, &mIndirect, 1, 0, 0, &mOutput, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
+        //CUDA_CHECK(cudaStreamSynchronize(stream));
+        CUDA_CHECK(cudaStreamSynchronize(nullptr));  // Making sure the denoiser is done
     };
 
 #endif
