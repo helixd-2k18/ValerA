@@ -3,6 +3,10 @@
 #include "./Driver.hpp"
 #include "./PipelineLayout.hpp"
 
+#ifdef ENABLE_OPTIX_DENOISE
+#include "./OptiXDenoise.hpp"
+#endif
+
 namespace vlr {
 
     struct PipelineCreateInfo {
@@ -25,6 +29,9 @@ namespace vlr {
         std::string interpolationShader = "./shaders/interpolation.comp.spv";
         std::string resampleShader = "./shaders/resample.comp.spv";
         std::string finalizeShader = "./shaders/finalize.comp.spv";
+#ifdef ENABLE_OPTIX_DENOISE
+        vkt::uni_ptr<OptiXDenoise> denoise = {};
+#endif
     };
 
     struct RenderPass {

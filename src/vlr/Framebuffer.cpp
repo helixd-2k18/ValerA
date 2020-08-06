@@ -130,12 +130,24 @@ namespace vlr {
         };
 
         // 
+        vkt::MemoryAllocationInfo almac = {};
+        almac.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+        almac.glMemory = almac.glID = 0u;
+        almac.queueFamilyIndices = {};
+        almac.memoryProperties = driver->getMemoryProperties().memoryProperties;
+        almac.instanceDispatch = driver->getInstanceDispatch();
+        almac.deviceDispatch = driver->getDeviceDispatch();
+        almac.instance = driver->getInstance();
+        almac.device = driver->getDevice();
+
+        // 
         auto createImage = [=,this](VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT, uint32_t wide = 1u) {
-            auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(allocator, vkh::VkImageCreateInfo{
+            auto image = vkt::ImageRegion(std::make_shared<vkt::ImageAllocation>(vkh::VkImageCreateInfo{
                 .format = format,
                 .extent = {width*wide,height,1u},
+                .tiling = VK_IMAGE_TILING_OPTIMAL, // Required for RGBA32F and OptiX Interaction (Linear)
                 .usage = fbusage,
-            }, vmaMemInfo), vkh::VkImageViewCreateInfo{
+            }, almac), vkh::VkImageViewCreateInfo{
                 .format = format,
                 .subresourceRange = apres
             }, VK_IMAGE_LAYOUT_GENERAL);

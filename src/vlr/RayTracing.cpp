@@ -15,6 +15,10 @@ namespace vlr {
         this->driver = driver;
         auto device = this->driver->getDeviceDispatch();
 
+#ifdef ENABLE_OPTIX_DENOISE
+        this->denoise = info->denoise;
+#endif
+
         // 
         this->stages = { // for faster code, pre-initialize
             vkt::makePipelineStageInfo(device, vkt::readBinary(info->generationShader), VK_SHADER_STAGE_COMPUTE_BIT),

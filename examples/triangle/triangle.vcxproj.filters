@@ -123,6 +123,9 @@
     <ClCompile Include="..\include\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\vlr\OptiXDenoise.cpp">
+      <Filter>Source Files\vlr</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\vlr\Acceleration.hpp">
@@ -271,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="..\include\stdafx.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\OptiXDenoise.hpp">
+      <Filter>Header Files\vlr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -41,7 +41,10 @@ namespace vlr {
         vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<Constants> constants = {};
         vkt::uni_ptr<Driver> driver = {};
-        
+#ifdef ENABLE_OPTIX_DENOISE
+        vkt::uni_ptr<OptiXDenoise> denoise = {};
+#endif
+
         // 
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};
         VkPipeline generation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE, finalize = VK_NULL_HANDLE, resample = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE;
