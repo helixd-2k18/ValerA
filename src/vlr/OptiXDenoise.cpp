@@ -76,38 +76,39 @@ namespace vlr {
         OPTIX_CHECK(optixDeviceContextSetLogCallback(m_optixDevice, context_log_cb, nullptr, 4));
 
         // 
-        OptixPixelFormat pixelFormat = OPTIX_PIXEL_FORMAT_FLOAT4;
-        size_t           sizeofPixel = sizeof(glm::vec4);
-
-        // 
         m_dOptions.inputKind = OPTIX_DENOISER_INPUT_RGB_ALBEDO_NORMAL;
         OPTIX_CHECK(optixDenoiserCreate(m_optixDevice, &m_dOptions, &m_denoiser));
         OPTIX_CHECK(optixDenoiserSetModel(m_denoiser, OPTIX_DENOISER_MODEL_KIND_HDR, nullptr, 0));
 
         // 
-        mIndirect.pixelStrideInBytes = sizeofPixel;
-        mIndirect.format = OPTIX_PIXEL_FORMAT_FLOAT3;
+        mIndirect.pixelStrideInBytes = sizeof(glm::vec4);
+        mIndirect.format = OPTIX_PIXEL_FORMAT_FLOAT4;
 
         // 
-        mAlbedo.pixelStrideInBytes = sizeofPixel;
-        mAlbedo.format = OPTIX_PIXEL_FORMAT_FLOAT3;
+        mAlbedo.pixelStrideInBytes = sizeof(glm::vec4);
+        mAlbedo.format = OPTIX_PIXEL_FORMAT_FLOAT4;
 
         // 
-        mNormal.pixelStrideInBytes = sizeofPixel;
-        mNormal.format = OPTIX_PIXEL_FORMAT_FLOAT3;
+        mNormal.pixelStrideInBytes = sizeof(glm::vec4);
+        mNormal.format = OPTIX_PIXEL_FORMAT_FLOAT4;
+
+        // 
+        mOutput.pixelStrideInBytes = sizeof(glm::vec4);
+        mOutput.format = OPTIX_PIXEL_FORMAT_FLOAT4;
     };
 
     void OptiXDenoise::setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer) { // 
         this->framebuffer = framebuffer;
 
         // 
+        mOutput.rowStrideInBytes = framebuffer->width * mOutput.pixelStrideInBytes;
         mIndirect.rowStrideInBytes = framebuffer->width * mIndirect.pixelStrideInBytes;
         mNormal.rowStrideInBytes = framebuffer->width * mNormal.pixelStrideInBytes;
         mAlbedo.rowStrideInBytes = framebuffer->width * mAlbedo.pixelStrideInBytes;
 
         // 
-        mNormal.width = mAlbedo.width = mIndirect.width = framebuffer->width;
-        mNormal.height = mAlbedo.height = mIndirect.height = framebuffer->height;
+        mOutput.width = mNormal.width = mAlbedo.width = mIndirect.width = framebuffer->width;
+        mOutput.height = mNormal.height = mAlbedo.height = mIndirect.height = framebuffer->height;
 
         // 
         auto interopImage = [&, this](vkt::ImageRegion region, OptixImage2D& image) {
@@ -150,6 +151,12 @@ namespace vlr {
     };
 
     void OptiXDenoise::denoise() {
+        // Copy from Optimal to Linear/CUDA
+        driver->submitOnce([&, this](VkCommandBuffer& cmd) {
+            framebuffer->imageToLinearCopyCommand(cmd);
+        });
+
+        // 
         CUstream stream = nullptr;
         OPTIX_CHECK(optixDenoiserComputeIntensity(m_denoiser, stream, &mIndirect, m_dIntensity, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
 
@@ -158,31 +165,14 @@ namespace vlr {
         params.denoiseAlpha = 0;
         params.hdrIntensity = m_dIntensity;
 
-        // Copy from Optimal to Linear/CUDA
-        vkt::submitOnce(driver->getDeviceDispatch(), driver->getQueue(), driver->getCommandPool(), [&, this](VkCommandBuffer& cmd) {
-            for (uint32_t b = 0u; b < 4u; b++) {
-                driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->rasterImages[5 + b], framebuffer->rasterImages[5 + b], framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], 1u, vkh::VkImageCopy{
-                    .srcSubresource = framebuffer->rasterImages[5 + b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
-                    .dstSubresource = framebuffer->inoutLinearImages[b].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
-                    .extent = {framebuffer->width, framebuffer->height, 1u}
-                });
-            };
-        });
-
         // 
         OPTIX_CHECK(optixDenoiserInvoke(m_denoiser, stream, &params, m_dState, m_dSizes.stateSizeInBytes, &mIndirect, 3, 0, 0, &mOutput, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
         //CUDA_CHECK(cudaStreamSynchronize(stream));
         CUDA_CHECK(cudaStreamSynchronize(nullptr));  // Making sure the denoiser is done
 
         // Copy from Linear/CUDA into Optimal
-        vkt::submitOnce(driver->getDeviceDispatch(), driver->getQueue(), driver->getCommandPool(), [&, this](VkCommandBuffer& cmd) {
-            for (uint32_t b = 0u; b < 4u; b++) {
-                driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], framebuffer->rasterImages[5 + b], framebuffer->rasterImages[5 + b], 1u, vkh::VkImageCopy{
-                    .srcSubresource = framebuffer->inoutLinearImages[b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
-                    .dstSubresource = framebuffer->rasterImages[5 + b].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
-                    .extent = {framebuffer->width, framebuffer->height, 1u}
-                });
-            };
+        driver->submitOnce([&, this](VkCommandBuffer& cmd) {
+            framebuffer->linearToImageCopyCommand(cmd);
         });
     };
 

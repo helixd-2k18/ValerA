@@ -694,7 +694,7 @@ int main() {
 
             // TODO: OptiX Denoise!
             {
-
+                denoiser->denoise();
             };
 
             // Next Compute After Denoise

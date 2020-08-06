@@ -9,9 +9,15 @@ namespace vlr {
         auto upstreamUsage = vkh::VkBufferUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eUniformBuffer = 1, .eStorageBuffer = 1, .eIndirectBuffer = 1, .eRayTracing = 1, .eTransformFeedbackBuffer = 1, .eTransformFeedbackCounterBuffer = 1, .eSharedDeviceAddress = 1 };
 
         // 
-        auto& almac = driver->memoryAllocationInfo();
+        vkt::MemoryAllocationInfo almac = {};
         almac.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
         almac.glMemory = almac.glID = 0u;
+        almac.queueFamilyIndices = {};
+        almac.memoryProperties = driver->getMemoryProperties().memoryProperties;
+        almac.instanceDispatch = driver->getInstanceDispatch();
+        almac.deviceDispatch = driver->getDeviceDispatch();
+        almac.instance = driver->getInstance();
+        almac.device = driver->getDevice();
 
         // 
         auto allocator = this->driver->getAllocator();

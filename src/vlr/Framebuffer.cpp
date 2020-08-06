@@ -81,6 +81,9 @@ namespace vlr {
 
     // 
     void Framebuffer::createFramebuffer(uint32_t width, uint32_t height) { //
+        this->width = width, this->height = height;
+
+        //
         auto fbusage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
         auto lnusage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1 };
         auto aspect = vkh::VkImageAspectFlags{.eColor = 1};
@@ -319,5 +322,32 @@ namespace vlr {
         // 
         vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(device, descriptorSetInfo, this->set, this->updated));
     };
+
+    void Framebuffer::imageToLinearCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd) {
+        auto framebuffer = this;
+
+        // Copy from Optimal to Linear/CUDA
+        for (uint32_t b = 0u; b < 4u; b++) {
+            driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->rasterImages[5 + b], framebuffer->rasterImages[5 + b], framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], 1u, vkh::VkImageCopy{
+                .srcSubresource = framebuffer->rasterImages[5 + b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
+                .dstSubresource = framebuffer->inoutLinearImages[b].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
+                .extent = {framebuffer->width, framebuffer->height, 1u}
+            });
+        };
+    };
+
+    void Framebuffer::linearToImageCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd) {
+        auto framebuffer = this;
+
+        // Copy from Linear/CUDA into Optimal
+        for (uint32_t b = 0u; b < 4u; b++) {
+            driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], framebuffer->rasterImages[5 + b], framebuffer->rasterImages[5 + b], 1u, vkh::VkImageCopy{
+                .srcSubresource = framebuffer->inoutLinearImages[b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
+                .dstSubresource = framebuffer->rasterImages[5 + b].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
+                .extent = {framebuffer->width, framebuffer->height, 1u}
+            });
+        };
+    };
+
 
 };

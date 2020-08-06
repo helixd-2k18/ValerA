@@ -73,6 +73,10 @@ namespace vlr {
         virtual void createRenderPass();
         virtual void createFramebuffer(uint32_t width = 1920u, uint32_t height = 1200u);
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> layout);
+
+        // 
+        virtual void imageToLinearCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd);
+        virtual void linearToImageCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd);
     };
 
 };
