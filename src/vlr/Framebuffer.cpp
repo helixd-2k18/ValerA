@@ -183,11 +183,14 @@ namespace vlr {
         };
 
         // 
-        for (uint32_t b = 0u; b < 8u; b++) {
+        for (uint32_t b = 0u; b < 12u; b++) {
             resampleImages.push_back(createImage(VK_FORMAT_R32_SFLOAT, 4u)); // Required for GL_EXT_shader_atomic_float i.e. super-vec4 
-            resampleAttachments.push_back(resampleImages.back());
             rasterImages.push_back(createImage());
-            rasterAttachments.push_back(rasterImages.back());
+
+            if (b < 8u) {
+                resampleAttachments.push_back(resampleImages.back());
+                rasterAttachments.push_back(rasterImages.back());
+            };
         };
 
         // 

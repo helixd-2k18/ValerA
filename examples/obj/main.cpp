@@ -633,7 +633,7 @@ int main() {
             constants->get(0u).projectionInv = glm::mat4(glm::transpose(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
 
             // Create render submission 
-            std::vector<VkSemaphore> waitSemaphores = {}, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
+            std::vector<VkSemaphore> waitSemaphores = {}, signalSemaphores = {};
             std::vector<vkh::VkPipelineStageFlags> waitStages = {};
 
             //
@@ -653,39 +653,65 @@ int main() {
             };
 
             // 
-            auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
+            {   // Path Tracing Command...
+                auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
 
-            // 
-            buildCommand->setCommand(rtCommand);
-            instanceSet->setCommand(rtCommand, true);
-            buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
+                // 
+                buildCommand->setCommand(rtCommand);
+                instanceSet->setCommand(rtCommand, true);
+                buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
 
-            // 
-            materialSet->setCommand(rtCommand);
-            constants->setCommand(rtCommand, true);
-            renderCommand->setCommand(rtCommand);
-            // TODO: Denoiser 
-            rayTracing->setCommandFinal(rtCommand);
-            vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
+                // 
+                materialSet->setCommand(rtCommand);
+                constants->setCommand(rtCommand, true);
+                renderCommand->setCommand(rtCommand);
+                vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
 
-            // 
-            fw->getDeviceDispatch()->CmdCopyBuffer(rtCommand, counters->getGpuBuffer(), counters->getCpuBuffer(), 1u, vkh::VkBufferCopy{
-                counters->getGpuBuffer().offset(),
-                counters->getCpuBuffer().offset(),
-                counters->getCpuBuffer().range()
-            });
+                // 
+                //fw->getDeviceDispatch()->CmdCopyBuffer(rtCommand, counters->getGpuBuffer(), counters->getCpuBuffer(), 1u, vkh::VkBufferCopy{
+                //    counters->getGpuBuffer().offset(),
+                //    counters->getCpuBuffer().offset(),
+                //    counters->getCpuBuffer().range()
+                //});
 
-            // 
-            fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
+                // 
+                fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
 
+                // 
+                VkFence fence = VK_NULL_HANDLE;
+                vkh::handleVk(fw->getDeviceDispatch()->CreateFence(vkh::VkFenceCreateInfo{ .flags = {1} }, nullptr, &fence));
+                vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+                    .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
+                    .commandBufferCount = 1u, .pCommandBuffers = &rtCommand,
+                    .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
+                }, fence));
 
-            // Submit command once
-            //renderer->setupCommands();
-            vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
-                .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
-                .commandBufferCount = 1u, .pCommandBuffers = &rtCommand,
-                .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
-            }, {}));
+                // 
+                vkh::handleVk(fw->getDeviceDispatch()->WaitForFences(1u, &fence, true, 30ull * 1000ull * 1000ull * 1000ull));
+                fw->getDeviceDispatch()->DestroyFence(fence, nullptr);
+            };
+
+            // TODO: OptiX Denoise!
+            {
+
+            };
+
+            // Next Compute After Denoise
+            signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
+            {
+                // Path Tracing...
+                auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
+                rayTracing->setCommandFinal(rtCommand);
+                vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
+                fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
+
+                // Submit command once
+                vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+                    .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
+                    .commandBufferCount = 1u, .pCommandBuffers = &rtCommand,
+                    .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
+                }, {}));
+            };
 
             // 
             waitSemaphores = { framebuffers[currentBuffer].presentSemaphore, framebuffers[currentBuffer].computeSemaphore }, signalSemaphores = { framebuffers[currentBuffer].drawSemaphore };
