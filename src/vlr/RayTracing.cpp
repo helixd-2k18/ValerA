@@ -25,7 +25,8 @@ namespace vlr {
             vkt::makePipelineStageInfo(device, vkt::readBinary(info->intersectionShader), VK_SHADER_STAGE_COMPUTE_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(info->interpolationShader), VK_SHADER_STAGE_COMPUTE_BIT),
             vkt::makePipelineStageInfo(device, vkt::readBinary(info->resampleShader), VK_SHADER_STAGE_COMPUTE_BIT),
-            vkt::makePipelineStageInfo(device, vkt::readBinary(info->finalizeShader), VK_SHADER_STAGE_COMPUTE_BIT)
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->finalizeShader), VK_SHADER_STAGE_COMPUTE_BIT),
+            vkt::makePipelineStageInfo(device, vkt::readBinary(info->compositeShader), VK_SHADER_STAGE_COMPUTE_BIT)
         };
 
         // 
@@ -34,7 +35,8 @@ namespace vlr {
         this->interpolation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[2]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->resample = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[3]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->finalize = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[4]), layout->pipelineLayout, this->driver->getPipelineCache());
-        
+        this->composite = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[5]), layout->pipelineLayout, this->driver->getPipelineCache());
+
 
         // 
         this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
@@ -172,6 +174,18 @@ namespace vlr {
 
         {   // Finalize Ray Tracing
             device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->finalize);
+            device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
+            device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
+            device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 24u), 1u);
+            vkt::commandBarrier(device, currentCmd);
+        };
+
+        {   // TODO: OptiX Denoise
+
+        }
+
+        {   // Composite Image
+            device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->composite);
             device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
             device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
             device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 24u), 1u);

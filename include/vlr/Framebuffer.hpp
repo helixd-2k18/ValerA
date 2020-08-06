@@ -29,6 +29,7 @@ namespace vlr {
         std::string interpolationShader = "./shaders/interpolation.comp.spv";
         std::string resampleShader = "./shaders/resample.comp.spv";
         std::string finalizeShader = "./shaders/finalize.comp.spv";
+        std::string compositeShader = "./shaders/composite.comp.spv";
 #ifdef ENABLE_OPTIX_DENOISE
         vkt::uni_ptr<OptiXDenoise> denoise = {};
 #endif

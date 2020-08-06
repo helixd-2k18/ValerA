@@ -15,12 +15,12 @@ float4 cbLoad(const int ID, in int2 samplep) {
     int2 cyt = samplep + int2(0, 1);
     float4 xt = superImageLoad(currImages[ID], cxt);
     float4 yt = superImageLoad(currImages[ID], cyt);
-//#ifndef HIGH_QUALITY_TRANSPARENCY
-//    if (dot(fixedt.xyz,1.f.xxx) < 0.0001f) { 
-//        if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else 
-//                                                                            { fixedt =  max(xt, yt); };
-//    };
-//#endif
+#ifndef HIGH_QUALITY_TRANSPARENCY
+    if (dot(fixedt.xyz,1.f.xxx) < 0.0001f) { 
+        if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else 
+                                                                            { fixedt =  max(xt, yt); };
+    };
+#endif
     //return max(fixedt, float4(0.f.xxx, 1.f));
     return fixedt;
 };
@@ -33,12 +33,12 @@ float4 sbLoad(const int ID, in int2 samplep) {
     int2 cyt = samplep + int2(0, 1);
     float4 xt = superImageLoad(resampleImages[ID], cxt);
     float4 yt = superImageLoad(resampleImages[ID], cyt);
-//#ifndef HIGH_QUALITY_TRANSPARENCY
-//    if (dot(fixedt.xyz,1.f.xxx) < 0.0001f) { 
-//        if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else 
-//                                                                            { fixedt =  max(xt, yt); };
-//    };
-//#endif
+#ifndef HIGH_QUALITY_TRANSPARENCY
+    if (dot(fixedt.xyz,1.f.xxx) < 0.0001f) { 
+        if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else 
+                                                                            { fixedt =  max(xt, yt); };
+    };
+#endif
     //return max(fixedt, float4(0.f.xxx, 1.f));
     return fixedt;
 };
@@ -94,28 +94,17 @@ void main()
 
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            float4 indirect = max(cbLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 1.f)) + sbLoad(IW_INDIRECT, curPixel);
-            float4 refleclr = max(cbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 1.f)) + sbLoad(IW_REFLECLR, curPixel); refleclr /= max(indirect.w, 1.f);
-            float4 shadows  = cbLoad(IW_SHADOWCL, curPixel) + sbLoad(IW_SHADOWCL, curPixel); //indirect += shadows;
+            float4 indirect = max(cbLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 1.f));
+            float4 refleclr = max(cbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 1.f)); refleclr /= max(indirect.w, 1.f);
+            float4 diffuse  = float4(MAT.diffuseColor.xyz * (indirect.xyz/max(indirect.w,1.f)), 1.f);
 
             // 
-            indirect = max(indirect, float4(0.f.xxx, 1.f));
-            refleclr = max(refleclr, float4(0.f.xxx, 1.f));
-            shadows = max(shadows, float4(0.f.xxx, 1.f));
-            
-            // 
-            superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
-            superImageStore(currImages[IW_REFLECLR], curPixel, refleclr);
-            superImageStore(currImages[IW_SHADOWCL], curPixel, shadows);
+            diffuse.xyz += refleclr.xyz;
+            imageStore(rasteredImages[RS_RENDERED], curPixel, diffuse);
+        } else {
+            float4 indirect = cbLoad(IW_INDIRECT, curPixel);
+            imageStore(rasteredImages[RS_RENDERED], curPixel, indirect);
         };
-
-        //superImageStore(currImages[IW_RENDERED], curPixel, cbLoad(IW_INDIRECT, curPixel));
-    };
-
-    // 
-    for (uint i=0;i<12;i++) {
-        const float4 pixof = superImageLoad(currImages[i], curPixel);
-        superImageStore(prevImages[i], curPixel, pixof);
     };
 
 };
