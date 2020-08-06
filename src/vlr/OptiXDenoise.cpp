@@ -56,7 +56,9 @@ namespace vlr {
         std::cerr << "[" << std::setw(2) << level << "][" << std::setw(12) << tag << "]: " << message << "\n";
     };
 
-    void OptiXDenoise::constructor(vkt::uni_ptr<Driver> driver) {
+    void OptiXDenoise::constructor(vkt::uni_ptr<Driver> driver) { //
+        this->driver = driver;
+
         // Forces the creation of an implicit CUDA context
         cudaFree(nullptr);
 
@@ -87,16 +89,15 @@ namespace vlr {
         mIndirect.format = OPTIX_PIXEL_FORMAT_FLOAT3;
 
         // 
-        mNormal.pixelStrideInBytes = sizeofPixel;
-        mNormal.format = OPTIX_PIXEL_FORMAT_FLOAT3;
-
-        // 
         mAlbedo.pixelStrideInBytes = sizeofPixel;
         mAlbedo.format = OPTIX_PIXEL_FORMAT_FLOAT3;
+
+        // 
+        mNormal.pixelStrideInBytes = sizeofPixel;
+        mNormal.format = OPTIX_PIXEL_FORMAT_FLOAT3;
     };
 
-    void OptiXDenoise::setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer) {
-        // 
+    void OptiXDenoise::setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer) { // 
         this->framebuffer = framebuffer;
 
         // 
@@ -105,11 +106,11 @@ namespace vlr {
         mAlbedo.rowStrideInBytes = framebuffer->width * mAlbedo.pixelStrideInBytes;
 
         // 
-        mNormal.width  = mAlbedo.width  = mIndirect.width  = framebuffer->width;
+        mNormal.width = mAlbedo.width = mIndirect.width = framebuffer->width;
         mNormal.height = mAlbedo.height = mIndirect.height = framebuffer->height;
 
         // 
-        auto interopImage = [&,this](vkt::ImageRegion region, OptixImage2D& image){
+        auto interopImage = [&, this](vkt::ImageRegion region, OptixImage2D& image) {
             cudaExternalMemoryHandleDesc cudaExtMemHandleDesc{};
             cudaExtMemHandleDesc.size = region->getAllocationInfo().reqSize;
 #ifdef VKT_WIN32_DETECTED
@@ -129,13 +130,6 @@ namespace vlr {
             cudaExtBufferDesc.flags = 0;
             CUDA_CHECK(cudaExternalMemoryGetMappedBuffer((void**)&image.data, cudaExtBuffer, &cudaExtBufferDesc));
         };
-
-        /*
-        interopImage(framebuffer->rasterImages[5], mIndirect);
-        interopImage(framebuffer->rasterImages[6], mAlbedo);
-        interopImage(framebuffer->rasterImages[7], mNormal);
-        interopImage(framebuffer->rasterImages[8], mOutput);
-        */
 
         // Bind With Linear Images
         interopImage(framebuffer->inoutLinearImages[0], mIndirect);
@@ -164,10 +158,32 @@ namespace vlr {
         params.denoiseAlpha = 0;
         params.hdrIntensity = m_dIntensity;
 
+        // Copy from Optimal to Linear/CUDA
+        vkt::submitOnce(driver->getDeviceDispatch(), driver->getQueue(), driver->getCommandPool(), [&, this](VkCommandBuffer& cmd) {
+            for (uint32_t b = 0u; b < 4u; b++) {
+                driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->rasterImages[5 + b], framebuffer->rasterImages[5 + b], framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], 1u, vkh::VkImageCopy{
+                    .srcSubresource = framebuffer->rasterImages[5 + b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
+                    .dstSubresource = framebuffer->inoutLinearImages[b].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
+                    .extent = {framebuffer->width, framebuffer->height, 1u}
+                });
+            };
+        });
+
         // 
-        OPTIX_CHECK(optixDenoiserInvoke(m_denoiser, stream, &params, m_dState, m_dSizes.stateSizeInBytes, &mIndirect, 1, 0, 0, &mOutput, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
+        OPTIX_CHECK(optixDenoiserInvoke(m_denoiser, stream, &params, m_dState, m_dSizes.stateSizeInBytes, &mIndirect, 3, 0, 0, &mOutput, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
         //CUDA_CHECK(cudaStreamSynchronize(stream));
         CUDA_CHECK(cudaStreamSynchronize(nullptr));  // Making sure the denoiser is done
+
+        // Copy from Linear/CUDA into Optimal
+        vkt::submitOnce(driver->getDeviceDispatch(), driver->getQueue(), driver->getCommandPool(), [&, this](VkCommandBuffer& cmd) {
+            for (uint32_t b = 0u; b < 4u; b++) {
+                driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], framebuffer->rasterImages[5 + b], framebuffer->rasterImages[5 + b], 1u, vkh::VkImageCopy{
+                    .srcSubresource = framebuffer->inoutLinearImages[b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
+                    .dstSubresource = framebuffer->rasterImages[5 + b].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
+                    .extent = {framebuffer->width, framebuffer->height, 1u}
+                });
+            };
+        });
     };
 
 #endif

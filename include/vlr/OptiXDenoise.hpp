@@ -23,12 +23,13 @@ namespace vlr {
         CUdeviceptr          m_dMinRGB{ 0 };
 
         OptixImage2D         mIndirect{};
-        OptixImage2D         mNormal{};
         OptixImage2D         mAlbedo{};
+        OptixImage2D         mNormal{};
         OptixImage2D         mOutput{};
 
         VkDeviceSize         recommendedScratchSizeInBytes = 0u;
-        vkt::uni_ptr<Framebuffer> framebuffer = {};
+        vkt::uni_ptr<Framebuffer>   framebuffer = {};
+        vkt::uni_ptr<Driver>        driver = {};
 
     public: 
         OptiXDenoise() { this->constructor(); };

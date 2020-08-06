@@ -31,7 +31,7 @@
 #define RS_INDIRECT 5
 #define RS_ALBEDOBF 6
 #define RS_NORMALED 7
-
+#define RS_DENOISED 8
 
 
 #ifdef GLSL
