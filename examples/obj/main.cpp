@@ -633,11 +633,8 @@ int main() {
             constants->get(0u).projectionInv = glm::mat4(glm::transpose(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
 
             // Create render submission 
-            std::vector<VkSemaphore> waitSemaphores = { framebuffers[currentBuffer].presentSemaphore }, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
-            std::vector<vkh::VkPipelineStageFlags> waitStages = {
-                vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 },
-                vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
-            };
+            std::vector<VkSemaphore> waitSemaphores = {}, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
+            std::vector<vkh::VkPipelineStageFlags> waitStages = {};
 
             //
             double scal = glfwGetTime();
@@ -657,7 +654,7 @@ int main() {
 
             // 
             auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
-            
+
             // 
             buildCommand->setCommand(rtCommand);
             instanceSet->setCommand(rtCommand, true);
@@ -676,9 +673,9 @@ int main() {
                 counters->getCpuBuffer().range()
             });
 
-
+            // 
             fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
-            //break; // FOR DEBUG!!
+
 
             // Submit command once
             //renderer->setupCommands();
@@ -689,7 +686,11 @@ int main() {
             }, {}));
 
             // 
-            waitSemaphores = { framebuffers[currentBuffer].computeSemaphore }, signalSemaphores = { framebuffers[currentBuffer].drawSemaphore };
+            waitSemaphores = { framebuffers[currentBuffer].presentSemaphore, framebuffers[currentBuffer].computeSemaphore }, signalSemaphores = { framebuffers[currentBuffer].drawSemaphore };
+            waitStages = {
+                vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 },
+                vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
+            };
 
             // create command buffer (with rewrite)
             VkCommandBuffer& commandBuffer = framebuffers[currentBuffer].commandBuffer;
