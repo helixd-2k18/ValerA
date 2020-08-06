@@ -99,9 +99,24 @@ namespace vlr {
         
     };
 
+    void RayTracing::setCommandFinal(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0)
+    {   // Composite Image
+        const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
+        const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
+        auto device = this->driver->getDeviceDispatch();
+        glm::uvec4 meta = vect0;
+
+        // 
+        device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->composite);
+        device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
+        device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
+        device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 24u), 1u);
+        vkt::commandBarrier(device, currentCmd);
+    };
+
     // The architecture is built in such a way that multi - command rendering can be turned into single - command rendering with ease... (i.e. JiviX-style)
-    // ����������� ��������� ����� �������, ����� �����-���������� ��������� ����� ���� ���������� � �������������� � ���������... (�.�. JiviX-style)
-    void RayTracing::setCommand(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0) {
+    void RayTracing::setCommand(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0) 
+    {
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
         auto device = this->driver->getDeviceDispatch();
@@ -174,18 +189,6 @@ namespace vlr {
 
         {   // Finalize Ray Tracing
             device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->finalize);
-            device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
-            device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
-            device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 24u), 1u);
-            vkt::commandBarrier(device, currentCmd);
-        };
-
-        {   // TODO: OptiX Denoise
-
-        }
-
-        {   // Composite Image
-            device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->composite);
             device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
             device->CmdPushConstants(currentCmd, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
             device->CmdDispatch(currentCmd, vkt::tiled(renderArea.extent.width, 32u), vkt::tiled(renderArea.extent.height, 24u), 1u);

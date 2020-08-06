@@ -664,6 +664,8 @@ int main() {
             materialSet->setCommand(rtCommand);
             constants->setCommand(rtCommand, true);
             renderCommand->setCommand(rtCommand);
+            // TODO: Denoiser 
+            rayTracing->setCommandFinal(rtCommand);
             vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
 
             // 
