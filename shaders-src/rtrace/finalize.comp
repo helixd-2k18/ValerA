@@ -7,7 +7,7 @@
 
 #define LAUNCH_ID GlobalInvocationID
 
-// TODO: CheckerBoard fixing for reflection and diffuse
+// Bugged Here, Disable...
 float4 cbLoad(const int ID, in int2 samplep) {
     float4 center = superImageLoad(currImages[ID], samplep);
     float4 fixedt = center;
@@ -25,7 +25,7 @@ float4 cbLoad(const int ID, in int2 samplep) {
     return fixedt;
 };
 
-// TODO: CheckerBoard fixing for reflection and diffuse
+// Bugged Here, Disable...
 float4 sbLoad(const int ID, in int2 samplep) {
     float4 center = superImageLoad(resampleImages[ID], samplep);
     float4 fixedt = center;
@@ -94,11 +94,12 @@ void main()
 
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            float4 indirect = max(cbLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 1.f)) + sbLoad(IW_INDIRECT, curPixel);
-            float4 refleclr = max(cbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 1.f)) + sbLoad(IW_REFLECLR, curPixel); refleclr /= max(indirect.w, 1.f);
-            float4 shadows  = cbLoad(IW_SHADOWCL, curPixel) + sbLoad(IW_SHADOWCL, curPixel); //indirect += shadows;
-
+            float4 indirect = max(cbLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f)) + max(sbLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f));
+            float4 refleclr = max(cbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f)) + max(sbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
+            float4 shadows  = max(cbLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f)) + max(sbLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f)); //indirect += shadows;
+            
             // 
+            //indirect += shadows;
             indirect = max(indirect, float4(0.f.xxx, 1.f));
             refleclr = max(refleclr, float4(0.f.xxx, 1.f));
             shadows = max(shadows, float4(0.f.xxx, 1.f));
@@ -107,6 +108,11 @@ void main()
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
             superImageStore(currImages[IW_REFLECLR], curPixel, refleclr);
             superImageStore(currImages[IW_SHADOWCL], curPixel, shadows);
+
+            // 
+            imageStore(rasteredImages[RS_INDIRECT], curPixel, indirect / indirect.w);
+            imageStore(rasteredImages[RS_NORMALED], curPixel, MAT.mapNormal);
+            imageStore(rasteredImages[RS_ALBEDOBF], curPixel, float4(1.f.xxxx));
         };
 
         //superImageStore(currImages[IW_RENDERED], curPixel, cbLoad(IW_INDIRECT, curPixel));

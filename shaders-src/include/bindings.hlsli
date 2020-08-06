@@ -27,6 +27,11 @@
 #define RS_RENDERED 4
 //#define RS_ORIGINAL 4
 
+// For OptiX
+#define RS_INDIRECT 5
+#define RS_ALBEDOBF 6
+#define RS_NORMALED 7
+
 
 
 #ifdef GLSL

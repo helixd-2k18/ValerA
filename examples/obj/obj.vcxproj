@@ -80,9 +80,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)/include;$(ProjectDir)/../../include;$(ProjectDir)/../include;C:\Program Files\RenderDoc</IncludePath>
-    <LibraryPath>C:\Program Files\RenderDoc;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(ProjectDir)/lib;$(ProjectDir)/../../lib;$(ProjectDir)/../lib</LibraryPath>
-    <ExecutablePath>C:\Program Files\RenderDoc;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)/include;$(ProjectDir)/../../include;$(ProjectDir)/../include;C:\Program Files\RenderDoc;C:\ProgramData\NVIDIA Corporation\OptiX SDK 7.1.0\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\include</IncludePath>
+    <LibraryPath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\lib\x64;C:\ProgramData\NVIDIA Corporation\OptiX SDK 7.1.0\SDK\build\lib\Debug;C:\Program Files\RenderDoc;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(ProjectDir)/lib;$(ProjectDir)/../../lib;$(ProjectDir)/../lib</LibraryPath>
+    <ExecutablePath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\bin;C:\Program Files\RenderDoc;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -123,7 +123,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_T=GetWC;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VKT_WIN32_DETECTED;ENABLE_OPTIX_DENOISE;_DEBUG;_CONSOLE;_T=GetWC;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <OpenMPSupport>true</OpenMPSupport>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -140,7 +140,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart.lib;cuda.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -188,6 +188,7 @@
     <ClCompile Include="..\..\src\vlr\GeometrySet.cpp" />
     <ClCompile Include="..\..\src\vlr\InstanceSet.cpp" />
     <ClCompile Include="..\..\src\vlr\MaterialSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\OptiXDenoise.cpp" />
     <ClCompile Include="..\..\src\vlr\OthersCommand.cpp" />
     <ClCompile Include="..\..\src\vlr\PipelineLayout.cpp" />
     <ClCompile Include="..\..\src\vlr\Rasterization.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="..\..\include\vlr\GeometrySet.hpp" />
     <ClInclude Include="..\..\include\vlr\InstanceSet.hpp" />
     <ClInclude Include="..\..\include\vlr\MaterialSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\OptiXDenoise.hpp" />
     <ClInclude Include="..\..\include\vlr\OthersCommand.hpp" />
     <ClInclude Include="..\..\include\vlr\PipelineLayout.hpp" />
     <ClInclude Include="..\..\include\vlr\Rasterization.hpp" />

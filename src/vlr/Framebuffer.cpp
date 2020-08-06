@@ -1,5 +1,6 @@
 #include "./vlr/Framebuffer.hpp"
 #include "./vlr/PipelineLayout.hpp"
+#include "./vlr/OptiXDenoise.hpp"
 
 namespace vlr {
 

@@ -45,6 +45,10 @@ namespace vlr {
     };
 
     class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: friend Rasterization; friend Resampling; friend RayTracing; friend PipelineLayout;
+#ifdef ENABLE_OPTIX_DENOISE
+    friend OptiXDenoise;
+#endif
+
         RenderPass rasterFBO = {}, resampleFBO = {}; VkDescriptorSet set = {};
         vkt::ImageRegion depthStencilImage = {}, atomicMapping = {};
         std::vector<VkSampler> samplers = {};
