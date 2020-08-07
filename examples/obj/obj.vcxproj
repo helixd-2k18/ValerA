@@ -204,6 +204,19 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\vkt\include\misc\args.hxx" />
+    <ClInclude Include="..\..\..\vkt\include\misc\catch.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\misc\half.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\misc\json.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\misc\pcg_extras.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\misc\pcg_random.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\misc\pcg_uint128.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\misc\soa_vector.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\misc\stb_image.h" />
+    <ClInclude Include="..\..\..\vkt\include\misc\stb_image_resize.h" />
+    <ClInclude Include="..\..\..\vkt\include\misc\stb_image_write.h" />
+    <ClInclude Include="..\..\..\vkt\include\misc\tinyexr.h" />
+    <ClInclude Include="..\..\..\vkt\include\misc\tiny_gltf.h" />
     <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkh\enums.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkh\handle.hpp" />

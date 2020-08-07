@@ -37,6 +37,9 @@
     <Filter Include="Header Files\xvk">
       <UniqueIdentifier>{f2331baa-3404-498a-b900-d003716a42fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\misc">
+      <UniqueIdentifier>{8551dddf-83fc-42ca-8bc7-1f762ed70baf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\vlr\Acceleration.cpp">
@@ -277,6 +280,45 @@
     </ClInclude>
     <ClInclude Include="..\..\include\vlr\OptiXDenoise.hpp">
       <Filter>Header Files\vlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\args.hxx">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\catch.hpp">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\half.hpp">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\json.hpp">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\pcg_extras.hpp">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\pcg_random.hpp">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\pcg_uint128.hpp">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\soa_vector.hpp">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\stb_image.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\stb_image_resize.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\stb_image_write.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\tiny_gltf.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\misc\tinyexr.h">
+      <Filter>Header Files\misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

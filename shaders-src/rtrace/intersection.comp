@@ -34,7 +34,7 @@ void main()
         packed = gID, seed = uint2(packed, constants.rdata.x);
         if (gID < fcount) {
             RayData ray = rays[0u].data[gID];
-            XHIT xhit = traceRays(ray.origin, ray.direct, 10000.f, true, 0.001f);
+            XHIT xhit = traceRays(ray.origin, ray.direct, 10000.f, true, 0.0001f);
 
             HitData hit;
             hit.indices = xhit.gIndices.xyz;
