@@ -385,7 +385,7 @@ int main() {
 
                         // 
                         stbi_set_flip_vertically_on_load(true);
-                        unsigned char* image = stbi_load(texture_filename.c_str(), &w, &h, &comp, STBI_default);
+                        unsigned char* image = stbi_load(texture_filename.c_str(), &w, &h, &comp, STBI_rgb_alpha);
                         if (!image) {
                             std::cerr << "Unable to load texture: " << texture_filename << std::endl; exit(1);
                         };
@@ -416,7 +416,7 @@ int main() {
                                 //
                                 vkt::Vector<> imageBuf = {};
 
-                                if (comp == 4) {
+                                //if (comp == 4) {
                                     if (width > 0u && height > 0u && rgba) {
                                         memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
                                         imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
@@ -439,7 +439,7 @@ int main() {
                                             .imageExtent = {uint32_t(width),uint32_t(height),1u},
                                         });
                                     });
-                                };
+                                //};
 
                                 // 
                                 textureSet->pushImage(image);
@@ -745,6 +745,9 @@ int main() {
             //
             double scal = glfwGetTime();
             glm::dmat4 trans = glm::scale(glm::sin(scal) * 0.1f + glm::dvec3(1.f, 1.f, 1.f));
+
+            // 
+            //mv = mv * glm::scale(glm::f64vec3(100.0));
 
             // 
             for (size_t s = 0; s < shapes.size(); s++) {

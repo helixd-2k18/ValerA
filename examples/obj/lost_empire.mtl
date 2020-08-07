@@ -6,10 +6,10 @@ newmtl Stone
 # Ka 0.2 0.2 0.2
 Kd 1 1 1
 Ks 0 0 0
-# map_Ka lost_empire-RGBA.png
+# map_Ka lost_empire-RGB.png
 # for G3D, to make textures look blocky:
 interpolateMode NEAREST_MAGNIFICATION_TRILINEAR_MIPMAP_MINIFICATION
-map_Kd lost_empire-RGBA.png
+map_Kd lost_empire-RGB.png
 # illum 2
 # d 1
 # Tr 0
@@ -19,10 +19,10 @@ newmtl Grass_Block
 # Ka 0.2 0.2 0.2
 Kd 1 1 1
 Ks 0 0 0
-# map_Ka lost_empire-RGBA.png
+# map_Ka lost_empire-RGB.png
 # for G3D, to make textures look blocky:
 interpolateMode NEAREST_MAGNIFICATION_TRILINEAR_MIPMAP_MINIFICATION
-map_Kd lost_empire-RGBA.png
+map_Kd lost_empire-RGB.png
 # illum 2
 # d 1
 # Tr 0
