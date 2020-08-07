@@ -81,7 +81,7 @@ void main()
     {
         atomicSuperImageAdd(resampleImages[IW_INDIRECT], topix, indirect); // Atomically Adding Samples
         atomicSuperImageAdd(resampleImages[IW_SHADOWCL], topix, shadowcl);
-        atomicSuperImageAdd(resampleImages[IW_REFLECLR], topix, float4(refleclr.xyz, 0.f));
+        //atomicSuperImageAdd(resampleImages[IW_REFLECLR], topix, float4(refleclr.xyz, 0.f)); // TODO: Adaptive Sampling For Reflections...
     };
 
 };
