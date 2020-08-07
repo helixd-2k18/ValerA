@@ -1,12 +1,13 @@
 #version 460 core
 #extension GL_GOOGLE_include_directive : require
 #define GLSL
+#define ENABLE_AS
 
 #include "../include/driver.hlsli"
 #include "../include/bindings.hlsli"
 
 #define LAUNCH_ID GlobalInvocationID
-
+#include "../include/raytracing.hlsli"
 
 
 
@@ -53,8 +54,8 @@ void main()
             XPOL MAT = materialize(xhit, GEO);
 
             // 
-            const float3 mapNormal = faceforward(GEO.gNormal.xyz, xhit.direct.xyz, GEO.gNormal.xyz);//MAT.mapNormal.xyz;
-            const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
+            const float3 geoNormal = faceforward(GEO.gNormal.xyz, xhit.direct.xyz, GEO.gNormal.xyz);//MAT.mapNormal.xyz;
+            const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,geoNormal);
 
             // 
             const float inIOR = 1.f, outIOR = 1.6666f;
@@ -77,18 +78,34 @@ void main()
                 if (couldReflection) {
                     outRay.origin.xyz = ray.direct.xyz * xhit.gBarycentric.w + ray.origin.xyz;
                     outRay.direct.xyz = reflectGlossy(seed, raydir.xyz, TBN, MAT.specularColor.y);//reflect(outRay.direct.xyz, mapNormal);
-                    outRay.origin.xyz += faceforward(GEO.gNormal.xyz, outRay.direct.xyz, -GEO.gNormal.xyz) * 0.001f;
+                    outRay.origin.xyz += faceforward(geoNormal, outRay.direct.xyz, -geoNormal) * 0.001f;
                     outRay.emission = half4(float4(outRay.color) * float4(MAT.emissionColor.xyz * MAT.emissionColor.w, 1.f));
                     outRay.color = half4(float3(outRay.color.xyz)*mix(1.f.xxx, MAT.diffuseColor.xyz, MAT.specularColor.zzz), 1.f);
                 } else {
                     outRay.origin.xyz = ray.direct.xyz * xhit.gBarycentric.w + ray.origin.xyz;
                     outRay.direct.xyz = randomHemisphereCosine(seed, TBN);//reflect(outRay.direct.xyz, mapNormal);
-                    outRay.origin.xyz += faceforward(GEO.gNormal.xyz, outRay.direct.xyz, -GEO.gNormal.xyz) * 0.001f;
+                    outRay.origin.xyz += faceforward(geoNormal, outRay.direct.xyz, -geoNormal) * 0.001f;
                     outRay.emission = half4(float4(outRay.color) * float4(MAT.emissionColor.xyz * MAT.emissionColor.w, 1.f));
                     outRay.color = half4(float4(float3(outRay.color.xyz)*max(MAT.diffuseColor.xyz - clamp(MAT.emissionColor.xyz*MAT.emissionColor.w,0.f.xxx,1.f.xxx), 0.f.xxx), 1.f));
                 };
             };
             emitRay(outRay);
+
+            // Shadow...
+            if (xhit.gBarycentric.w <= 9999.f && dot(xhit.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
+            {
+                float4 enegry = half4(float4(float3(ray.color)*max(MAT.diffuseColor.xyz - clamp(MAT.emissionColor.xyz*MAT.emissionColor.w,0.f.xxx,1.f.xxx), 0.f.xxx), 1.f));
+                float4 signal = half4(float4(ray.color) * float4(MAT.emissionColor.xyz * MAT.emissionColor.w, 1.f));
+                directLight(geoNormal, ray.direct.xyz * xhit.gBarycentric.w + ray.origin.xyz, seed, signal, enegry);
+
+                outRay.color = half4(enegry);
+                outRay.emission = half4(signal);
+
+                kind(outRay, SHADOWS_RAY);
+                lifetime(outRay, 0u);
+                finished(outRay, true);
+                emitRay(outRay);
+            };
         };
     };
 };

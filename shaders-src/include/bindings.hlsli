@@ -519,7 +519,7 @@ XHIT rasterize(in float3 origin, in float3 raydir, float maxT, bool scatterTrans
         //processing.origin = geometry.gPosition;
 
         // TODO: rasterization direct diffuse access
-        if (material.diffuseColor.w > (scatterTransparency ? random(seed) : threshold)) { // Only When Opaque!
+        if (material.diffuseColor.w > 0.0001f) { // Only When Opaque!
             confirmed = processing;
         };
     };

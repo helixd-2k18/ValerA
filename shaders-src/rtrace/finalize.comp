@@ -72,18 +72,21 @@ void main()
             // Accumulation!
             float4 indirect = max(bLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f)) + max(rLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f));
             float4 refleclr = max(bLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f)); //+ max(rLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
-            float4 shadows  = max(bLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f)) + max(rLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f)); //indirect += shadows;
+            float4 shadows  = max(bLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f)); //+ max(rLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f)); //indirect += shadows;
+            float4 transpr  = max(bLoad(IW_TRANSPAR, curPixel), float4(0.f.xxx, 0.f));
 
             // 
-            //indirect += shadows;
+            indirect += shadows;
             indirect = max(indirect, float4(0.f.xxx, 1.f));
             refleclr = max(refleclr, float4(0.f.xxx, 1.f));
             shadows = max(shadows, float4(0.f.xxx, 1.f));
+            transpr = max(transpr, float4(0.f.xxx, 1.f));
 
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
             superImageStore(currImages[IW_REFLECLR], curPixel, refleclr);
             superImageStore(currImages[IW_SHADOWCL], curPixel, shadows);
+            superImageStore(currImages[IW_TRANSPAR], curPixel, transpr);
         };
 
         //superImageStore(currImages[IW_RENDERED], curPixel, cbLoad(IW_INDIRECT, curPixel));

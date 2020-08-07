@@ -24,7 +24,6 @@ void main()
 #endif
 
     const Box box = { -1.f.xxx, 1.f.xxx }; // TODO: Change Coordinate
-    const float4 sphere = float4(float3(16.f,128.f,16.f), 8.f);
     const float3 lightc = 32.f*4096.f.xxx/(sphere.w*sphere.w);
 
     const uint2 lanQ = LAUNCH_ID.xy;//gl_LaunchIDEXT.xy;//gl_GlobalInvocationID.xy;
@@ -52,7 +51,7 @@ void main()
 
         // Replacement for rasterization
         //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
-          XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f); // BROKEN!
+          XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
 
         // TODO: Optimize Fetching and Interpolation 
         XGEO GEO = interpolate(RPM);
@@ -79,11 +78,16 @@ void main()
         };
 
         // 
-        const float3 mapNormal = faceforward(GEO.gNormal.xyz, raydir, GEO.gNormal.xyz);
-        const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
+        const float3 geoNormal = faceforward(GEO.gNormal.xyz, raydir, GEO.gNormal.xyz);
+        const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,geoNormal);
         
         // Emit Diffuse Indirect Ray
         RayData outRay;
+        outRay.pixelID = u16vec2(LAUNCH_ID);
+        outRay.meta = u8vec4(0u);
+        outRay.emission = f16vec4(0.f.xxxx);
+        outRay.color = f16vec4(1.f.xxx, 1.f);
+        outRay.origin = RPM.origin.xyz;
         /*{
             outRay.origin = RPM.origin.xyz;
             outRay.direct = randomHemisphereCosine(seed, TBN);
@@ -108,22 +112,12 @@ void main()
             bool couldReflection = random(seed) <= reflectionPower;
 
             if (checker) {
-                outRay.origin = RPM.origin.xyz;
                 outRay.direct = randomHemisphereCosine(seed, TBN);
-                outRay.origin.xyz += faceforward(GEO.gNormal.xyz, outRay.direct, -GEO.gNormal.xyz) * 0.001f;
-                outRay.pixelID = u16vec2(LAUNCH_ID);
-                outRay.emission = f16vec4(0.f.xxxx);
-                outRay.color = f16vec4(2.f.xxx, 1.f);
-                outRay.meta = u8vec4(0u);
+                outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
                 kind(outRay, DIFFUSE_RAY);
             } else { // BROKEN...
-                outRay.origin = RPM.origin.xyz;
                 outRay.direct = reflectGlossy(seed, raydir.xyz, TBN, MAT.specularColor.y);
-                outRay.origin.xyz += faceforward(GEO.gNormal.xyz, outRay.direct, -GEO.gNormal.xyz) * 0.001f;
-                outRay.pixelID = u16vec2(LAUNCH_ID);
-                outRay.emission = f16vec4(0.f.xxxx);
-                outRay.color = f16vec4(2.f.xxx, 1.f);
-                outRay.meta = u8vec4(0u);
+                outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
                 kind(outRay, REFLECT_RAY);
             };
             
@@ -132,29 +126,46 @@ void main()
         } else { // SkyBox
             outRay.origin = RPM.origin.xyz;
             outRay.direct = raydir;
-            outRay.pixelID = u16vec2(LAUNCH_ID);
             outRay.color = half4(1.f.xxxx);
             outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(raydir.xyz, origin.xyz));
             outRay.color = half4(0.f.xxxx);
-            outRay.meta = u8vec4(0u);
             
             kind(outRay, DIFFUSE_RAY);
             lifetime(outRay, 0u);
             finished(outRay, true);
         };
 
-        uint ID = emitRay(outRay);
+        emitRay(outRay);
 
+        // Trace Transparency Where Needed!
+        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f && MAT.diffuseColor.w > 0.0001f && MAT.diffuseColor.w < 0.999f) 
         {
+            outRay.direct = raydir;
+            outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
+            kind(outRay, TRANSPC_RAY);
             
+            lifetime(outRay, 2u);
+            finished(outRay, false);
+
+            emitRay(outRay);
         };
 
+        // void directLight(in float3 normal, in float3 origin, inout uint2 seed, inout float4 gSignal, inout float4 gEnergy)
 
-
+        // Shadow...
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
-        { // Exist Debug
-            //RayData ray = rays[0u].data[ID];
-            //atomicSuperImageAdd3(currImages[IW_RENDERED], curPixel, toLinear(ray.direct.xyz * 0.5f + 0.5f));
+        {
+            float4 enegry = 1.f.xxxx;
+            float4 signal = 0.f.xxxx;
+            directLight(GEO.gNormal.xyz, outRay.origin.xyz, seed, signal, enegry);
+
+            outRay.color = half4(enegry);
+            outRay.emission = half4(signal);
+
+            kind(outRay, SHADOWS_RAY);
+            lifetime(outRay, 0u);
+            finished(outRay, true);
+            emitRay(outRay);
         };
     };
 

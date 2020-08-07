@@ -71,19 +71,9 @@ void main()
         XPOL MAT = materialize(RPM, GEO);
 
         // 
-        const float inIOR = 1.f, outIOR = 1.6666f;
-        float reflectionPower = mix(clamp(pow(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
-        bool couldReflection = random(seed) <= reflectionPower;
-
-        // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
             float4 indirect = max(sbLoad(RS_INDIRECT, curPixel), float4(0.f.xxx, 1.f));
-            float4 refleclr = max(sbLoad(RS_REFLECLR, curPixel), float4(0.f.xxx, 1.f)); //refleclr /= max(indirect.w, 1.f);
-            float4 diffuse  = float4(MAT.diffuseColor.xyz * indirect.xyz / indirect.w, 1.f);
-
-            // 
-            diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, reflectionPower);
-            imageStore(rasteredImages[RS_RENDERED], curPixel, diffuse);
+            imageStore(rasteredImages[RS_RENDERED], curPixel, indirect);
         } else {
             float4 indirect = cbLoad(IW_INDIRECT, curPixel);
             imageStore(rasteredImages[RS_RENDERED], curPixel, indirect);
