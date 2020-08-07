@@ -40,7 +40,7 @@ namespace vlr {
 
         // 
         virtual void setFramebuffer(vkt::uni_ptr<Framebuffer> framebuffer);
-        virtual void denoise();
+        virtual void denoise(const uint32_t& bufferID);
     };
 #endif
 

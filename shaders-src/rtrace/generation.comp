@@ -122,7 +122,7 @@ void main()
                 outRay.origin.xyz += faceforward(GEO.gNormal.xyz, outRay.direct, -GEO.gNormal.xyz) * 0.001f;
                 outRay.pixelID = u16vec2(LAUNCH_ID);
                 outRay.emission = f16vec4(0.f.xxxx);
-                outRay.color = f16vec4(0.f.xxx, 0.f);//f16vec4(2.f.xxx, 1.f);
+                outRay.color = f16vec4(2.f.xxx, 1.f);
                 outRay.meta = u8vec4(0u);
                 kind(outRay, REFLECT_RAY);
             };

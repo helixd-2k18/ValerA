@@ -63,37 +63,29 @@ void main()
 
             // 
             RayData outRay = ray;
+            lifetime(outRay, lifetime(ray));
+            finished(outRay, false);
+
             if (xhit.gBarycentric.w > 9999.f) {
                 outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(xhit.direct.xyz, xhit.origin.xyz));
                 outRay.color = half4(0.f);
-                outRay.meta = u8vec4(0u);
-                kind(outRay, DIFFUSE_RAY);
+                
                 lifetime(outRay, 0u);
                 finished(outRay, true);
             } else 
             {   
                 if (couldReflection) {
-                    outRay.pixelID = u16vec2(LAUNCH_ID);
                     outRay.origin.xyz = ray.direct.xyz * xhit.gBarycentric.w + ray.origin.xyz;
                     outRay.direct.xyz = reflectGlossy(seed, raydir.xyz, TBN, MAT.specularColor.y);//reflect(outRay.direct.xyz, mapNormal);
                     outRay.origin.xyz += faceforward(GEO.gNormal.xyz, outRay.direct.xyz, -GEO.gNormal.xyz) * 0.001f;
                     outRay.emission = half4(float4(outRay.color) * float4(MAT.emissionColor.xyz * MAT.emissionColor.w, 1.f));
-                    outRay.color = half4(mix(1.f.xxx, MAT.diffuseColor.xyz, MAT.specularColor.zzz), 1.f);
-                    outRay.meta = u8vec4(0u);
-                    kind(outRay, kind(ray));
-                    lifetime(outRay, lifetime(ray));
-                    finished(outRay, false);
+                    outRay.color = half4(float3(outRay.color.xyz)*mix(1.f.xxx, MAT.diffuseColor.xyz, MAT.specularColor.zzz), 1.f);
                 } else {
-                    outRay.pixelID = u16vec2(LAUNCH_ID);
                     outRay.origin.xyz = ray.direct.xyz * xhit.gBarycentric.w + ray.origin.xyz;
                     outRay.direct.xyz = randomHemisphereCosine(seed, TBN);//reflect(outRay.direct.xyz, mapNormal);
                     outRay.origin.xyz += faceforward(GEO.gNormal.xyz, outRay.direct.xyz, -GEO.gNormal.xyz) * 0.001f;
                     outRay.emission = half4(float4(outRay.color) * float4(MAT.emissionColor.xyz * MAT.emissionColor.w, 1.f));
-                    outRay.color = half4(float4(outRay.color) * float4(max(MAT.diffuseColor.xyz - clamp(MAT.emissionColor.xyz*MAT.emissionColor.w,0.f.xxx,1.f.xxx), 0.f.xxx), 1.f));
-                    outRay.meta = u8vec4(0u);
-                    kind(outRay, kind(ray));
-                    lifetime(outRay, lifetime(ray));
-                    finished(outRay, false);
+                    outRay.color = half4(float4(float3(outRay.color.xyz)*max(MAT.diffuseColor.xyz - clamp(MAT.emissionColor.xyz*MAT.emissionColor.w,0.f.xxx,1.f.xxx), 0.f.xxx), 1.f));
                 };
             };
             emitRay(outRay);

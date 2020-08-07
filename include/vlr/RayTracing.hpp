@@ -47,7 +47,7 @@ namespace vlr {
 
         // 
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};
-        VkPipeline generation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE, finalize = VK_NULL_HANDLE, resample = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE, composite = VK_NULL_HANDLE;
+        VkPipeline generation = VK_NULL_HANDLE, intersection = VK_NULL_HANDLE, finalize = VK_NULL_HANDLE, resample = VK_NULL_HANDLE, interpolation = VK_NULL_HANDLE, composite = VK_NULL_HANDLE, cbfix = VK_NULL_HANDLE;
         // TODO: Accumulation Shader (pick up all hits)
         
         // 

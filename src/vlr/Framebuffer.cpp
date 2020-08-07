@@ -323,30 +323,29 @@ namespace vlr {
         vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(device, descriptorSetInfo, this->set, this->updated));
     };
 
-    void Framebuffer::imageToLinearCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd) {
+    void Framebuffer::imageToLinearCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd, const uint32_t& whatToDenoise) {
         auto framebuffer = this;
 
         // Copy from Optimal to Linear/CUDA
-        for (uint32_t b = 0u; b < 4u; b++) {
-            driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->rasterImages[5 + b], framebuffer->rasterImages[5 + b], framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], 1u, vkh::VkImageCopy{
-                .srcSubresource = framebuffer->rasterImages[5 + b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
+        for (uint32_t b = 0u; b < 3u; b++) {
+            const uint32_t bID = (b == 0u ? whatToDenoise : 4u);
+            driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->rasterImages[bID+b], framebuffer->rasterImages[bID+b], framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], 1u, vkh::VkImageCopy{
+                .srcSubresource = framebuffer->rasterImages[bID+ b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
                 .dstSubresource = framebuffer->inoutLinearImages[b].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
                 .extent = {framebuffer->width, framebuffer->height, 1u}
             });
         };
     };
 
-    void Framebuffer::linearToImageCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd) {
+    void Framebuffer::linearToImageCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd, const uint32_t& whatToDenoise) {
         auto framebuffer = this;
 
         // Copy from Linear/CUDA into Optimal
-        for (uint32_t b = 0u; b < 4u; b++) {
-            driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->inoutLinearImages[b], framebuffer->inoutLinearImages[b], framebuffer->rasterImages[5 + b], framebuffer->rasterImages[5 + b], 1u, vkh::VkImageCopy{
-                .srcSubresource = framebuffer->inoutLinearImages[b].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
-                .dstSubresource = framebuffer->rasterImages[5 + b].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
-                .extent = {framebuffer->width, framebuffer->height, 1u}
-            });
-        };
+        driver->getDeviceDispatch()->CmdCopyImage(cmd, framebuffer->inoutLinearImages[3u], framebuffer->inoutLinearImages[3u], framebuffer->rasterImages[whatToDenoise], framebuffer->rasterImages[whatToDenoise], 1u, vkh::VkImageCopy{
+            .srcSubresource = framebuffer->inoutLinearImages[3u].getImageSubresourceLayers(), .srcOffset = {0u, 0u, 0u},
+            .dstSubresource = framebuffer->rasterImages[whatToDenoise].getImageSubresourceLayers(), .dstOffset = {0u, 0u, 0u},
+            .extent = {framebuffer->width, framebuffer->height, 1u}
+        });
     };
 
 

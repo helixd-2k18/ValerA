@@ -7,17 +7,21 @@
 
 #define LAUNCH_ID GlobalInvocationID
 
-// TODO: CheckerBoard fixing for reflection and diffuse
+// Bugged Here, Disable...
 float4 cbLoad(const int ID, in int2 samplep) {
     float4 center = superImageLoad(currImages[ID], samplep);
     float4 fixedt = center;
-    return fixedt;
-};
-
-// TODO: CheckerBoard fixing for reflection and diffuse
-float4 sbLoad(const int ID, in int2 samplep) {
-    float4 center = imageLoad(rasteredImages[ID], samplep);
-    float4 fixedt = center;
+    int2 cxt = samplep + int2(1, 0);
+    int2 cyt = samplep + int2(0, 1);
+    float4 xt = superImageLoad(currImages[ID], cxt);
+    float4 yt = superImageLoad(currImages[ID], cyt);
+#ifndef HIGH_QUALITY_TRANSPARENCY
+    if (dot(fixedt.xyz,1.f.xxx) < 0.0001f) { 
+        if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else 
+                                                                            { fixedt =  max(xt, yt); };
+    };
+#endif
+    //return max(fixedt, float4(0.f.xxx, 1.f));
     return fixedt;
 };
 
@@ -27,9 +31,9 @@ float4 sbLoad(const int ID, in int2 samplep) {
 layout ( local_size_x = 32u, local_size_y = 24u ) in; 
 void main() 
 #else
-
 #endif
 {
+
 #ifdef GLSL
     const uint3 GlobalInvocationID = gl_GlobalInvocationID;
     const uint3 LocalInvocationID = gl_LocalInvocationID;
@@ -71,23 +75,31 @@ void main()
         XPOL MAT = materialize(RPM, GEO);
 
         // 
-        const float inIOR = 1.f, outIOR = 1.6666f;
-        float reflectionPower = mix(clamp(pow(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
-        bool couldReflection = random(seed) <= reflectionPower;
-
-        // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            float4 indirect = max(sbLoad(RS_INDIRECT, curPixel), float4(0.f.xxx, 1.f));
-            float4 refleclr = max(sbLoad(RS_REFLECLR, curPixel), float4(0.f.xxx, 1.f)); //refleclr /= max(indirect.w, 1.f);
-            float4 diffuse  = float4(MAT.diffuseColor.xyz * indirect.xyz / indirect.w, 1.f);
+             // Use Current Frame with CheckerBoard issue fix!
+            float4 indirect = max(cbLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f));
+            float4 refleclr = max(cbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
+            float4 shadows  = max(cbLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f));
+
+            //indirect += shadows;
+            indirect = max(indirect, float4(0.f.xxx, 1.f));
+            refleclr = max(refleclr, float4(0.f.xxx, 1.f));
+            shadows = max(shadows, float4(0.f.xxx, 1.f));
 
             // 
-            diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, reflectionPower);
-            imageStore(rasteredImages[RS_RENDERED], curPixel, diffuse);
-        } else {
-            float4 indirect = cbLoad(IW_INDIRECT, curPixel);
-            imageStore(rasteredImages[RS_RENDERED], curPixel, indirect);
+            imageStore(rasteredImages[RS_INDIRECT], curPixel, indirect / indirect.w);
+            imageStore(rasteredImages[RS_REFLECLR], curPixel, refleclr / refleclr.w);
+            imageStore(rasteredImages[RS_ALBEDOBF], curPixel, MAT.diffuseColor);
+            imageStore(rasteredImages[RS_NORMALED], curPixel, MAT.mapNormal);
         };
+
+        //superImageStore(currImages[IW_RENDERED], curPixel, cbLoad(IW_INDIRECT, curPixel));
     };
+
+    // 
+    //for (uint i=0;i<12;i++) {
+    //    const float4 pixof = superImageLoad(currImages[i], curPixel);
+    //    superImageStore(prevImages[i], curPixel, pixof);
+    //};
 
 };

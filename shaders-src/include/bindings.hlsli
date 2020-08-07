@@ -24,14 +24,13 @@
 #define RS_INDICIES 1
 #define RS_POSITION 2
 #define RS_BARYCENT 3
-#define RS_RENDERED 4
-//#define RS_ORIGINAL 4
 
 // For OptiX
-#define RS_INDIRECT 5
-#define RS_ALBEDOBF 6
-#define RS_NORMALED 7
-#define RS_DENOISED 8
+#define RS_INDIRECT 4
+#define RS_ALBEDOBF 5
+#define RS_NORMALED 6
+#define RS_RENDERED 7
+#define RS_REFLECLR 8
 
 
 #ifdef GLSL

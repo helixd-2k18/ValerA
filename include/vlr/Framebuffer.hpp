@@ -29,6 +29,7 @@ namespace vlr {
         std::string interpolationShader = "./shaders/interpolation.comp.spv";
         std::string resampleShader = "./shaders/resample.comp.spv";
         std::string finalizeShader = "./shaders/finalize.comp.spv";
+        std::string cbfixShader = "./shaders/cbfix.comp.spv";
         std::string compositeShader = "./shaders/composite.comp.spv";
 #ifdef ENABLE_OPTIX_DENOISE
         vkt::uni_ptr<OptiXDenoise> denoise = {};
@@ -75,8 +76,8 @@ namespace vlr {
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> layout);
 
         // 
-        virtual void imageToLinearCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd);
-        virtual void linearToImageCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd);
+        virtual void imageToLinearCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd, const uint32_t& whatDenoise = 4u);
+        virtual void linearToImageCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd, const uint32_t& whatDenoise = 4u);
     };
 
 };

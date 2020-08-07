@@ -150,10 +150,10 @@ namespace vlr {
         OPTIX_CHECK(optixDenoiserSetup(m_denoiser, stream, framebuffer->width, framebuffer->height, m_dState, m_dSizes.stateSizeInBytes, m_dScratch, m_dSizes.withOverlapScratchSizeInBytes));
     };
 
-    void OptiXDenoise::denoise() {
+    void OptiXDenoise::denoise(const uint32_t& bufferID) {
         // Copy from Optimal to Linear/CUDA
         driver->submitOnce([&, this](VkCommandBuffer& cmd) {
-            framebuffer->imageToLinearCopyCommand(cmd);
+            framebuffer->imageToLinearCopyCommand(cmd, bufferID);
         });
 
         // 
@@ -172,7 +172,7 @@ namespace vlr {
 
         // Copy from Linear/CUDA into Optimal
         driver->submitOnce([&, this](VkCommandBuffer& cmd) {
-            framebuffer->linearToImageCopyCommand(cmd);
+            framebuffer->linearToImageCopyCommand(cmd, bufferID);
         });
     };
 
