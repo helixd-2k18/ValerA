@@ -749,7 +749,7 @@ int main() {
             // 
             for (size_t s = 0; s < shapes.size(); s++) {
                 instanceSet->get(s) = vkh::VsGeometryInstance{
-                    .transform = glm::mat3x4(glm::transpose(glm::inverse(mv))),
+                    .transform = glm::mat3x4(glm::transpose(mv)),
                     .customId = uint32_t(s),
                     .mask = 0xFFu,
                     .instanceOffset = 0u,
