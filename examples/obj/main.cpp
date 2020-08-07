@@ -800,7 +800,7 @@ int main() {
             // TODO: OptiX Denoise!
             {
                 denoiser->denoise(4u); // Denoise Diffuse
-                denoiser->denoise(8u); // Denoise Reflections
+                //denoiser->denoise(8u); // Denoise Reflections
             };
 
             // Next Compute After Denoise
