@@ -46,7 +46,7 @@ GLTF is much complex format, very complex for support and Debug. Do not misunder
 ## Tech Spec
 
 ```MD
-- Architecture    : [ARC:F2020H:XT]
+- Architecture    : [ARC:F2020H:XT] (Connor Lake)
 - Portfolio       : Work in Progress
 - License         : Apache-2.0 (Currently)
 - Execute Day     : [2021:Q1]
@@ -60,7 +60,7 @@ GLTF is much complex format, very complex for support and Debug. Do not misunder
 - Replacement Of  : Project "vRt" ("engine", 2018)
 - Shaders Version : v2.0
 
-Date:[27.07.2020]:[helix.d@IMN]
+Date:[08.08.2020]:[helix.d@IMN]
 ```
 
 ### About Minecraft Mod Idea...
