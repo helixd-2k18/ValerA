@@ -189,8 +189,8 @@ public:
 };
 
 // settings
-const unsigned int SCR_WIDTH = 1600;
-const unsigned int SCR_HEIGHT = 1200;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 struct FDStruct {
     glm::vec4 fPosition = glm::vec4(1.f);

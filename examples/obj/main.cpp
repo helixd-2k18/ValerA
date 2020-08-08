@@ -344,10 +344,103 @@ int main() {
     // 
     std::string base_dir = "./";
     std::unordered_map<std::string, uint32_t> textures = {};
-
-
-    // Material (TODO: Textures, Needs Loader and Storage)
     uint32_t idx = 0u;
+
+    // 
+    auto loadTexture = [&](std::string name) -> GLuint {
+        // Only load the texture if it is not already loaded
+        if (textures.find(name) == textures.end()) {
+            int w = 0u, h = 0u, comp = 4u;
+
+            // 
+            std::string texture_filename = name;
+            if (!std::filesystem::exists(texture_filename)) {
+                // Append base dir.
+                texture_filename = base_dir + name;
+                if (!std::filesystem::exists(texture_filename)) {
+                    std::cerr << "Unable to find file: " << name << std::endl;
+                    return -1;
+                };
+            };
+
+            // 
+            stbi_set_flip_vertically_on_load(true);
+            unsigned char* image = stbi_load(texture_filename.c_str(), &w, &h, &comp, STBI_rgb_alpha);
+            if (!image) {
+                std::cerr << "Unable to load texture: " << texture_filename << std::endl;
+                return -1;
+            };
+            std::cout << "Loaded texture: " << texture_filename << ", w = " << w << ", h = " << h << ", comp = " << comp << std::endl;
+
+ 
+            int width = w, height = h;
+            unsigned char* rgba = image;
+            const char* err = nullptr;
+            GLuint texture_id = idx++;
+
+            {   //
+                vkt::VmaMemoryInfo memInfo = {};
+                memInfo.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+                //
+                auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
+                    it->format = VK_FORMAT_R8G8B8A8_UNORM,
+                    it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
+                    it->usage = imageUsage;
+                    return it;
+                }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
+                    it->format = VK_FORMAT_R8G8B8A8_UNORM,
+                    it->subresourceRange = apres;
+                    return it;
+                }));
+
+                //
+                vkt::Vector<> imageBuf = {};
+
+                //if (comp == 4) {
+                if (width > 0u && height > 0u && rgba) {
+                    memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+                    imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
+                        .size = size_t(width) * size_t(height) * sizeof(glm::u8vec4), .usage = uploadUsage,
+                    }, memInfo));
+                    memcpy(imageBuf.data(), rgba, imageBuf.range());
+                };
+
+                // 
+                fw->submitOnce([=](VkCommandBuffer& cmd) {
+                    image.transfer(cmd);
+
+                    auto buffer = imageBuf;
+                    fw->getDeviceDispatch()->CmdCopyBufferToImage(cmd, buffer.buffer(), image.getImage(), image.getImageLayout(), 1u, vkh::VkBufferImageCopy{
+                        .bufferOffset = buffer.offset(),
+                        .bufferRowLength = uint32_t(width),
+                        .bufferImageHeight = uint32_t(height),
+                        .imageSubresource = image.subresourceLayers(),
+                        .imageOffset = {0u,0u,0u},
+                        .imageExtent = {uint32_t(width),uint32_t(height),1u},
+                    });
+                });
+
+                // 
+                textureSet->pushImage(image);
+            };
+
+            stbi_image_free(image);
+            textures.insert(std::make_pair(name, texture_id));
+        };
+
+        // If not found, force return -1
+        if (textures.find(name) == textures.end()) {
+            return -1;
+        };
+
+        // Return when possible
+        return textures[name];
+    };
+
+
+
+    // Material
     for (uint32_t i = 0; i < materials.size(); i++) {
         const auto& mat = materials[i]; vlr::MaterialUnit& mdk = materialSet->get(i);
         mdk = vlr::MaterialUnit{};
@@ -355,105 +448,13 @@ int main() {
         mdk.normalTexture = -1;
         mdk.pbrAGMTexture = -1;
         mdk.emissionTexture = -1;
-        mdk.diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
-        //mdk.pbrAGM = glm::vec4(1.f, mat.roughness, mat.metallic, 0.f);
-        //mdk.normal = glm::vec4(0.5f, 0.5f, 1.0f, 1.f);
-        //mdk.emission = glm::vec4(mat.emission[0], mat.emission[1], mat.emission[2], 0.f);
-        //mdk.diffuse = glm::vec4(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2], 1.f);
-
-
-
-        {
-            for (size_t m = 0; m < materials.size(); m++) {
-                tinyobj::material_t* mp = &materials[m];
-
-                if (mp->diffuse_texname.length() > 0) {
-                    // Only load the texture if it is not already loaded
-                    if (textures.find(mp->diffuse_texname) == textures.end()) {
-                        GLuint texture_id = idx++;
-                        int w = 0u, h = 0u, comp = 4u;
-
-                        // 
-                        std::string texture_filename = mp->diffuse_texname;
-                        if (!std::filesystem::exists(texture_filename)) {
-                            // Append base dir.
-                            texture_filename = base_dir + mp->diffuse_texname;
-                            if (!std::filesystem::exists(texture_filename)) {
-                                std::cerr << "Unable to find file: " << mp->diffuse_texname << std::endl; exit(1);
-                            };
-                        };
-
-                        // 
-                        stbi_set_flip_vertically_on_load(true);
-                        unsigned char* image = stbi_load(texture_filename.c_str(), &w, &h, &comp, STBI_rgb_alpha);
-                        if (!image) {
-                            std::cerr << "Unable to load texture: " << texture_filename << std::endl; exit(1);
-                        };
-                        std::cout << "Loaded texture: " << texture_filename << ", w = " << w << ", h = " << h << ", comp = " << comp << std::endl;
-
-
-                        {   // 
-                            int width = w, height = h;
-                            unsigned char* rgba = image;
-                            const char* err = nullptr;
-
-                            {   //
-                                vkt::VmaMemoryInfo memInfo = {};
-                                memInfo.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
-
-                                //
-                                auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
-                                    it->format = VK_FORMAT_R8G8B8A8_UNORM,
-                                    it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
-                                    it->usage = imageUsage;
-                                    return it;
-                                }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
-                                    it->format = VK_FORMAT_R8G8B8A8_UNORM,
-                                    it->subresourceRange = apres;
-                                    return it;
-                                }));
-
-                                //
-                                vkt::Vector<> imageBuf = {};
-
-                                //if (comp == 4) {
-                                    if (width > 0u && height > 0u && rgba) {
-                                        memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
-                                        imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
-                                            .size = size_t(width) * size_t(height) * sizeof(glm::u8vec4), .usage = uploadUsage,
-                                        }, memInfo));
-                                        memcpy(imageBuf.data(), rgba, imageBuf.range());
-                                    };
-
-                                    // 
-                                    fw->submitOnce([=](VkCommandBuffer& cmd) {
-                                        image.transfer(cmd);
-
-                                        auto buffer = imageBuf;
-                                        fw->getDeviceDispatch()->CmdCopyBufferToImage(cmd, buffer.buffer(), image.getImage(), image.getImageLayout(), 1u, vkh::VkBufferImageCopy{
-                                            .bufferOffset = buffer.offset(),
-                                            .bufferRowLength = uint32_t(width),
-                                            .bufferImageHeight = uint32_t(height),
-                                            .imageSubresource = image.subresourceLayers(),
-                                            .imageOffset = {0u,0u,0u},
-                                            .imageExtent = {uint32_t(width),uint32_t(height),1u},
-                                        });
-                                    });
-                                //};
-
-                                // 
-                                textureSet->pushImage(image);
-                            };
-                        };
-
-                        stbi_image_free(image);
-                        textures.insert(std::make_pair(mp->diffuse_texname, texture_id));
-                    };
-                };
-            };
-
-            mdk.diffuseTexture = textures[mat.diffuse_texname];
-        };
+        mdk.pbrAGM = glm::vec4(1.f, mat.roughness, mat.metallic, 0.f);
+        mdk.normal = glm::vec4(0.5f, 0.5f, 1.0f, 1.f);
+        mdk.emission = glm::vec4(mat.emission[0], mat.emission[1], mat.emission[2], 0.f);
+        mdk.diffuse = glm::vec4(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2], 1.f);
+        mdk.diffuseTexture = loadTexture(mat.diffuse_texname);
+        mdk.normalTexture = loadTexture(mat.normal_texname);
+        mdk.pbrAGMTexture = loadTexture(mat.specular_texname);
     };
 
     // Default Material
@@ -466,6 +467,8 @@ int main() {
         mdk.emissionTexture = -1;
         mdk.diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
     };
+
+
 
     // 
     framebuffer->createFramebuffer(canvasWidth, canvasHeight);
