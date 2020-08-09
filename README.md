@@ -13,9 +13,9 @@ Classic-like batch ray tracing, but based on `VK_KHR_ray_tracing` ideas... vRt r
 - [x] No CMAKE, more direct compilation
 - [x] Multiple compute shaders rendering (include Ray Query)
 - [x] More and efficient ray-tracing
+- [x] OptiX Denoiser support (but obj example only)
 - [x] Static Buffer Views set
 - [ ] Dynamic Buffer Views set
-- [ ] OptiX Denoiser support (obj example only)
 - [ ] More performance and, probably, multi-threading
 - [ ] DirectX 12 Ultimate support and HLSL (under consideration)
 - [ ] RDNA-2 support
