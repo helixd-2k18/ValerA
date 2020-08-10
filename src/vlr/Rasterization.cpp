@@ -90,35 +90,23 @@ namespace vlr {
         auto device = this->driver->getDeviceDispatch();
 
         // 
-        device->CmdBindPipeline(rasterCommand, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pipeline);
-        device->CmdBindDescriptorSets(rasterCommand, VK_PIPELINE_BIND_POINT_GRAPHICS, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
-        device->CmdSetViewport(rasterCommand, 0u, 1u, viewport);
-        device->CmdSetScissor(rasterCommand, 0u, 1u, renderArea);
-        device->CmdSetPrimitiveTopologyEXT(rasterCommand, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-        device->CmdPushConstants(rasterCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(meta), &meta);
-        device->CmdBeginRenderPass(rasterCommand, vkh::VkRenderPassBeginInfo{ .renderPass = framebuffer->rasterFBO.renderPass, .framebuffer = framebuffer->rasterFBO.framebuffer, .renderArea = renderArea, .clearValueCount = static_cast<uint32_t>(framebuffer->rasterFBO.clearValues.size()), .pClearValues = framebuffer->rasterFBO.clearValues.data() }, VK_SUBPASS_CONTENTS_INLINE);
-
-        // 
         auto& instanceDesc = this->instanceSet->get(meta.x);
         auto& geometrySet = this->instanceSet->accelerations[instanceDesc.customId]->geometrySet;
         auto& desc = geometrySet->get(meta.y);
         //auto geometry = geometrySet->geometries[meta.y];
 
         // 
-        //if (geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR && geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1) {
-            //const auto& buffer = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView);
-            //device->CmdBindIndexBuffer(rasterCommand, buffer, buffer.offset(), VkIndexType(geometry->desc->indexType));
-            //device->CmdDrawIndexed(rasterCommand, geometry->desc->primitiveCount * 3u, 1u, geometry->desc->firstVertex, 0u, 0u);
-        //} else {
-            device->CmdDraw(rasterCommand, desc.primitiveCount * 3u, 1u, desc.firstVertex, 0u); // TODO: Instanced Support
-        //};
-
-        // 
-        device->CmdEndRenderPass(rasterCommand);
+        device->CmdPushConstants(rasterCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(meta), &meta);
+        device->CmdDraw(rasterCommand, desc.primitiveCount * 3u, 1u, desc.firstVertex, 0u); // TODO: Instanced Support
     };
 
     // 
     void Rasterization::setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta) {
+        const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
+        const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
+        auto device = this->driver->getDeviceDispatch();
+
+        // 
         vkt::imageBarrier(rasterCommand, vkt::ImageBarrierInfo{
             .image = this->framebuffer->depthStencilImage.getImage(),
             .targetLayout = VK_IMAGE_LAYOUT_GENERAL,
@@ -132,9 +120,9 @@ namespace vlr {
 
         // 
         for (auto& image : this->framebuffer->rasterImages) {
-            this->driver->getDeviceDispatch()->CmdClearColorImage(rasterCommand, image, image.getImageLayout(), vkh::VkClearColorValue{ .float32 = { 0.f,0.f,0.f,0.f } }, 1u, image.getImageSubresourceRange());
+            device->CmdClearColorImage(rasterCommand, image, image.getImageLayout(), vkh::VkClearColorValue{ .float32 = { 0.f,0.f,0.f,0.f } }, 1u, image.getImageSubresourceRange());
         };
-        this->driver->getDeviceDispatch()->CmdClearDepthStencilImage(rasterCommand, this->framebuffer->depthStencilImage, this->framebuffer->depthStencilImage.getImageLayout(), vkh::VkClearDepthStencilValue{ .depth = 1.0f, .stencil = 0 }, 1u, this->framebuffer->depthStencilImage.getImageSubresourceRange());
+        device->CmdClearDepthStencilImage(rasterCommand, this->framebuffer->depthStencilImage, this->framebuffer->depthStencilImage.getImageLayout(), vkh::VkClearDepthStencilValue{ .depth = 1.0f, .stencil = 0 }, 1u, this->framebuffer->depthStencilImage.getImageSubresourceRange());
 
         // 
         vkt::commandBarrier(this->driver->getDeviceDispatch(), rasterCommand);
@@ -150,6 +138,14 @@ namespace vlr {
         });
 
         // 
+        device->CmdBindPipeline(rasterCommand, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pipeline);
+        device->CmdBindDescriptorSets(rasterCommand, VK_PIPELINE_BIND_POINT_GRAPHICS, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
+        device->CmdSetViewport(rasterCommand, 0u, 1u, viewport);
+        device->CmdSetScissor(rasterCommand, 0u, 1u, renderArea);
+        device->CmdSetPrimitiveTopologyEXT(rasterCommand, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+        device->CmdBeginRenderPass(rasterCommand, vkh::VkRenderPassBeginInfo{ .renderPass = framebuffer->rasterFBO.renderPass, .framebuffer = framebuffer->rasterFBO.framebuffer, .renderArea = renderArea, .clearValueCount = static_cast<uint32_t>(framebuffer->rasterFBO.clearValues.size()), .pClearValues = framebuffer->rasterFBO.clearValues.data() }, VK_SUBPASS_CONTENTS_INLINE);
+
+        // 
         for (uint32_t i = 0u; i < this->instanceSet->getGpuBuffer().size(); i++) {
             auto& instanceDesc = this->instanceSet->get(i);
             auto& geometrySet = this->instanceSet->accelerations[instanceDesc.customId]->geometrySet;
@@ -158,6 +154,9 @@ namespace vlr {
                 this->drawCommand(rasterCommand, glm::uvec4(i, j, 0u, 0u));
             };
         };
+
+        // 
+        device->CmdEndRenderPass(rasterCommand);
         vkt::commandBarrier(this->driver->getDeviceDispatch(), rasterCommand);
     };
 
