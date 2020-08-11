@@ -71,9 +71,13 @@ void main()
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
             // Accumulation!
             float4 indirect = max(bLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f)) + max(rLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f));
-            float4 refleclr = max(bLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f)); //+ max(rLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
-            float4 shadows  = max(bLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f)); //+ max(rLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f)); //indirect += shadows;
+            float4 refleclp = max(bLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f)) + max(rLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
+            float4 transpp  = max(bLoad(IW_TRANSPAR, curPixel), float4(0.f.xxx, 0.f)) + max(rLoad(IW_TRANSPAR, curPixel), float4(0.f.xxx, 0.f));
+            float4 shadows  = max(bLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f));
+
+            // 
             float4 transpr  = max(bLoad(IW_TRANSPAR, curPixel), float4(0.f.xxx, 0.f));
+            float4 refleclr = max(bLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f));
 
             // 
             indirect += shadows;
@@ -81,6 +85,10 @@ void main()
             refleclr = max(refleclr, float4(0.f.xxx, 1.f));
             shadows = max(shadows, float4(0.f.xxx, 1.f));
             transpr = max(transpr, float4(0.f.xxx, 1.f));
+
+            //
+            refleclr = mix(refleclp/refleclp.w, refleclr/refleclr.w, 0.5f.xxxx);
+            transpr  = mix(transpp /transpp .w, transpr /transpr.w , 0.5f.xxxx);
 
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);

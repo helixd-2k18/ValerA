@@ -55,6 +55,7 @@ void main()
     float4 indirect = superImageLoad(prevImages[IW_INDIRECT], curPixel); // Pre-Multiplied with Alpha, if you want just bright sum, use zero W
     float4 shadowcl = superImageLoad(prevImages[IW_SHADOWCL], curPixel); // Pre-Multiplied with Alpha, if you want just bright sum, use zero W
     float4 refleclr = superImageLoad(prevImages[IW_REFLECLR], curPixel); // Pre-Multiplied with Alpha, if you want just bright sum, use zero W
+    float4 transpar = superImageLoad(prevImages[IW_TRANSPAR], curPixel);
 
     // 
     float4 wPosition = float4(superImageLoad(prevImages[IW_ORIGINAL], curPixel).xyz, 1.f);
@@ -82,6 +83,7 @@ void main()
         atomicSuperImageAdd(resampleImages[IW_INDIRECT], topix, indirect); // Atomically Adding Samples
         atomicSuperImageAdd(resampleImages[IW_SHADOWCL], topix, shadowcl);
         atomicSuperImageAdd(resampleImages[IW_REFLECLR], topix, refleclr); // TODO: Adaptive Sampling For Reflections...
+        atomicSuperImageAdd(resampleImages[IW_TRANSPAR], topix, transpar);
     };
 
 };
