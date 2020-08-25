@@ -42,3 +42,21 @@ namespace vlr {
     };
 
 };
+
+namespace vlj {
+    class InstanceSet : public Wrap<vlr::InstanceSet> {
+        InstanceSet() : Wrap<vlr::InstanceSet>() {};
+        InstanceSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::InstanceSet>(std::make_shared<vlr::InstanceSet>(driver, info)) {};
+
+        //CALLIFY(constructor);
+        CALLIFY(getCpuBuffer);
+        CALLIFY(getGpuBuffer);
+        CALLIFY(get);
+        CALLIFY(createDescriptorSet);
+        CALLIFY(setCommand);
+        CALLIFY(getVector);
+        CALLIFY(setAccelerations);
+        CALLIFY(pushAcceleration);
+        CALLIFY(resetAccelerations);
+    };
+};

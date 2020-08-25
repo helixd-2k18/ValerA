@@ -6,7 +6,6 @@
 
 namespace vlr {
 
-
     struct AccelerationCreateInfo {
         vkt::uni_ptr<InstanceSet> instanceSet = {}; // Top Level
         vkt::uni_ptr<GeometrySet> geometrySet = {}; // Bottom Level
@@ -54,4 +53,17 @@ namespace vlr {
         virtual uint64_t getHandle();
     };
 
+};
+
+namespace vlj {
+    class Acceleration : public Wrap<vlr::Acceleration> {
+        Acceleration() : Wrap<vlr::Acceleration>() {};
+        Acceleration(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::AccelerationCreateInfo> info = {}) : Wrap<vlr::Acceleration>(std::make_shared<vlr::Acceleration>(driver, info)) {};
+
+        //CALLIFY(constructor);
+        CALLIFY(updateAccelerationStructure);
+        CALLIFY(setCommand);
+        CALLIFY(createDescriptorSet);
+        CALLIFY(getHandle);
+    };
 };

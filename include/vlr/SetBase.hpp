@@ -12,14 +12,14 @@ namespace vlr {
         bool uniform = false, enableCPU = true, enableGL = false;
         
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, const uint32_t& stride = 1u, vkt::uni_arg<DataSetCreateInfo> info = {});
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}, const uint32_t& stride = 1u);
 
     private: 
         vkt::VectorBase cpuBuffer = {}, gpuBuffer = {};
         
     public:
         SetBase() { this->constructor(); };
-        SetBase(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) { this->constructor(driver, 1u, info); };
+        SetBase(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}, const uint32_t& stride = 1u) { this->constructor(driver, info, stride); };
         ~SetBase() {};
 
         // 
@@ -41,7 +41,7 @@ namespace vlr {
 
     public: 
         SetBase_T() : SetBase() { this->constructor(); };
-        SetBase_T(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) { this->constructor(driver, sizeof(T), info); };
+        SetBase_T(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) { this->constructor(driver, info, sizeof(T)); };
         ~SetBase_T() {};
 
         // 
@@ -66,4 +66,19 @@ namespace vlr {
         virtual std::vector<T> getVector() { std::vector<T> acp(this->getCpuBuffer().size()); memcpy(acp.data(), cpuBuffer.data(), acp.size() * sizeof(T)); return acp; };
     };
 
+};
+
+namespace vlj {
+    class SetBase : public Wrap<vlr::SetBase> {
+        SetBase() : Wrap<vlr::SetBase>() {};
+        SetBase(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}, const uint32_t& stride = 1u) : Wrap<vlr::SetBase>(std::make_shared<vlr::SetBase>(driver, info, stride)) {};
+
+        //CALLIFY(constructor);
+        CALLIFY(getCpuBuffer);
+        CALLIFY(getGpuBuffer);
+        //CALLIFY(get);
+        CALLIFY(createDescriptorSet);
+        CALLIFY(setCommand);
+        //CALLIFY(getVector);
+    };
 };

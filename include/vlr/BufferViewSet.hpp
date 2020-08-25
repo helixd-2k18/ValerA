@@ -7,7 +7,7 @@ namespace vlr {
     class BufferViewSet : public std::enable_shared_from_this<BufferViewSet> { protected: friend RayTracing; friend Rasterization; friend Resampling; friend PipelineLayout;
         VkDescriptorSet set = {}; bool updated = false, texelBuffer = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
-        std::vector<vkt::Vector<uint8_t>> buffers = {};
+        std::vector<vkt::VectorBase> buffers = {};
         vkt::uni_ptr<Driver> driver = {};
 
     public: 
@@ -21,25 +21,35 @@ namespace vlr {
         };
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         //virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
-        virtual void pushBufferView_T(const vkt::uni_arg<vkt::Vector<uint8_t>>& bufferView) { this->buffers.push_back(bufferView); };
+        virtual void pushBufferView_T(const vkt::uni_arg<vkt::Vector<uint8_t>>& bufferView) { this->buffers.push_back(vkt::VectorBase(bufferView->getAllocation(), bufferView->offset(), bufferView->range(), bufferView->stride())); };
+        virtual void pushBufferView_T(const vkt::uni_arg<vkt::VectorBase>& bufferView) { this->buffers.push_back(bufferView); };
         virtual void resetBufferViews(){ this->buffers.resize(0ull); };
 
         template<class T = uint8_t>
         void pushBufferView(vkt::uni_arg<vkt::Vector<T>> bufferView) {
-            this->pushBufferView_T(vkt::Vector<uint8_t>(bufferView->getAllocation(), bufferView->offset(), bufferView->range(), bufferView->stride()));
+            this->pushBufferView_T(vkt::VectorBase(bufferView->getAllocation(), bufferView->offset(), bufferView->range(), bufferView->stride()));
         };
 
         virtual void pushBufferView(vkt::uni_arg<vkt::VectorBase> bufferView) {
-            this->pushBufferView_T(vkt::Vector<uint8_t>(bufferView->getAllocation(), bufferView->offset(), bufferView->range(), bufferView->stride()));
+            this->pushBufferView_T(bufferView);
         };
 
         // 
-        vkt::Vector<uint8_t>& get(const uint32_t& I = 0u) { return buffers[I]; };
-        const vkt::Vector<uint8_t>& get(const uint32_t& I = 0u) const { return buffers[I]; };
+        vkt::VectorBase& get(const uint32_t& I = 0u) { return buffers[I]; };
+        const vkt::VectorBase& get(const uint32_t& I = 0u) const { return buffers[I]; };
 
         // 
-        vkt::Vector<uint8_t>& operator[](const uint32_t& I) { return get(I); };
-        const vkt::Vector<uint8_t>& operator[](const uint32_t& I) const { return get(I); };
+        vkt::VectorBase& operator[](const uint32_t& I) { return get(I); };
+        const vkt::VectorBase& operator[](const uint32_t& I) const { return get(I); };
     };
 
+};
+
+namespace vlj {
+    class BufferViewSet : public Wrap<vlr::BufferViewSet> {
+        BufferViewSet(vkt::uni_ptr<vlr::Driver> driver, const bool& texelBuffer = false) : Wrap<vlr::BufferViewSet>(std::make_shared<vlr::BufferViewSet>(driver, texelBuffer)) {};
+
+        //CALLIFY(constructor);
+        CALLIFY(get);
+    };
 };

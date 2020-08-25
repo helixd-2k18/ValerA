@@ -56,13 +56,13 @@ namespace vlr {
             return vector[I];
         };
 
-        virtual const vkt::Vector<uint8_t>& operator[](const uint32_t& I) const { return this->getBuffer_T(I); };
-        virtual vkt::Vector<uint8_t>& operator[](const uint32_t& I) { return this->getBuffer_T(I); };
+        virtual const vkt::VectorBase& operator[](const uint32_t& I) const { return this->getBuffer_T(I); };
+        virtual vkt::VectorBase& operator[](const uint32_t& I) { return this->getBuffer_T(I); };
 
-        virtual const vkt::Vector<uint8_t>& getBuffer_T(const uint32_t& I) const { return (*this->bufferViews)[I]; };
-        virtual vkt::Vector<uint8_t>& getBuffer_T(const uint32_t& I) { return (*this->bufferViews)[I]; };
+        virtual const vkt::VectorBase& getBuffer_T(const uint32_t& I) const { return (*this->bufferViews)[I]; };
+        virtual vkt::VectorBase& getBuffer_T(const uint32_t& I) { return (*this->bufferViews)[I]; };
 
-        virtual vkt::Vector<uint8_t> getAttributeBuffer_T(const uint32_t& I) const {
+        virtual vkt::VectorBase getAttributeBuffer_T(const uint32_t& I) const {
             const vkh::VkVertexInputAttributeDescription attribute = this->getAttribute(I);
             const vkh::VkVertexInputBindingDescription binding = this->getBinding(attribute.binding);
             return (*this->bufferViews)[binding.binding];
@@ -84,4 +84,19 @@ namespace vlr {
         void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
     };
 
+};
+
+namespace vlj {
+    class VertexSet : public Wrap<vlr::VertexSet> {
+        VertexSet() : Wrap<vlr::VertexSet>() {};
+        VertexSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::VertexSetCreateInfo> info = {}) : Wrap<vlr::VertexSet>(std::make_shared<vlr::VertexSet>(driver, info)) {};
+
+        //CALLIFY(constructor);
+        CALLIFY(getAttribute);
+        CALLIFY(getBinding);
+        CALLIFY(getBuffer_T);
+        CALLIFY(getAttributeBuffer_T);
+        CALLIFY(getBuffer);
+        CALLIFY(getAttributeBuffer);
+    };
 };

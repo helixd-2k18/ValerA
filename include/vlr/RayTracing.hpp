@@ -98,3 +98,19 @@ namespace vlr {
     };
 
 };
+
+namespace vlj {
+    class RayTracing : public Wrap<vlr::RayTracing> {
+        RayTracing() : Wrap<vlr::RayTracing>() {};
+        RayTracing(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::RayTracingCreateInfo> info) : Wrap<vlr::RayTracing>(std::make_shared<vlr::RayTracing>(driver, info)) {};
+
+        //CALLIFY(constructor);
+        CALLIFY(setCommand);
+        CALLIFY(setCommandFinal);
+        CALLIFY(setDescriptorSets);
+        CALLIFY(swapRayData);
+        CALLIFY(setAccelerationTop);
+        CALLIFY(setConstants);
+        CALLIFY(getCounters);
+    };
+};

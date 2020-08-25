@@ -77,3 +77,44 @@ namespace vlr {
     };
 
 };
+
+namespace vlj {
+    class PipelineLayout : public Wrap<vlr::PipelineLayout> {
+        PipelineLayout() : Wrap<vlr::PipelineLayout>() {};
+        PipelineLayout(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::PipelineLayout>(std::make_shared<vlr::PipelineLayout>(driver)) {};
+
+        // 
+        CALLIFY(getPipelineCache);
+        CALLIFY(getBindingPipelineLayout);
+        CALLIFY(getTransformPipelineLayout);
+        CALLIFY(getDescriptorPool);
+        CALLIFY(getPipelineLayout);
+        CALLIFY(getDescriptorSet);
+        CALLIFY(getDescriptorSets);
+
+        // 
+        CALLIFY(getDescriptorSetLayout);
+        CALLIFY(getSetLayout);
+        CALLIFY(getTextureSetLayout);
+        CALLIFY(getSamplerSetLayout);
+        CALLIFY(getBufferViewSetLayout);
+        CALLIFY(getUniformSetLayout);
+        CALLIFY(getBackgroundSetLayout);
+        CALLIFY(getFramebufferSetLayout);
+        CALLIFY(getAccelerationSetLayout);
+        CALLIFY(getByteBufferViewSetLayout);
+
+        // 
+        CALLIFY(setMaterials);
+        CALLIFY(setVertexSet);
+        CALLIFY(setFramebuffer);
+        CALLIFY(setAccelerationTop);
+        CALLIFY(setConstants);
+        CALLIFY(setRayTracing);
+        CALLIFY(setRasterization);
+        CALLIFY(setInstanceSet);
+        CALLIFY(setBackground);
+
+        //CALLIFY(constructor);
+    };
+};

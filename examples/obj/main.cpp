@@ -294,11 +294,7 @@ int main() {
     // 
     for (size_t s = 0; s < shapes.size(); s++) {
         instanceSet->get(s) = vkh::VsGeometryInstance{
-            .transform = glm::mat3x4(1.f),
             .customId = uint32_t(s),
-            .mask = 0xFFu,
-            .instanceOffset = 0u,
-            .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
             .accelerationStructureHandle = accelerations[s]->getHandle() // Broken Feature, Set Manually
         };
     };
@@ -757,9 +753,6 @@ int main() {
                 instanceSet->get(s) = vkh::VsGeometryInstance{
                     .transform = glm::mat3x4(glm::transpose(mv)),
                     .customId = uint32_t(s),
-                    .mask = 0xFFu,
-                    .instanceOffset = 0u,
-                    .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
                     .accelerationStructureHandle = accelerations[s]->getHandle() // Broken Feature, Set Manually
                 };
             };

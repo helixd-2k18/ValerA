@@ -24,9 +24,26 @@ namespace vlr {
         virtual void pushSampler(const VkSampler& sampler) { this->samplers.push_back(sampler); };
         virtual void resetSampler(){ this->samplers.resize(0ull); };
 
+        //
+        VkSampler& get(const uint32_t& I = 0u) { return samplers[I]; };
+        const VkSampler& get(const uint32_t& I = 0u) const { return samplers[I]; };
+
         // 
         VkSampler& operator[](const uint32_t& I) { return samplers[I]; };
         const VkSampler& operator[](const uint32_t& I) const { return samplers[I]; };
     };
 
+};
+
+namespace vlj {
+    class SamplerSet : public Wrap<vlr::SamplerSet> {
+        SamplerSet() : Wrap<vlr::SamplerSet>() {};
+        SamplerSet(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::SamplerSet>(std::make_shared<vlr::SamplerSet>(driver)) {};
+
+        //CALLIFY(constructor);
+        CALLIFY(createDescriptorSet);
+        CALLIFY(pushSampler);
+        CALLIFY(resetSampler);
+        CALLIFY(get);
+    };
 };

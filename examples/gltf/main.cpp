@@ -341,11 +341,10 @@ int main() {
         // 
         if (gnode.mesh >= 0) {
             instanceSet->get(instanceCounter++) = vkh::VsGeometryInstance{
-                .transform = glm::mat3x4(1.f),//glm::mat3x4(glm::transpose(glm::dmat4(inTransform) * glm::dmat4(localTransform))),
+                .transform = glm::mat3x4(glm::transpose(glm::dmat4(inTransform) * glm::dmat4(localTransform))),
                 .customId = uint32_t(gnode.mesh), // MeshID
                 .mask = 0xff,
                 .instanceOffset = 0u,
-                .flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV,
             };
         };
 

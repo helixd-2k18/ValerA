@@ -42,3 +42,19 @@ namespace vlr {
     };
 
 };
+
+namespace vlj {
+    class GeometrySet : public Wrap<vlr::GeometrySet> {
+        GeometrySet() : Wrap<vlr::GeometrySet>() {};
+        GeometrySet(vkt::uni_ptr<vlr::VertexSet> vertexSet, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::GeometrySet>(std::make_shared<vlr::GeometrySet>(vertexSet, info)) {};
+
+        //CALLIFY(constructor);
+        CALLIFY(getCpuBuffer);
+        CALLIFY(getGpuBuffer);
+        CALLIFY(get);
+        CALLIFY(createDescriptorSet);
+        CALLIFY(setCommand);
+        CALLIFY(getVector);
+    };
+};
+

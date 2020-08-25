@@ -79,6 +79,7 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "resumable": "cpp",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "filesystem": "cpp"
     }
 }
