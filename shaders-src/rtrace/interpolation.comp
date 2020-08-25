@@ -101,7 +101,7 @@ void main()
                 outRay.color = half4(enegry);
                 outRay.emission = half4(signal);
 
-                kind(outRay, SHADOWS_RAY);
+                //kind(outRay, SHADOWS_RAY);
                 lifetime(outRay, 0u);
                 finished(outRay, true);
                 emitRay(outRay);

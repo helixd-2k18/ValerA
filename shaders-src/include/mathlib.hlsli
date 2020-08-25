@@ -98,15 +98,15 @@ struct ColorChain {
 //uint lifetime(in HitData hit) { return bitfieldExtract(hit.meshID_meta, 24, 4); };
 //uint lifetime(inout HitData hit, in uint a) { hit.meshID_meta = bitfieldInsert(hit.meshID_meta, a, 24, 4); return a; };
 // 
-const int fb=1;
-uint lifetime(inout RayData ray) { return bitfieldExtract(ray.meta.x, 2,4+fb); };
-uint lifetime(inout RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a,2,4+fb)); return a; };
+const int fb=0;
+uint lifetime(inout RayData ray) { return bitfieldExtract(ray.meta.x, 3,4+fb); };
+uint lifetime(inout RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a,3,4+fb)); return a; };
 // 
-uint kind(inout RayData ray) { return bitfieldExtract(ray.meta.x, 0, 2+fb); };
-uint kind(inout RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a,0,2+fb)); return a; };
+uint kind(inout RayData ray) { return bitfieldExtract(ray.meta.x, 0, 3+fb); };
+uint kind(inout RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a,0,3+fb)); return a; };
 //
-bool finished(inout RayData ray) { return bool(bitfieldExtract(ray.meta.x,6,1+fb)); };
-bool finished(inout RayData ray, in bool a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x,uint(a),6,1+fb)); return a; };
+bool finished(inout RayData ray) { return bool(bitfieldExtract(ray.meta.x,7,1+fb)); };
+bool finished(inout RayData ray, in bool a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x,uint(a),7,1+fb)); return a; };
 #endif
 
 

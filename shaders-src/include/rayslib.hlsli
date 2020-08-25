@@ -47,10 +47,10 @@ RayData finishRay(inout RayData ray) {
     finished(ray, true);
     if (dot(ray.emission.xyz, 1.hf.xxx) > 0.001hf) {
         uint kindof = kind(ray);
-        if (kindof == DIFFUSE_RAY) { atomicSuperImageAdd(currImages[IW_INDIRECT], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); };
-        if (kindof == REFLECT_RAY) { atomicSuperImageAdd(currImages[IW_REFLECLR], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); };
-        if (kindof == SHADOWS_RAY) { atomicSuperImageAdd(currImages[IW_SHADOWCL], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); };
-        if (kindof == TRANSPC_RAY) { atomicSuperImageAdd(currImages[IW_TRANSPAR], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); };
+        if (kindof == REFLECT_RAY) { atomicSuperImageAdd(currImages[nonuniformEXT(IW_REFLECLR)], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); };
+        if (kindof == DIFFUSE_RAY) { atomicSuperImageAdd(currImages[nonuniformEXT(IW_INDIRECT)], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); };
+        if (kindof == SHADOWS_RAY) { atomicSuperImageAdd(currImages[nonuniformEXT(IW_SHADOWCL)], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); };
+        if (kindof == TRANSPC_RAY) { atomicSuperImageAdd(currImages[nonuniformEXT(IW_TRANSPAR)], int2(ray.pixelID), float4(min(ray.emission, half4(2.f.xxx, 1.f)))); };
 
         ray.emission.xyzw = 0.hf.xxxx;
     };

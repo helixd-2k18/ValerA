@@ -77,18 +77,18 @@ void main()
 
             // 
             float4 transpr  = max(bLoad(IW_TRANSPAR, curPixel), float4(0.f.xxx, 0.f));
-            float4 refleclr = max(bLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f));
+            float4 refleclr = max(bLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
 
             // 
             indirect += shadows;
-            indirect = max(indirect, float4(0.f.xxx, 1.f));
-            refleclr = max(refleclr, float4(0.f.xxx, 1.f));
-            shadows = max(shadows, float4(0.f.xxx, 1.f));
-            transpr = max(transpr, float4(0.f.xxx, 1.f));
+            indirect = max(indirect, float4(0.f.xxx, 0.f));
+            refleclr = max(refleclr, float4(0.f.xxx, 0.f));
+            shadows = max(shadows, float4(0.f.xxx, 0.f));
+            transpr = max(transpr, float4(0.f.xxx, 0.f));
 
-            //
-            refleclr = mix(refleclp/refleclp.w, refleclr/refleclr.w, 0.5f.xxxx);
-            transpr  = mix(transpp /transpp .w, transpr /transpr.w , 0.5f.xxxx);
+            // 
+            //refleclr = mix(refleclp/refleclp.w, refleclr/max(refleclr.w,1.f), 0.5f.xxxx);
+            transpr  = mix(transpp /transpp .w, transpr /max(transpr.w ,1.f), 0.5f.xxxx);
 
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
@@ -98,12 +98,19 @@ void main()
         };
 
         //superImageStore(currImages[IW_RENDERED], curPixel, cbLoad(IW_INDIRECT, curPixel));
-    };
 
-    // 
-    for (uint i=0;i<12;i++) {
-        const float4 pixof = superImageLoad(currImages[i], curPixel);
-        superImageStore(prevImages[i], curPixel, pixof);
+        // 
+        for (uint i=0;i<12;i++) {
+            const float4 pixof = superImageLoad(currImages[i], curPixel);
+            superImageStore(prevImages[i], curPixel, pixof);
+        };
+
+        // Use sampled reflection as previous frame
+        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
+            const float4 refleclp = max(bLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f)) + max(rLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
+            const float4 maximize = refleclp / max(refleclp.w, 1.f);
+            superImageStore(prevImages[IW_REFLECLR], curPixel, max(maximize*min(refleclp.w, 65536.f), float4(0.f.xxx, 0.f)));
+        };
     };
 
 };
