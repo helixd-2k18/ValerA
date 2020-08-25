@@ -7,7 +7,7 @@ namespace vlr {
 
 #pragma pack(push, 1)
     struct MeshIDFlags {
-        uint32_t ID : 24, hasTransform : 1, hasNormal : 1, hasTexcoord : 1, hasTangent : 1, reserved : 4;
+        uint32_t ID : 24, hasTransform : 1, hasNormal : 1, hasTexcoord : 1, hasTangent : 1, translucent: 1, reserved : 3;
     };
 #pragma pack(pop)
 

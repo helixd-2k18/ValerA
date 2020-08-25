@@ -85,7 +85,7 @@ namespace vlr {
                 auto attribute = geometry->vertexSet->getAttribute(geometry->desc->vertexAttribute);
                 auto binding = geometry->vertexSet->getBinding(attribute.binding);
                 auto offsetDesc = vkh::VkAccelerationStructureBuildOffsetInfoKHR{};
-                auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eNoDuplicateAnyHitInvocation = 1 };
+                auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eOpaque = (geometry->desc->mesh_flags.translucent ? 0u : 1u), .eNoDuplicateAnyHitInvocation = 1 };
                 auto geometryDesc = vkh::VkAccelerationStructureGeometryKHR{ .flags = buildGeometryFlags };
                 auto triangleDesc = vkh::VkAccelerationStructureGeometryTrianglesDataKHR{};
                 auto buffer = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
