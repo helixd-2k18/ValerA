@@ -208,6 +208,9 @@ int main() {
             .vertexAttribute = 0u
         };
 
+        //
+        gdesc.mesh_flags.translucent = 1;
+
         // 
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
 
