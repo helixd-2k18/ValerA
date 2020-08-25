@@ -142,12 +142,12 @@ namespace vlj {
         virtual operator const T* () const { return object.ptr(); };
 
         // now required explicit...
-        virtual explicit operator std::shared_ptr<T> () { return object.get_shared(); };
-        virtual explicit operator std::shared_ptr<T> () const { return object.get_shared(); };
+        virtual explicit operator std::shared_ptr<T>& () { return object.get_shared(); };
+        virtual explicit operator const std::shared_ptr<T>& () const { return object.get_shared(); };
 
         // 
-        virtual operator vkt::uni_ptr<T> () { return object; };
-        virtual operator vkt::uni_ptr<T> () const { return object; };
+        virtual operator vkt::uni_ptr<T>& () { return object; };
+        virtual operator const vkt::uni_ptr<T>& () const { return object; };
 
         // 
         virtual T* operator->() { return object.ptr(); };
@@ -155,6 +155,11 @@ namespace vlj {
         virtual const T* operator->() const { return object.ptr(); };
         //virtual const T& operator*() const { return object.ref(); };
 
+        // Due Explicit
+        virtual std::shared_ptr<T>& sharedPtr() { return object.get_shared(); };
+        virtual const std::shared_ptr<T>& sharedPtr() const { return object.get_shared(); };
+
+    // 
     protected: friend Wrap; friend T; // 
         vkt::uni_ptr<T> object = {};
     };
