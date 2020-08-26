@@ -108,7 +108,7 @@ void main()
         // Use sampled reflection as previous frame
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
             const float4 refleclp = max(bLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f)) + max(rLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
-            const float4 maximize = refleclp / max(refleclp.w, 1.f);
+            const float4 maximize = max(refleclp / max(refleclp.w, 1.f), float4(0.f.xxx, 0.f));
             superImageStore(prevImages[IW_REFLECLR], curPixel, max(maximize*min(refleclp.w, 65536.f), float4(0.f.xxx, 0.f)));
         };
     };

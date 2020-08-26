@@ -145,7 +145,7 @@ STATIC const float4 sphere = float4(float3(16.f,128.f,16.f), 8.f);
 void directLight(in float3 normal, in float4 sphere, in float3 origin, inout uint2 seed, inout float4 gSignal, inout float4 gEnergy) {
     const float3 lightp = sphere.xyz + randomSphere(seed) * sphere.w; float shdist = distance(lightp.xyz,origin.xyz);
     const float3 lightd = normalize(lightp.xyz - origin.xyz);
-    const float3 lightc = 32.f*512.f.xxx/(sphere.w*sphere.w);
+    const float3 lightc = 64.f*512.f.xxx/(sphere.w*sphere.w);
 
     if ( dot(normal, lightd) >= 0.f ) {
         float sdepth = raySphereIntersect(origin.xyz,lightd,sphere.xyz,sphere.w);

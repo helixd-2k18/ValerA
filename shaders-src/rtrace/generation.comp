@@ -106,10 +106,13 @@ void main()
             finished(outRay, true);
         };*/
 
+        // 
         const float inIOR = 1.f, outIOR = 1.6666f;
+        float reflectionPower = mix(clamp(pow(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
+        bool couldReflection = random(seed) <= reflectionPower;
+
+        //
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            float reflectionPower = mix(clamp(pow(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
-            bool couldReflection = random(seed) <= reflectionPower;
 
             if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
                 outRay.direct = randomHemisphereCosine(seed, TBN);
@@ -155,17 +158,19 @@ void main()
         // Shadow...
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
         {
-            float4 enegry = 1.f.xxxx;
-            float4 signal = 0.f.xxxx;
-            directLight(GEO.gNormal.xyz, outRay.origin.xyz, seed, signal, enegry);
+            if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
+                float4 enegry = 1.f.xxxx;
+                float4 signal = 0.f.xxxx;
+                directLight(GEO.gNormal.xyz, outRay.origin.xyz, seed, signal, enegry);
 
-            outRay.color = half4(enegry);
-            outRay.emission = half4(signal);
+                outRay.color = half4(enegry);
+                outRay.emission = half4(signal);
 
-            kind(outRay, SHADOWS_RAY);
-            lifetime(outRay, 0u);
-            finished(outRay, true);
-            emitRay(outRay);
+                kind(outRay, SHADOWS_RAY);
+                lifetime(outRay, 0u);
+                finished(outRay, true);
+                emitRay(outRay);
+            };
         };
     };
 
