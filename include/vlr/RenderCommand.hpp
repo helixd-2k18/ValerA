@@ -37,6 +37,7 @@ namespace vlj {
         RenderCommand() : Wrap<vlr::RenderCommand>() {};
         RenderCommand(vkt::uni_ptr<vlr::RenderCommand> object) : Wrap<vlr::RenderCommand>(object) {};
         RenderCommand(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::RenderCommandCreateInfo> info = {}) : Wrap<vlr::RenderCommand>(std::make_shared<vlr::RenderCommand>(driver, info)) {};
+        RenderCommand(std::shared_ptr<vlr::RenderCommand> object) : Wrap<vlr::RenderCommand>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(setRasterization);

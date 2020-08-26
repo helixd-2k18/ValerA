@@ -83,6 +83,7 @@ namespace vlj {
         PipelineLayout() : Wrap<vlr::PipelineLayout>() {};
         PipelineLayout(vkt::uni_ptr<vlr::PipelineLayout> object) : Wrap<vlr::PipelineLayout>(object) {};
         PipelineLayout(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::PipelineLayout>(std::make_shared<vlr::PipelineLayout>(driver)) {};
+        PipelineLayout(std::shared_ptr<vlr::PipelineLayout> object) : Wrap<vlr::PipelineLayout>(object) {};
 
         // 
         CALLIFY(getPipelineCache);

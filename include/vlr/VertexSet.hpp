@@ -91,6 +91,7 @@ namespace vlj {
         VertexSet() : Wrap<vlr::VertexSet>() {};
         VertexSet(vkt::uni_ptr<vlr::VertexSet> object) : Wrap<vlr::VertexSet>(object) {};
         VertexSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::VertexSetCreateInfo> info = {}) : Wrap<vlr::VertexSet>(std::make_shared<vlr::VertexSet>(driver, info)) {};
+        VertexSet(std::shared_ptr<vlr::VertexSet> object) : Wrap<vlr::VertexSet>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(getAttribute);

@@ -49,6 +49,7 @@ namespace vlj {
         InstanceSet() : Wrap<vlr::InstanceSet>() {};
         InstanceSet(vkt::uni_ptr<vlr::InstanceSet> object) : Wrap<vlr::InstanceSet>(object) {};
         InstanceSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::InstanceSet>(std::make_shared<vlr::InstanceSet>(driver, info)) {};
+        InstanceSet(std::shared_ptr<vlr::InstanceSet> object) : Wrap<vlr::InstanceSet>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(getCpuBuffer);

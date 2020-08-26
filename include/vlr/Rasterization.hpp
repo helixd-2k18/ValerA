@@ -64,6 +64,7 @@ namespace vlj {
         Rasterization() : Wrap<vlr::Rasterization>() {};
         Rasterization(vkt::uni_ptr<vlr::Rasterization> object) : Wrap<vlr::Rasterization>(object) {};
         Rasterization(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::PipelineCreateInfo> info) : Wrap<vlr::Rasterization>(std::make_shared<vlr::Rasterization>(driver, info)) {};
+        Rasterization(std::shared_ptr<vlr::Rasterization> object) : Wrap<vlr::Rasterization>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(drawCommand);

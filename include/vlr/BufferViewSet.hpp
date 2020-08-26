@@ -51,6 +51,7 @@ namespace vlj {
         BufferViewSet() : Wrap<vlr::BufferViewSet>() {};
         BufferViewSet(vkt::uni_ptr<vlr::BufferViewSet> object) : Wrap<vlr::BufferViewSet>(object) {};
         BufferViewSet(vkt::uni_ptr<vlr::Driver> driver, const bool& texelBuffer = false) : Wrap<vlr::BufferViewSet>(std::make_shared<vlr::BufferViewSet>(driver, texelBuffer)) {};
+        BufferViewSet(std::shared_ptr<vlr::BufferViewSet> object) : Wrap<vlr::BufferViewSet>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(get);

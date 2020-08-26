@@ -40,6 +40,7 @@ namespace vlj {
         SamplerSet() : Wrap<vlr::SamplerSet>() {};
         SamplerSet(vkt::uni_ptr<vlr::SamplerSet> object) : Wrap<vlr::SamplerSet>(object) {};
         SamplerSet(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::SamplerSet>(std::make_shared<vlr::SamplerSet>(driver)) {};
+        SamplerSet(std::shared_ptr<vlr::SamplerSet> object) : Wrap<vlr::SamplerSet>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(createDescriptorSet);

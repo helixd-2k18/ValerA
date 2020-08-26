@@ -13,6 +13,7 @@ namespace vlj {
         AttributeSet() : Wrap<vlr::AttributeSet>() {};
         AttributeSet(vkt::uni_ptr<vlr::AttributeSet> object) : Wrap<vlr::AttributeSet>(object) {};
         AttributeSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::AttributeSet>(std::make_shared<vlr::AttributeSet>(driver, info)) {};
+        AttributeSet(std::shared_ptr<vlr::AttributeSet> object) : Wrap<vlr::AttributeSet>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(getCpuBuffer);

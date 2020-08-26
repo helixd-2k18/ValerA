@@ -48,6 +48,7 @@ namespace vlj {
         GeometrySet() : Wrap<vlr::GeometrySet>() {};
         GeometrySet(vkt::uni_ptr<vlr::GeometrySet> object) : Wrap<vlr::GeometrySet>(object) {};
         GeometrySet(vkt::uni_ptr<vlr::VertexSet> vertexSet, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::GeometrySet>(std::make_shared<vlr::GeometrySet>(vertexSet, info)) {};
+        GeometrySet(std::shared_ptr<vlr::GeometrySet> object) : Wrap<vlr::GeometrySet>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(getCpuBuffer);

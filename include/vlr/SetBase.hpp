@@ -73,6 +73,7 @@ namespace vlj {
         SetBase() : Wrap<vlr::SetBase>() {};
         SetBase(vkt::uni_ptr<vlr::SetBase> object) : Wrap<vlr::SetBase>(object) {};
         SetBase(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}, const uint32_t& stride = 1u) : Wrap<vlr::SetBase>(std::make_shared<vlr::SetBase>(driver, info, stride)) {};
+        SetBase(std::shared_ptr<vlr::SetBase> object) : Wrap<vlr::SetBase>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(getCpuBuffer);

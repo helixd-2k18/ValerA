@@ -23,6 +23,7 @@ namespace vlj {
         Accumulation() : Wrap<vlr::Accumulation>() {};
         Accumulation(vkt::uni_ptr<vlr::Accumulation> object) : Wrap<vlr::Accumulation>(object) {};
         Accumulation(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::Accumulation>(std::make_shared<vlr::Accumulation>(driver)) {};
+        Accumulation(std::shared_ptr<vlr::Accumulation> object) : Wrap<vlr::Accumulation>(object) {};
 
         //CALLIFY(constructor);
     };

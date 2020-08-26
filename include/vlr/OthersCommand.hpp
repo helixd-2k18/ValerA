@@ -23,6 +23,7 @@ namespace vlj {
         OthersCommand() : Wrap<vlr::OthersCommand>() {};
         OthersCommand(vkt::uni_ptr<vlr::OthersCommand> object) : Wrap<vlr::OthersCommand>(object) {};
         OthersCommand(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::OthersCommand>(std::make_shared<vlr::OthersCommand>(driver)) {};
+        OthersCommand(std::shared_ptr<vlr::OthersCommand> object) : Wrap<vlr::OthersCommand>(object) {};
 
         //CALLIFY(constructor);
     };

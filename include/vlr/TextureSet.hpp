@@ -40,6 +40,7 @@ namespace vlj {
         TextureSet() : Wrap<vlr::TextureSet>() {};
         TextureSet(vkt::uni_ptr<vlr::TextureSet> object) : Wrap<vlr::TextureSet>(object) {};
         TextureSet(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::TextureSet>(std::make_shared<vlr::TextureSet>(driver)) {};
+        TextureSet(std::shared_ptr<vlr::TextureSet> object) : Wrap<vlr::TextureSet>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(get);

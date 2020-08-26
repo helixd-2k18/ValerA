@@ -14,6 +14,7 @@ namespace vlj {
         //Driver() : Wrap<vlr::Driver>() {};
         Driver(vkt::uni_ptr<vlr::Driver> object) : Wrap<vlr::Driver>(object) {};
         Driver() : Wrap<vlr::Driver>(std::make_shared<vlr::Driver>()) {};
+        Driver(std::shared_ptr<vlr::Driver> object) : Wrap<vlr::Driver>(object) {};
 
         //CALLIFY(constructor);
     };

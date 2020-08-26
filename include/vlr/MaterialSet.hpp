@@ -29,6 +29,7 @@ namespace vlj {
         MaterialSet() : Wrap<vlr::MaterialSet>() {};
         MaterialSet(vkt::uni_ptr<vlr::MaterialSet> object) : Wrap<vlr::MaterialSet>(object) {};
         MaterialSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::MaterialSet>(std::make_shared<vlr::MaterialSet>(driver, info)) {};
+        MaterialSet(std::shared_ptr<vlr::MaterialSet> object) : Wrap<vlr::MaterialSet>(object) {};
 
         //CALLIFY(constructor);
         CALLIFY(getCpuBuffer);
