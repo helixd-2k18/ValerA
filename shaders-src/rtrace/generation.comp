@@ -161,7 +161,7 @@ void main()
             if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
                 float4 enegry = 1.f.xxxx;
                 float4 signal = 0.f.xxxx;
-                directLight(GEO.gNormal.xyz, outRay.origin.xyz, seed, signal, enegry);
+                directLight(MAT.mapNormal.xyz, outRay.origin.xyz, seed, signal, enegry);
 
                 outRay.color = half4(enegry);
                 outRay.emission = half4(signal);
