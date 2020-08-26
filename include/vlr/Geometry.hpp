@@ -56,6 +56,7 @@ namespace vlr {
 namespace vlj {
     class Geometry : public Wrap<vlr::Geometry> {
         Geometry() : Wrap<vlr::Geometry>() {};
+        Geometry(vkt::uni_ptr<vlr::Geometry> object) : Wrap<vlr::Geometry>(object) {};
         Geometry(vkt::uni_ptr<vlr::VertexSet> vertexSet, vkt::uni_arg<vlr::GeometryDesc> desc = {}) : Wrap<vlr::Geometry>(std::make_shared<vlr::Geometry>(vertexSet, desc)) {};
 
         //CALLIFY(constructor);

@@ -21,6 +21,7 @@ namespace vlr {
 namespace vlj {
     class OthersCommand : public Wrap<vlr::OthersCommand> {
         OthersCommand() : Wrap<vlr::OthersCommand>() {};
+        OthersCommand(vkt::uni_ptr<vlr::OthersCommand> object) : Wrap<vlr::OthersCommand>(object) {};
         OthersCommand(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::OthersCommand>(std::make_shared<vlr::OthersCommand>(driver)) {};
 
         //CALLIFY(constructor);

@@ -41,6 +41,7 @@ namespace vlr {
 namespace vlj {
     class Resampling : public Wrap<vlr::Resampling> {
         Resampling() : Wrap<vlr::Resampling>() {};
+        Resampling(vkt::uni_ptr<vlr::Resampling> object) : Wrap<vlr::Resampling>(object) {};
         Resampling(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::PipelineCreateInfo> info = {}) : Wrap<vlr::Resampling>(std::make_shared<vlr::Resampling>(driver, info)) {};
 
         //CALLIFY(constructor);

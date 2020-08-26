@@ -15,6 +15,7 @@ namespace vlr {
     public: 
         InstanceSet() : SetBase_T<vkh::VsGeometryInstance>() { this->constructorExtend0(); };
         InstanceSet(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<vkh::VsGeometryInstance>(driver, info) { this->constructorExtend0(driver, info); };
+        ~InstanceSet() {};
 
         virtual void constructorExtend0() {};
         virtual void constructorExtend0(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) {
@@ -46,6 +47,7 @@ namespace vlr {
 namespace vlj {
     class InstanceSet : public Wrap<vlr::InstanceSet> {
         InstanceSet() : Wrap<vlr::InstanceSet>() {};
+        InstanceSet(vkt::uni_ptr<vlr::InstanceSet> object) : Wrap<vlr::InstanceSet>(object) {};
         InstanceSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::InstanceSet>(std::make_shared<vlr::InstanceSet>(driver, info)) {};
 
         //CALLIFY(constructor);

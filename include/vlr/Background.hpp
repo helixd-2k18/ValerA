@@ -32,8 +32,11 @@ namespace vlr {
 namespace vlj {
     class Background : public Wrap<vlr::Background> {
         Background() : Wrap<vlr::Background>() {};
+        Background(vkt::uni_ptr<vlr::Background> object) : Wrap<vlr::Background>(object) {};
         Background(vkt::uni_ptr<vlr::Driver> driver, vkt::ImageRegion image = {}) : Wrap<vlr::Background>(std::make_shared<vlr::Background>(driver, image)) {};
 
         //CALLIFY(constructor);
+        CALLIFY(createDescriptorSet);
+        CALLIFY(setImage);
     };
 };

@@ -58,6 +58,7 @@ namespace vlr {
 namespace vlj {
     class Acceleration : public Wrap<vlr::Acceleration> {
         Acceleration() : Wrap<vlr::Acceleration>() {};
+        Acceleration(vkt::uni_ptr<vlr::Acceleration> object) : Wrap<vlr::Acceleration>(object) {};
         Acceleration(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::AccelerationCreateInfo> info = {}) : Wrap<vlr::Acceleration>(std::make_shared<vlr::Acceleration>(driver, info)) {};
 
         //CALLIFY(constructor);

@@ -124,6 +124,7 @@ namespace vlj {
     class Wrap { public:
         Wrap() {};
         Wrap(const Wrap<T>& wrap) : object(wrap.object) {};
+        Wrap(vkt::uni_ptr<T> object) : object(object) {};
         Wrap(std::shared_ptr<T> object) : object(object) {};
         Wrap(T* object) : object(object) {};
         Wrap(T& object) : object(&object) {};
