@@ -78,7 +78,7 @@ void main()
         };
 
         // 
-        const float3 geoNormal = faceforward(GEO.gNormal.xyz, raydir, GEO.gNormal.xyz);
+        const float3 geoNormal = faceforward(MAT.mapNormal.xyz, raydir, GEO.gNormal.xyz);
         const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,geoNormal);
         
         // Emit Diffuse Indirect Ray

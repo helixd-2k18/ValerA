@@ -125,7 +125,7 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
 
     //
-    std::string inputfile = "lost_empire.obj";
+    std::string inputfile = "Chess_Set.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -454,6 +454,7 @@ int main() {
         mdk.diffuseTexture = loadTexture(mat.diffuse_texname);
         mdk.normalTexture = loadTexture(mat.normal_texname);
         mdk.pbrAGMTexture = loadTexture(mat.specular_texname);
+        if (mdk.normalTexture == -1) { mdk.normalTexture = loadTexture(mat.bump_texname); };
     };
 
     // Default Material

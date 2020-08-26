@@ -54,7 +54,7 @@ void main()
             XPOL MAT = materialize(xhit, GEO);
 
             // 
-            const float3 geoNormal = faceforward(GEO.gNormal.xyz, xhit.direct.xyz, GEO.gNormal.xyz);//MAT.mapNormal.xyz;
+            const float3 geoNormal = faceforward(MAT.mapNormal.xyz, xhit.direct.xyz, GEO.gNormal.xyz);//MAT.mapNormal.xyz;
             const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,geoNormal);
 
             // 
