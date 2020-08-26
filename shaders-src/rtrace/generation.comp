@@ -107,11 +107,11 @@ void main()
         };*/
 
         const float inIOR = 1.f, outIOR = 1.6666f;
-        float reflectionPower = mix(clamp(pow(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
-        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f && reflectionPower < 0.999f) {
+        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
+            float reflectionPower = mix(clamp(pow(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
             bool couldReflection = random(seed) <= reflectionPower;
 
-            if (checker) {
+            if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
                 outRay.direct = randomHemisphereCosine(seed, TBN);
                 outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
                 kind(outRay, DIFFUSE_RAY);
