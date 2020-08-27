@@ -56,7 +56,7 @@ XHIT traceRays(in float3 origin, in float3 raydir, float maxT, bool scatterTrans
 
     // 
     bool restart = true, opaque = false;
-    while((R++) < 4u && restart) { restart = false; // restart needs for transparency (after every resolve)
+    while((R++) < 1u && restart) { restart = false; // restart needs for transparency (after every resolve)
         float lastMax = (maxT - fullLength); float3 lastOrigin = forigin;//raydir * fullLength + sorigin;
 
 #ifdef GLSL
@@ -142,25 +142,25 @@ XHIT traceRays(in float3 origin, in float3 raydir, float maxT, bool scatterTrans
 
 STATIC const float4 sphere = float4(float3(16.f,128.f,16.f), 8.f);
 
-void directLight(in float3 normal, in float4 sphere, in float3 origin, inout uint2 seed, inout float4 gSignal, inout float4 gEnergy) {
+void directLight(in float3 normal, in float3 gnormal, in float4 sphere, in float3 origin, inout uint2 seed, inout float4 gSignal, inout float4 gEnergy) {
     const float3 lightp = sphere.xyz + randomSphere(seed) * sphere.w; float shdist = distance(lightp.xyz,origin.xyz);
     const float3 lightd = normalize(lightp.xyz - origin.xyz);
-    const float3 lightc = 64.f*512.f.xxx/(sphere.w*sphere.w);
+    const float3 lightc = 128.f*512.f.xxx/(sphere.w*sphere.w);
 
-    if ( dot(normal, lightd) >= 0.f ) {
-        float sdepth = raySphereIntersect(origin.xyz,lightd,sphere.xyz,sphere.w);
-        XHIT result = traceRays(origin + faceforward(normal, lightd, -normal), lightd, sdepth = sdepth <= 0.f ? 10000.f : sdepth, true, 0.01f);
-
-        if ( min(sdepth, result.gBarycentric.w) >= sdepth ) { // If intersects with light
+    float4 signal = float4(0.f.xxx, 1.f);
+    if ( dot(gnormal, lightd) >= 0.f ) {
+        float sdepth = raySphereIntersect(origin.xyz,lightd,sphere.xyz,sphere.w); //sdepth = min(sdepth, shdist);
+        XHIT result = traceRays(origin + faceforward(gnormal, lightd, -gnormal) * 0.0001f, lightd, sdepth, true, 0.01f); // Fixed shadows here (after normals shifting)
+        if ( result.gBarycentric.w >= sdepth && sdepth <= 9999.f ) { // If intersects with light
             const float cos_a_max = sqrt(1.f - clamp(sphere.w * sphere.w / dot(sphere.xyz-origin.xyz, sphere.xyz-origin.xyz), 0.f, 1.f));
-            gSignal += float4(gEnergy.xyz * 2.f * (1.f - cos_a_max) * clamp(dot( lightd, normal ), 0.f, 1.f) * lightc, 0.f);
-            gEnergy *= 0.f.xxxx;
+            signal = float4(gEnergy.xyz * 2.f * (1.f - cos_a_max) * clamp(dot( lightd, normal ), 0.f, 1.f) * lightc, 1.f);
         };
     };
+    gSignal += signal, gEnergy *= 0.f.xxxx;
 };
 
-void directLight(in float3 normal, in float3 origin, inout uint2 seed, inout float4 gSignal, inout float4 gEnergy) {
-    directLight(normal, sphere, origin, seed, gSignal, gEnergy);
+void directLight(in float3 normal, in float3 gnormal, in float3 origin, inout uint2 seed, inout float4 gSignal, inout float4 gEnergy) {
+    directLight(normal, gnormal, sphere, origin, seed, gSignal, gEnergy);
 };
 
 #endif

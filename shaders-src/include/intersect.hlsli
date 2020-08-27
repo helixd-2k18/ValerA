@@ -33,12 +33,13 @@ float3 boxNormal(in float3 mpoint, in float3 boxMin, in float3 boxMax) {
 float raySphereIntersect(in float3 r0, in float3 rd, in float3 s0, in float sr) {
     float a = dot(rd, rd);
     float3 s0_r0 = r0 - s0;
-    float b = 2.0 * dot(rd, s0_r0);
+    float b = 2.0f * dot(rd, s0_r0);
     float c = dot(s0_r0, s0_r0) - (sr * sr);
-    if (b*b - 4.0*a*c < 0.0) {
-        return -1.0;
-    }
-    return (-b - sqrt((b*b) - 4.0*a*c))/(2.0*a);
+    if (b*b - 4.0f*a*c < 0.0f) { return 10000.0f; };
+    float d1 = (-b - sqrt((b*b) - 4.0f*a*c))/(2.0f*a);
+    float d2 = (-b + sqrt((b*b) - 4.0f*a*c))/(2.0f*a);
+    float mn = min(d1,d2), mx = max(d1,d2);
+    return mx >= 0.f ? (mn >= 0.f ? mn : mx) : 10000.f;
 };
 
 float planeIntersect(in float3 l0, in float3 r, in float3 p0, in float3 n){

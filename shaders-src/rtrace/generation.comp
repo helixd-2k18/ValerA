@@ -78,16 +78,17 @@ void main()
         };
 
         // 
-        const float3 geoNormal = faceforward(MAT.mapNormal.xyz, raydir, GEO.gNormal.xyz);
-        const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,geoNormal);
+        const float3 mapNormal = faceforward(MAT.mapNormal.xyz, raydir, GEO.gNormal.xyz);
+        const float3 geoNormal = faceforward(GEO.gNormal.xyz, raydir, GEO.gNormal.xyz);
+        const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
         
         // Emit Diffuse Indirect Ray
-        RayData outRay;
-        outRay.pixelID = u16vec2(LAUNCH_ID);
-        outRay.meta = u8vec4(0u);
-        outRay.emission = f16vec4(0.f.xxxx);
-        outRay.color = f16vec4(1.f.xxx, 1.f);
-        outRay.origin = RPM.origin.xyz;
+        RayData tempRay;
+        tempRay.pixelID = u16vec2(LAUNCH_ID);
+        tempRay.meta = u8vec4(0u);
+        tempRay.emission = f16vec4(0.f.xxxx);
+        tempRay.color = f16vec4(1.f.xxx, 1.f);
+        tempRay.origin = RPM.origin.xyz;
         /*{
             outRay.origin = RPM.origin.xyz;
             outRay.direct = randomHemisphereCosine(seed, TBN);
@@ -112,37 +113,38 @@ void main()
         bool couldReflection = random(seed) <= reflectionPower;
 
         //
-        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-
-            if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
-                outRay.direct = randomHemisphereCosine(seed, TBN);
+        {
+            RayData outRay = tempRay;
+            if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
+                
+                if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
+                    outRay.direct = randomHemisphereCosine(seed, TBN); kind(outRay, DIFFUSE_RAY);
+                } else { // BROKEN...
+                    outRay.direct = reflectGlossy(seed, raydir.xyz, TBN, MAT.specularColor.y); kind(outRay, REFLECT_RAY);
+                };
                 outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
+
+                lifetime(outRay, 2u);
+                finished(outRay, false);
+            } else { // SkyBox
+                outRay.origin = RPM.origin.xyz;
+                outRay.direct = raydir;
+                outRay.color = half4(1.f.xxxx);
+                outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(raydir.xyz, origin.xyz));
+                outRay.color = half4(0.f.xxxx);
+                
                 kind(outRay, DIFFUSE_RAY);
-            } else { // BROKEN...
-                outRay.direct = reflectGlossy(seed, raydir.xyz, TBN, MAT.specularColor.y);
-                outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
-                kind(outRay, REFLECT_RAY);
+                lifetime(outRay, 0u);
+                finished(outRay, true);
             };
-            
-            lifetime(outRay, 2u);
-            finished(outRay, false);
-        } else { // SkyBox
-            outRay.origin = RPM.origin.xyz;
-            outRay.direct = raydir;
-            outRay.color = half4(1.f.xxxx);
-            outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(raydir.xyz, origin.xyz));
-            outRay.color = half4(0.f.xxxx);
-            
-            kind(outRay, DIFFUSE_RAY);
-            lifetime(outRay, 0u);
-            finished(outRay, true);
-        };
 
-        emitRay(outRay);
+            emitRay(outRay);
+        };
 
         // Trace Transparency Where Needed!
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f && MAT.diffuseColor.w > 0.0001f && MAT.diffuseColor.w < 0.999f) 
         {
+            RayData outRay = tempRay;
             outRay.direct = raydir;
             outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
             kind(outRay, TRANSPC_RAY);
@@ -158,15 +160,17 @@ void main()
         // Shadow...
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
         {
+            RayData outRay = tempRay;
             if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
                 float4 enegry = 1.f.xxxx;
                 float4 signal = 0.f.xxxx;
-                directLight(MAT.mapNormal.xyz, outRay.origin.xyz, seed, signal, enegry);
+                directLight(mapNormal, geoNormal, outRay.origin.xyz, seed, signal, enegry);
 
                 outRay.color = half4(enegry);
                 outRay.emission = half4(signal);
 
-                kind(outRay, SHADOWS_RAY);
+                //kind(outRay, SHADOWS_RAY);
+                kind(outRay, DIFFUSE_RAY);
                 lifetime(outRay, 0u);
                 finished(outRay, true);
                 emitRay(outRay);
