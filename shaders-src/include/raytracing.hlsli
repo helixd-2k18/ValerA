@@ -147,7 +147,7 @@ void directLight(in float3 normal, in float3 gnormal, in float4 sphere, in float
     const float3 lightd = normalize(lightp.xyz - origin.xyz);
     const float3 lightc = 128.f*512.f.xxx/(sphere.w*sphere.w);
 
-    float4 signal = float4(0.f.xxx, 1.f);
+    float4 signal = float4(0.f.xxx, 0.f);
     if ( dot(gnormal, lightd) >= 0.f ) {
         float sdepth = raySphereIntersect(origin.xyz,lightd,sphere.xyz,sphere.w); //sdepth = min(sdepth, shdist);
         XHIT result = traceRays(origin + faceforward(gnormal, lightd, -gnormal) * 0.0001f, lightd, sdepth, true, 0.01f); // Fixed shadows here (after normals shifting)
