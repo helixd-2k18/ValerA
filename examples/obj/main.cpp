@@ -125,7 +125,7 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
 
     //
-    std::string inputfile = "Chess_Set.obj";
+    std::string inputfile = "lost_empire.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -690,6 +690,18 @@ int main() {
     auto counters = rayTracing->getCounters();
 
     // 
+    uint64_t fenceValue = 0u;
+    vk::SemaphoreTypeCreateInfo timelineCreateInfo = {};
+    timelineCreateInfo.semaphoreType = (vk::SemaphoreType)VK_SEMAPHORE_TYPE_TIMELINE;
+    timelineCreateInfo.initialValue = fenceValue;
+
+    // 
+    cudaExternalSemaphore_t cuSignalSemaphore = {}, cuWaitSemaphore = {};
+    VkSemaphore waitSemaphore = {}, signalSemaphore = {};
+    vkt::createSemaphore(fw->getDeviceDispatch().get(), &waitSemaphore, (uint32_t*)&cuWaitSemaphore, &timelineCreateInfo);
+    vkt::createSemaphore(fw->getDeviceDispatch().get(), &signalSemaphore, (uint32_t*)&cuSignalSemaphore, &timelineCreateInfo);
+
+    // 
     while (!glfwWindowShouldClose(manager.window)) { // 
         glfwPollEvents();
 
@@ -750,9 +762,6 @@ int main() {
             glm::dmat4 trans = glm::scale(glm::sin(scal) * 0.1f + glm::dvec3(1.f, 1.f, 1.f));
 
             // 
-            //mv = mv * glm::scale(glm::f64vec3(100.0));
-
-            // 
             for (size_t s = 0; s < shapes.size(); s++) {
                 instanceSet->get(s) = vkh::VsGeometryInstance{
                     .transform = glm::mat3x4(glm::transpose(mv)),
@@ -761,7 +770,6 @@ int main() {
                 };
             };
 
-            // 
             {   // Path Tracing Command...
                 auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
 
@@ -787,26 +795,57 @@ int main() {
                 fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
 
                 // 
-                VkFence fence = VK_NULL_HANDLE;
-                vkh::handleVk(fw->getDeviceDispatch()->CreateFence(vkh::VkFenceCreateInfo{ .flags = {1} }, nullptr, &fence));
+                //VkFence fence = VK_NULL_HANDLE;
+                //vkh::handleVk(fw->getDeviceDispatch()->CreateFence(vkh::VkFenceCreateInfo{ .flags = {1} }, nullptr, &fence));
+                signalSemaphores = { signalSemaphore };
+                ++fenceValue;
+
+                // 
+                vk::TimelineSemaphoreSubmitInfo timelineInfo = {};
+                timelineInfo.signalSemaphoreValueCount = 1;
+                timelineInfo.pSignalSemaphoreValues = &fenceValue;
+
+                // 
                 vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+                    .pNext = &timelineInfo,
                     .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
                     .commandBufferCount = 1u, .pCommandBuffers = &rtCommand,
                     .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
-                }, fence));
+                }, nullptr));
 
                 // 
-                vkh::handleVk(fw->getDeviceDispatch()->WaitForFences(1u, &fence, true, 30ull * 1000ull * 1000ull * 1000ull));
-                fw->getDeviceDispatch()->DestroyFence(fence, nullptr);
+                //vkh::handleVk(fw->getDeviceDispatch()->WaitForFences(1u, &fence, true, 30ull * 1000ull * 1000ull * 1000ull));
+                //fw->getDeviceDispatch()->DestroyFence(fence, nullptr);
             };
 
-            // TODO: OptiX Denoise!
-            {
+            {   // 
+                cudaExternalSemaphoreWaitParams waitParams{};
+                std::memset(&waitParams, 0, sizeof(waitParams));
+                waitParams.flags = 0;
+                waitParams.params.fence.value = fenceValue;
+                cudaWaitExternalSemaphoresAsync(&cuSignalSemaphore, &waitParams, 1, nullptr);
+
+                // 
                 denoiser->denoise(4u); // Denoise Diffuse
                 //denoiser->denoise(8u); // Denoise Reflections
+
+                // 
+                cudaExternalSemaphoreSignalParams sigParams{};
+                std::memset(&sigParams, 0, sizeof(sigParams));
+                sigParams.flags = 0;
+                sigParams.params.fence.value = ++fenceValue;
+                cudaSignalExternalSemaphoresAsync(&cuWaitSemaphore, nullptr, 1, nullptr);
             };
 
+            // 
+            vk::SemaphoreWaitInfo waitInfo = {};
+            waitInfo.semaphoreCount = 1u;
+            waitInfo.pSemaphores = reinterpret_cast<vk::Semaphore*>(&waitSemaphore);
+            waitInfo.pValues = &fenceValue;
+            fw->getDeviceDispatch()->WaitSemaphoresKHR((VkSemaphoreWaitInfo*)&waitInfo, 1000000);
+
             // Next Compute After Denoise
+            waitSemaphores = {};
             signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
             {
                 // Path Tracing...
