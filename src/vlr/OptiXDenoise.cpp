@@ -152,9 +152,9 @@ namespace vlr {
 
     void OptiXDenoise::denoise(const uint32_t& bufferID) {
         // Copy from Optimal to Linear/CUDA
-        driver->submitOnce([&, this](VkCommandBuffer& cmd) {
-            framebuffer->imageToLinearCopyCommand(cmd, bufferID);
-        });
+        //driver->submitOnce([&, this](VkCommandBuffer& cmd) {
+        //    framebuffer->imageToLinearCopyCommand(cmd, bufferID);
+        //});
 
         // 
         CUstream stream = nullptr;
@@ -171,9 +171,9 @@ namespace vlr {
         CUDA_CHECK(cudaStreamSynchronize(stream)); // Making sure the denoiser is done
 
         // Copy from Linear/CUDA into Optimal
-        driver->submitOnce([&, this](VkCommandBuffer& cmd) {
-            framebuffer->linearToImageCopyCommand(cmd, bufferID);
-        });
+        //driver->submitOnce([&, this](VkCommandBuffer& cmd) {
+        //    framebuffer->linearToImageCopyCommand(cmd, bufferID);
+        //});
     };
 
 #endif

@@ -702,6 +702,7 @@ int main() {
     vkt::createSemaphore(fw->getDeviceDispatch().get(), &signalSemaphore, (uint32_t*)&cuSignalSemaphore, &timelineCreateInfo);
 
     // 
+    const uint32_t FBufID = 4u;
     while (!glfwWindowShouldClose(manager.window)) { // 
         glfwPollEvents();
 
@@ -782,16 +783,8 @@ int main() {
                 materialSet->setCommand(rtCommand);
                 constants->setCommand(rtCommand, true);
                 renderCommand->setCommand(rtCommand);
+                framebuffer->imageToLinearCopyCommand(rtCommand, FBufID);
                 vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
-
-                // 
-                //fw->getDeviceDispatch()->CmdCopyBuffer(rtCommand, counters->getGpuBuffer(), counters->getCpuBuffer(), 1u, vkh::VkBufferCopy{
-                //    counters->getGpuBuffer().offset(),
-                //    counters->getCpuBuffer().offset(),
-                //    counters->getCpuBuffer().range()
-                //});
-
-                // 
                 fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
 
                 // 
@@ -850,6 +843,7 @@ int main() {
             {
                 // Path Tracing...
                 auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
+                framebuffer->linearToImageCopyCommand(rtCommand, FBufID);
                 rayTracing->setCommandFinal(rtCommand);
                 vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
                 fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
