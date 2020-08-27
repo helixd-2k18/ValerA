@@ -7,14 +7,28 @@
 
 #define LAUNCH_ID GlobalInvocationID
 
+// 
+float4 cbFetchW(const int ID, in int2 samplep){
+    float4 color = superImageLoad(currImages[ID], samplep);
+    color = max(color, float4(0.f.xxx, 0.f));
+    return color / max(color.w, 1.f);
+};
+
+// 
+float4 rbFetchW(const int ID, in int2 samplep){
+    float4 color = superImageLoad(resampleImages[ID], samplep);
+    color = max(color, float4(0.f.xxx, 0.f));
+    return color / max(color.w, 1.f);
+};
+
 // Bugged Here, Disable...
 float4 cbLoad(const int ID, in int2 samplep) {
-    float4 center = superImageLoad(currImages[ID], samplep);
+    float4 center = cbFetchW(ID, samplep);
     float4 fixedt = center;
     int2 cxt = samplep + int2(1, 0);
     int2 cyt = samplep + int2(0, 1);
-    float4 xt = superImageLoad(currImages[ID], cxt);
-    float4 yt = superImageLoad(currImages[ID], cyt);
+    float4 xt = cbFetchW(ID, cxt);
+    float4 yt = cbFetchW(ID, cyt);
 #ifndef HIGH_QUALITY_TRANSPARENCY
     if (dot(fixedt.xyz,1.f.xxx) < 0.0001f || fixedt.w <= 0.0001f) { 
         if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else { fixedt =  max(xt, yt); };
@@ -26,12 +40,12 @@ float4 cbLoad(const int ID, in int2 samplep) {
 
 // Bugged Here, Disable...
 float4 rbLoad(const int ID, in int2 samplep) {
-    float4 center = superImageLoad(resampleImages[ID], samplep);
+    float4 center = rbFetchW(ID, samplep);
     float4 fixedt = center;
     int2 cxt = samplep + int2(1, 0);
     int2 cyt = samplep + int2(0, 1);
-    float4 xt = superImageLoad(resampleImages[ID], cxt);
-    float4 yt = superImageLoad(resampleImages[ID], cyt);
+    float4 xt = rbFetchW(ID, cxt);
+    float4 yt = rbFetchW(ID, cyt);
 #ifndef HIGH_QUALITY_TRANSPARENCY
     if (dot(fixedt.xyz,1.f.xxx) < 0.0001f || fixedt.w <= 0.0001f) { 
         if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else { fixedt =  max(xt, yt); };
@@ -105,24 +119,13 @@ void main()
             float4 transpr  = max(cbLoad(IW_TRANSPAR, curPixel), float4(0.f.xxx, 0.f));
 
             // 
-            refleclp = max(refleclp, float4(0.f.xxx, 0.f));
-            indirect = max(indirect, float4(0.f.xxx, 0.f));
-            refleclr = max(refleclr, float4(0.f.xxx, 0.f));
-            shadows = max(shadows, float4(0.f.xxx, 0.f));
-            transpr = max(transpr, float4(0.f.xxx, 0.f));
-
-            // 
-            refleclr = mix(refleclp/ max(refleclp.w,1.f), refleclr/max(refleclr.w,1.f), 0.5f.xxxx);
-            refleclr = max(refleclr, float4(0.f.xxx, 1.f));
-
-            // 
-            float4 diffuse  = float4(MAT.diffuseColor.xyz * indirect.xyz / max(indirect.w, 1.f), 1.f);
-            diffuse.xyz = mix(diffuse.xyz, refleclr.xyz/max(refleclr.w, 1.f), reflectionPower);
-            diffuse.xyz = mix(diffuse.xyz, transpr.xyz /max( transpr.w, 1.f), 1.f-MAT.diffuseColor.w);
+            float4 diffuse  = float4(MAT.diffuseColor.xyz * indirect.xyz, 1.f);
+            diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, reflectionPower);
+            diffuse.xyz = mix(diffuse.xyz, transpr.xyz, 1.f-MAT.diffuseColor.w);
 
             // 
             imageStore(rasteredImages[RS_INDIRECT], curPixel, float4(diffuse.xyz, 1.f));
-            imageStore(rasteredImages[RS_REFLECLR], curPixel, refleclr / max(refleclr.w, 1.f));
+            imageStore(rasteredImages[RS_REFLECLR], curPixel, mix(refleclp, refleclr, 0.5f.xxxx));
             imageStore(rasteredImages[RS_ALBEDOBF], curPixel, MAT.diffuseColor);
             imageStore(rasteredImages[RS_NORMALED], curPixel, MAT.mapNormal);
         };
