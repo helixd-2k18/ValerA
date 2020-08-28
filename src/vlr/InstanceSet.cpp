@@ -15,6 +15,7 @@ namespace vlr {
 
     // 
     void InstanceSet::resetAccelerations() {
+        this->accelerations.clear(); 
         this->accelerations.resize(0u);
     };
 

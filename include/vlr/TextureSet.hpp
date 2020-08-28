@@ -22,7 +22,7 @@ namespace vlr {
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         //virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
         virtual void pushImage(vkt::uni_arg<vkt::ImageRegion> image) { this->images.push_back(image); };
-        virtual void resetImages(){ this->images.resize(0ull); };
+        virtual void resetImages(){ this->images.clear(); this->images.resize(0ull); };
 
         //
         vkt::ImageRegion& get(const uint32_t& I = 0u) { return images[I]; };

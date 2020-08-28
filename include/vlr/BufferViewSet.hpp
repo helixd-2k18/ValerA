@@ -24,7 +24,7 @@ namespace vlr {
         //virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
         virtual void pushBufferView_T(const vkt::uni_arg<vkt::Vector<uint8_t>>& bufferView) { this->buffers.push_back(vkt::VectorBase(bufferView->getAllocation(), bufferView->offset(), bufferView->range(), bufferView->stride())); };
         virtual void pushBufferView_T(const vkt::uni_arg<vkt::VectorBase>& bufferView) { this->buffers.push_back(bufferView); };
-        virtual void resetBufferViews(){ this->buffers.resize(0ull); };
+        virtual void resetBufferViews(){ this->buffers.clear(); this->buffers.resize(0ull); };
 
         template<class T = uint8_t>
         void pushBufferView(vkt::uni_arg<vkt::Vector<T>> bufferView) {

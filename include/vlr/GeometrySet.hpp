@@ -21,7 +21,7 @@ namespace vlr {
             this->vertexSet = vertexSet;
         };
         virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry);
-        virtual void resetGeometries() { this->geometries.resize(0u); };
+        virtual void resetGeometries() { this->geometries.clear(); this->geometries.resize(0u); };
 
         // 
         virtual const vkt::VectorBase& getCpuBuffer() const override { return SetBase_T<GeometryDesc>::getCpuBuffer(); };

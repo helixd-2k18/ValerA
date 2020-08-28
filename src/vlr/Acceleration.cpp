@@ -39,10 +39,10 @@ namespace vlr {
 
     // 
     void Acceleration::updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build) {
-        offsetInfo.resize(0u);
-        buildGInfo.resize(0u);
-        offsetPtr.resize(0u);
-        buildGPtr.resize(0u);
+        offsetInfo.clear(); offsetInfo.resize(0u);
+        buildGInfo.clear(); buildGInfo.resize(0u);
+        offsetPtr.clear(); offsetPtr.resize(0u);
+        buildGPtr.clear(); buildGPtr.resize(0u);
 
         // 
         if (info.has()) {
