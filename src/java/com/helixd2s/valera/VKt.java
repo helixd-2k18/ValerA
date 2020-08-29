@@ -2,6 +2,9 @@ package com.helixd2s.valera;
 
 import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.annotation.*;
+import org.bytedeco.javacpp.tools.*;
+import org.bytedeco.javacpp.indexer.*;
+import java.lang.annotation.*;
 
 // "jniJiviXBase", "JiviX"
 
@@ -10,8 +13,22 @@ import org.bytedeco.javacpp.annotation.*;
         "./include/stdafx.h",
 }, link = {"vulkan-1", "glfw"}, define = {"ENABLE_OPENGL_INTEROP", "VKT_USE_GLAD", "WIN32", "OS_WIN", "VK_ENABLE_BETA_EXTENSIONS", "VK_USE_PLATFORM_WIN32_KHR", "SHARED_PTR_NAMESPACE std", "UNIQUE_PTR_NAMESPACE std", "VKT_ENABLE_GLFW_SUPPORT"})
 @Name("") //
-public class VKt extends Pointer {
-    static { Loader.load(); }
+public class VKt implements InfoMapper {
+    static { Loader.load(); };
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.PARAMETER})
+    @Adapter("vkt::uni_ptr")
+    public @interface UniPtr {
+        /** template type */
+        String value() default "";
+    };
+
+    // 
+    public void map(InfoMap infoMap) {
+        infoMap.put(new Info("vkt::uni_ptr").skip().annotations("@UniPtr"));
+    };
 
     // Pointer for xvk::Device
     @Name("xvk::Device")
@@ -25,7 +42,7 @@ public class VKt extends Pointer {
             allocate();
         }
         private native void allocate();
-    }
+    };
 
     // Pointer for xvk::Instance
     @Name("xvk::Instance")
@@ -39,9 +56,9 @@ public class VKt extends Pointer {
             allocate();
         }
         private native void allocate();
-    }
+    };
 
-
+    // 
     @Name("vkt::VmaMemoryInfo")
     public static class VmaMemoryInfo extends Pointer {
         static { Loader.load(); }
@@ -57,15 +74,15 @@ public class VKt extends Pointer {
         private native void allocate();
 
         //
-        public native @ByRef @SharedPtr Device getDeviceDispatch();
-        public native @ByRef @SharedPtr Instance getInstanceDispatch();
+        public native @ByRef @UniPtr Device getDeviceDispatch();
+        public native @ByRef @UniPtr Instance getInstanceDispatch();
 
         //
-        public native @ByRef VmaMemoryInfo setDeviceDispatch(@SharedPtr Device device);
-        public native @ByRef VmaMemoryInfo setInstanceDispatch(@SharedPtr Instance instance);
-    }
+        public native @ByRef VmaMemoryInfo setDeviceDispatch(@UniPtr Device device);
+        public native @ByRef VmaMemoryInfo setInstanceDispatch(@UniPtr Instance instance);
+    };
 
-
+    // 
     @Name("vkt::MemoryAllocationInfo")
     public static class MemoryAllocationInfo extends Pointer {
         static { Loader.load(); }
@@ -80,7 +97,7 @@ public class VKt extends Pointer {
         private native void allocate();
     };
 
-
+    // 
     @Name("vkt::ImageAllocation")
     public static class ImageAllocation extends Pointer {
         static { Loader.load(); }
@@ -88,7 +105,7 @@ public class VKt extends Pointer {
         public ImageAllocation(Pointer p) {
             super(p);
         }
-        public ImageAllocation(@SharedPtr ImageAllocation alloc) {
+        public ImageAllocation(@UniPtr ImageAllocation alloc) {
             allocate(alloc);
         }
         public ImageAllocation(@Cast("vkh::VkImageCreateInfo*") long createInfoAddress, MemoryAllocationInfo allocationInfoAddress) {
@@ -98,17 +115,17 @@ public class VKt extends Pointer {
             allocate();
         }
 
-        private native void allocate(@SharedPtr ImageAllocation alloc);
+        private native void allocate(@UniPtr ImageAllocation alloc);
         private native void allocate(@Cast("vkh::VkImageCreateInfo*") long createInfoAddress, MemoryAllocationInfo allocationInfoAddress);
         private native void allocate();
 
-        //private native @SharedPtr ImageAllocation uniPtr();
+        //private native @UniPtr ImageAllocation uniPtr();
 
         public native int getGLImage();
         public native int getGLMemory();
-    }
+    };
 
-
+    // 
     @Name("vkt::VmaImageAllocation")
     public static class VmaImageAllocation extends Pointer {
         static { Loader.load(); }
@@ -119,7 +136,7 @@ public class VKt extends Pointer {
         public VmaImageAllocation() {
             allocate();
         }
-        public VmaImageAllocation(@SharedPtr ImageAllocation alloc) {
+        public VmaImageAllocation(@UniPtr ImageAllocation alloc) {
             allocate(alloc);
         }
         public VmaImageAllocation(@Cast("VmaAllocator*") long vmaAllocator, @Cast("vkh::VkImageCreateInfo*") long createInfo, @Cast("vkt::VmaMemoryInfo*") long memInfoPtr) {
@@ -130,17 +147,17 @@ public class VKt extends Pointer {
         }
 
         private native void allocate();
-        private native void allocate(@SharedPtr ImageAllocation alloc);
+        private native void allocate(@UniPtr ImageAllocation alloc);
         private native void allocate(@Cast("VmaAllocator*") long vmaAllocator, @Cast("vkh::VkImageCreateInfo*") long createInfo, @Cast("vkt::VmaMemoryInfo*") long memInfoPtr);
         private native void allocate(@Cast("VmaAllocator*") long vmaAllocator, @Cast("vkh::VkImageCreateInfo*") long createInfo, VmaMemoryInfo memInfo);
 
-        //private native @SharedPtr ImageAllocation uniPtr();
+        //private native @UniPtr ImageAllocation uniPtr();
 
         public native int getGLImage();
         public native int getGLMemory();
-    }
+    };
 
-
+    // 
     @Name("vkt::BufferAllocation")
     public static class BufferAllocation extends Pointer {
         static { Loader.load(); }
@@ -148,7 +165,7 @@ public class VKt extends Pointer {
         public BufferAllocation(Pointer p) {
             super(p);
         }
-        public BufferAllocation(@SharedPtr BufferAllocation alloc) {
+        public BufferAllocation(@UniPtr BufferAllocation alloc) {
             allocate(alloc);
         }
         public BufferAllocation(@Cast("vkh::VkBufferCreateInfo*") long createInfoAddress, MemoryAllocationInfo allocationInfoAddress) {
@@ -158,14 +175,14 @@ public class VKt extends Pointer {
             allocate();
         }
 
-        private native void allocate(@SharedPtr BufferAllocation alloc);
+        private native void allocate(@UniPtr BufferAllocation alloc);
         private native void allocate(@Cast("vkh::VkBufferCreateInfo*") long createInfoAddress, MemoryAllocationInfo allocationInfoAddress);
         private native void allocate();
 
-        //private native @SharedPtr BufferAllocation uniPtr();
-    }
+        //private native @UniPtr BufferAllocation uniPtr();
+    };
 
-
+    // 
     @Name("vkt::VmaBufferAllocation")
     public static class VmaBufferAllocation extends Pointer {
         static { Loader.load(); }
@@ -176,7 +193,7 @@ public class VKt extends Pointer {
         public VmaBufferAllocation() {
             allocate();
         }
-        public VmaBufferAllocation(@SharedPtr BufferAllocation alloc) {
+        public VmaBufferAllocation(@UniPtr BufferAllocation alloc) {
             allocate(alloc);
         }
         public VmaBufferAllocation(@Cast("VmaAllocator*") long vmaAllocator, @Cast("vkh::VkBufferCreateInfo*") long createInfo, @Cast("vkt::VmaMemoryInfo*") long memInfoPtr) {
@@ -187,15 +204,12 @@ public class VKt extends Pointer {
         }
 
         private native void allocate();
-        private native void allocate(@SharedPtr BufferAllocation alloc);
+        private native void allocate(@UniPtr BufferAllocation alloc);
         private native void allocate(@Cast("VmaAllocator*") long vmaAllocator, @Cast("vkh::VkBufferCreateInfo*") long createInfo, @Cast("vkt::VmaMemoryInfo*") long memInfoPtr);
         private native void allocate(@Cast("VmaAllocator*") long vmaAllocator, @Cast("vkh::VkBufferCreateInfo*") long createInfo, VmaMemoryInfo memInfo);
-        //private native @SharedPtr BufferAllocation uniPtr();
-    }
+        //private native @UniPtr BufferAllocation uniPtr();
+    };
     
-    
-    
-
     //
     public static native @Name("vkt::initializeGL")
     void initializeGL(@Cast("GLFWglproc(*)(const char*)") long GetProcAddress);
@@ -243,13 +257,13 @@ public class VKt extends Pointer {
         public ImageRegion(ImageRegion b) {
             allocate(b);
         }
-        public ImageRegion(@SharedPtr ImageAllocation alloc, @Cast("vkh::VkImageViewCreateInfo*") long info, @Cast("VkImageLayout") int layout) { allocate(alloc, info, layout); }
-        public ImageRegion(@SharedPtr VmaImageAllocation alloc, @Cast("vkh::VkImageViewCreateInfo*") long info, @Cast("VkImageLayout") int layout) { allocate(alloc, info, layout); }
+        public ImageRegion(@UniPtr ImageAllocation alloc, @Cast("vkh::VkImageViewCreateInfo*") long info, @Cast("VkImageLayout") int layout) { allocate(alloc, info, layout); }
+        public ImageRegion(@UniPtr VmaImageAllocation alloc, @Cast("vkh::VkImageViewCreateInfo*") long info, @Cast("VkImageLayout") int layout) { allocate(alloc, info, layout); }
 
         private native void allocate();
         private native void allocate(ImageRegion b);
-        private native void allocate(@SharedPtr ImageAllocation alloc, @Cast("vkh::VkImageViewCreateInfo*") long info, @Cast("VkImageLayout") int layout);
-        private native void allocate(@SharedPtr VmaImageAllocation alloc, @Cast("vkh::VkImageViewCreateInfo*") long info, @Cast("VkImageLayout") int layout);
+        private native void allocate(@UniPtr ImageAllocation alloc, @Cast("vkh::VkImageViewCreateInfo*") long info, @Cast("VkImageLayout") int layout);
+        private native void allocate(@UniPtr VmaImageAllocation alloc, @Cast("vkh::VkImageViewCreateInfo*") long info, @Cast("VkImageLayout") int layout);
 
         //
         public native int getGLImage();
@@ -257,7 +271,7 @@ public class VKt extends Pointer {
 
         //
         public native @Cast("uintptr_t") long getDescriptorPtr();
-    }
+    };
 
     @Name("vkt::VectorBase") // TODO: Untyped Vector in Native
     public static class Vector extends Pointer {
@@ -268,13 +282,13 @@ public class VKt extends Pointer {
         public Vector(Pointer p) {
             super(p);
         }
-        public Vector(@SharedPtr VmaBufferAllocation a, long offset, long size, long stride) { allocate(a, offset, size, stride); }
-        public Vector(@SharedPtr BufferAllocation a, long offset, long size, long stride) { allocate(a, offset, size, stride); }
+        public Vector(@UniPtr VmaBufferAllocation a, long offset, long size, long stride) { allocate(a, offset, size, stride); }
+        public Vector(@UniPtr BufferAllocation a, long offset, long size, long stride) { allocate(a, offset, size, stride); }
 
         //
         protected native void allocate();
-        protected native void allocate(@SharedPtr VmaBufferAllocation a, long offset, long size, long stride);
-        protected native void allocate(@SharedPtr BufferAllocation a, long offset, long size, long stride);
+        protected native void allocate(@UniPtr VmaBufferAllocation a, long offset, long size, long stride);
+        protected native void allocate(@UniPtr BufferAllocation a, long offset, long size, long stride);
 
         // Java have NOT support `VkDeviceOrHostAddressKHR` or `VkDeviceOrHostAddressConstKHR`, and become rude var... (DeRMo!)
         public native @Cast("uintptr_t") long deviceAddress();
@@ -304,8 +318,8 @@ public class VKt extends Pointer {
         public ByteVector(Pointer p) {
             super(p);
         }
-        public ByteVector(@SharedPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 1); }
-        public ByteVector(@SharedPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 1); }
+        public ByteVector(@UniPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 1); }
+        public ByteVector(@UniPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 1); }
 
         // Indexer for Data
         //public ByteBufferIndexer getIndexer() {
@@ -323,7 +337,7 @@ public class VKt extends Pointer {
         public native BytePointer map(long ptr);
         public native BytePointer data();
         public native BytePointer data(long ptr);
-    }
+    };
 
     // FOR KOTLIN AND NATIVE!
     @Name("vkt::Vector<uint8_t>") // uint8_t version (C++)
@@ -335,8 +349,8 @@ public class VKt extends Pointer {
             super(p);
         }
         public UByteVector() { super(); }
-        public UByteVector(@SharedPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 1); }
-        public UByteVector(@SharedPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 1); }
+        public UByteVector(@UniPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 1); }
+        public UByteVector(@UniPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 1); }
 
         // Indexer for Data
         //public UByteBufferIndexer getIndexer() {
@@ -354,7 +368,7 @@ public class VKt extends Pointer {
         public native @Cast("uint8_t*")BytePointer map(long ptr);
         public native @Cast("uint8_t*")BytePointer data();
         public native @Cast("uint8_t*")BytePointer data(long ptr);
-    }
+    };
 
     // For JAVA only
     @Name("vkt::Vector<int16_t>") // int8_t default
@@ -366,8 +380,8 @@ public class VKt extends Pointer {
             super(p);
         }
         public ShortVector() { super(); }
-        public ShortVector(@SharedPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 2); }
-        public ShortVector(@SharedPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 2); }
+        public ShortVector(@UniPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 2); }
+        public ShortVector(@UniPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 2); }
 
         // Indexer for Data
         //public ShortBufferIndexer getIndexer() {
@@ -385,7 +399,7 @@ public class VKt extends Pointer {
         public native ShortPointer map(long ptr);
         public native ShortPointer data();
         public native ShortPointer data(long ptr);
-    }
+    };
 
     // FOR KOTLIN AND NATIVE!
     @Name("vkt::Vector<uint16_t>") // uint8_t version (C++)
@@ -397,8 +411,8 @@ public class VKt extends Pointer {
             super(p);
         }
         public UShortVector() { super(); }
-        public UShortVector(@SharedPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 2); }
-        public UShortVector(@SharedPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 2); }
+        public UShortVector(@UniPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 2); }
+        public UShortVector(@UniPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 2); }
 
         // Indexer for Data
         //public UShortBufferIndexer getIndexer() {
@@ -416,7 +430,7 @@ public class VKt extends Pointer {
         public native @Cast("uint16_t*") ShortPointer map(long ptr);
         public native @Cast("uint16_t*") ShortPointer data();
         public native @Cast("uint16_t*") ShortPointer data(long ptr);
-    }
+    };
 
     // For JAVA only
     @Name("vkt::Vector<int32_t>") // int8_t default
@@ -428,8 +442,8 @@ public class VKt extends Pointer {
             super(p);
         }
         public IntVector() { super(); }
-        public IntVector(@SharedPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
-        public IntVector(@SharedPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
+        public IntVector(@UniPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
+        public IntVector(@UniPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
 
         // Indexer for Data
         //public IntBufferIndexer getIndexer() {
@@ -447,7 +461,7 @@ public class VKt extends Pointer {
         public native IntPointer map(long ptr);
         public native IntPointer data();
         public native IntPointer data(long ptr);
-    }
+    };
 
     // FOR KOTLIN AND NATIVE!
     @Name("vkt::Vector<uint32_t>") // uint8_t version (C++)
@@ -459,8 +473,8 @@ public class VKt extends Pointer {
             super(p);
         }
         public UIntVector() { super(); }
-        public UIntVector(@SharedPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
-        public UIntVector(@SharedPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
+        public UIntVector(@UniPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
+        public UIntVector(@UniPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
 
         // Indexer for Data
         //public UIntBufferIndexer getIndexer() {
@@ -478,7 +492,7 @@ public class VKt extends Pointer {
         public native @Cast("uint32_t*") IntPointer map(long ptr);
         public native @Cast("uint32_t*") IntPointer data();
         public native @Cast("uint32_t*") IntPointer data(long ptr);
-    }
+    };
 
     // Universal
     @Name("vkt::Vector<float>") // int8_t default
@@ -490,8 +504,8 @@ public class VKt extends Pointer {
             super(p);
         }
         public FloatVector() { super(); }
-        public FloatVector(@SharedPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
-        public FloatVector(@SharedPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
+        public FloatVector(@UniPtr VmaBufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
+        public FloatVector(@UniPtr BufferAllocation a, long offset, long size) { super(a, offset, size, 4); }
 
         // Indexer for Data
         //public FloatBufferIndexer getIndexer() {
@@ -509,9 +523,9 @@ public class VKt extends Pointer {
         public native FloatPointer map(long ptr);
         public native FloatPointer data();
         public native FloatPointer data(long ptr);
-    }
+    };
 
-    
+    // 
     @Name("vkt::GPUFramework")
     public static class Driver extends Pointer {
         static { Loader.load(); }
@@ -524,7 +538,7 @@ public class VKt extends Pointer {
         }
 
         private native void allocate();
-    }
+    };
     
     
 };

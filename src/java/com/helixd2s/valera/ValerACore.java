@@ -2,7 +2,9 @@ package com.helixd2s.valera;
 
 import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.annotation.*;
+import org.bytedeco.javacpp.tools.*;
 import org.bytedeco.javacpp.indexer.*;
+import java.lang.annotation.*;
 
 // "jniJiviXBase", "JiviX"
 
@@ -13,10 +15,24 @@ import org.bytedeco.javacpp.indexer.*;
         "jniVKt.h",
 }, link = {"vulkan-1", "glfw"}, define = {"ENABLE_OPENGL_INTEROP", "VKT_USE_GLAD", "WIN32", "OS_WIN", "VK_ENABLE_BETA_EXTENSIONS", "VK_USE_PLATFORM_WIN32_KHR", "SHARED_PTR_NAMESPACE std", "UNIQUE_PTR_NAMESPACE std", "VKT_ENABLE_GLFW_SUPPORT"})
 @Name("") //
-public class ValerACore extends Pointer {
-    static { Loader.load(); }
+public class ValerACore implements InfoMapper {
+    static { Loader.load(); };
+    
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.PARAMETER})
+    @Adapter("vkt::uni_ptr")
+    public @interface UniPtr {
+        /** template type */
+        String value() default "";
+    };
 
+    // 
+    public void map(InfoMap infoMap) {
+        infoMap.put(new Info("vkt::uni_ptr").skip().annotations("@UniPtr"));
+    };
 
+    // 
     @Name("vlj::Driver")
     public static class Driver extends Pointer {
         static { Loader.load(); }
@@ -27,12 +43,12 @@ public class ValerACore extends Pointer {
         public Driver() {
             allocate();
         }
-        public Driver(@SharedPtr VKt.Driver object) {
+        public Driver(@UniPtr VKt.Driver object) {
             allocate(object);
         }
 
         private native void allocate();
-        private native void allocate(@SharedPtr VKt.Driver object);
+        private native void allocate(@UniPtr VKt.Driver object);
 
         // LWJGL-3 Compatible
         public native void loadXVK();
@@ -73,13 +89,14 @@ public class ValerACore extends Pointer {
         }
 
         //
-        public native @SharedPtr VKt.Device getDeviceDispatch();
-        public native @SharedPtr VKt.Instance getInstanceDispatch();
+        public native @UniPtr VKt.Device getDeviceDispatch();
+        public native @UniPtr VKt.Instance getInstanceDispatch();
 
         //
         public native long memoryAllocationInfoPtr();
     };
     
+    // 
     @Name("vlr::MaterialUnit")
     public static class MaterialUnit extends Pointer {
         static { Loader.load(); }
@@ -92,6 +109,35 @@ public class ValerACore extends Pointer {
         }
 
         private native void allocate();
-    }
+    };
+
+    // 
+    @Name("vlr::AccelerationCreateInfo")
+    public static class AccelerationCreateInfo extends Pointer {
+        static { Loader.load(); }
+
+        public AccelerationCreateInfo(Pointer p) { super(p); };
+        public AccelerationCreateInfo() { allocate(); };
+
+        private native void allocate();
+    };
     
+
+    //
+    @Name("vlr::Acceleration")
+    public static class Acceleration extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public Acceleration(Pointer p) { super(p); };
+        public Acceleration(@UniPtr Driver driver, AccelerationCreateInfo info) { allocate(driver, info); };
+        public Acceleration(@UniPtr Driver driver) { allocate(driver); };
+        public Acceleration() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr Driver driver, AccelerationCreateInfo info);
+        private native void allocate(@UniPtr Driver driver);
+    };
+
 };
