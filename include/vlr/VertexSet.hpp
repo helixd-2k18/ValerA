@@ -88,6 +88,7 @@ namespace vlr {
 
 namespace vlj {
     class VertexSet : public Wrap<vlr::VertexSet> {
+    public:
         VertexSet() : Wrap<vlr::VertexSet>() {};
         VertexSet(vkt::uni_ptr<vlr::VertexSet> object) : Wrap<vlr::VertexSet>(object) {};
         VertexSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::VertexSetCreateInfo> info = {}) : Wrap<vlr::VertexSet>(std::make_shared<vlr::VertexSet>(driver, info)) {};

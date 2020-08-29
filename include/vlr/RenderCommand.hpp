@@ -34,6 +34,7 @@ namespace vlr {
 
 namespace vlj {
     class RenderCommand : public Wrap<vlr::RenderCommand> {
+    public:
         RenderCommand() : Wrap<vlr::RenderCommand>() {};
         RenderCommand(vkt::uni_ptr<vlr::RenderCommand> object) : Wrap<vlr::RenderCommand>(object) {};
         RenderCommand(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::RenderCommandCreateInfo> info = {}) : Wrap<vlr::RenderCommand>(std::make_shared<vlr::RenderCommand>(driver, info)) {};

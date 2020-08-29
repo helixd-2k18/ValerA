@@ -48,6 +48,7 @@ namespace vlr {
 
 namespace vlj {
     class BufferViewSet : public Wrap<vlr::BufferViewSet> {
+    public:
         BufferViewSet() : Wrap<vlr::BufferViewSet>() {};
         BufferViewSet(vkt::uni_ptr<vlr::BufferViewSet> object) : Wrap<vlr::BufferViewSet>(object) {};
         BufferViewSet(vkt::uni_ptr<vlr::Driver> driver, const bool& texelBuffer = false) : Wrap<vlr::BufferViewSet>(std::make_shared<vlr::BufferViewSet>(driver, texelBuffer)) {};

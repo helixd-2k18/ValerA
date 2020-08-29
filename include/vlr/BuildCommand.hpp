@@ -39,6 +39,7 @@ namespace vlr {
 
 namespace vlj {
     class BuildCommand : public Wrap<vlr::BuildCommand> {
+    public:
         BuildCommand() : Wrap<vlr::BuildCommand>() {};
         BuildCommand(vkt::uni_ptr<vlr::BuildCommand> object) : Wrap<vlr::BuildCommand>(object) {};
         BuildCommand(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::BuildCommandCreateInfo> info = {}) : Wrap<vlr::BuildCommand>(std::make_shared<vlr::BuildCommand>(driver, info)) {};

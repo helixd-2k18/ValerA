@@ -37,6 +37,7 @@ namespace vlr {
 
 namespace vlj {
     class SamplerSet : public Wrap<vlr::SamplerSet> {
+    public:
         SamplerSet() : Wrap<vlr::SamplerSet>() {};
         SamplerSet(vkt::uni_ptr<vlr::SamplerSet> object) : Wrap<vlr::SamplerSet>(object) {};
         SamplerSet(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::SamplerSet>(std::make_shared<vlr::SamplerSet>(driver)) {};

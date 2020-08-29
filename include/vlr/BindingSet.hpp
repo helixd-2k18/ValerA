@@ -11,6 +11,7 @@ namespace vlr {
 
 namespace vlj {
     class BindingSet : public Wrap<vlr::BindingSet> {
+    public:
         BindingSet() : Wrap<vlr::BindingSet>() {};
         BindingSet(vkt::uni_ptr<vlr::BindingSet> object) : Wrap<vlr::BindingSet>(object) {};
         BindingSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::BindingSet>(std::make_shared<vlr::BindingSet>(driver, info)) {};

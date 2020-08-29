@@ -97,6 +97,7 @@ namespace vlr {
 
 namespace vlj {
     class Framebuffer : public Wrap<vlr::Framebuffer> {
+    public:
         Framebuffer() : Wrap<vlr::Framebuffer>() {};
         Framebuffer(vkt::uni_ptr<vlr::Framebuffer> object) : Wrap<vlr::Framebuffer>(object) {};
         Framebuffer(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::Framebuffer>(std::make_shared<vlr::Framebuffer>(driver)) {};

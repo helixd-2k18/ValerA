@@ -101,6 +101,7 @@ namespace vlr {
 
 namespace vlj {
     class RayTracing : public Wrap<vlr::RayTracing> {
+    public:
         RayTracing() : Wrap<vlr::RayTracing>() {};
         RayTracing(vkt::uni_ptr<vlr::RayTracing> object) : Wrap<vlr::RayTracing>(object) {};
         RayTracing(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::RayTracingCreateInfo> info) : Wrap<vlr::RayTracing>(std::make_shared<vlr::RayTracing>(driver, info)) {};

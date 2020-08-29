@@ -21,9 +21,10 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{1af19893-93b9-4274-962f-42d46822cf43}</ProjectGuid>
-    <RootNamespace>javacpp</RootNamespace>
+    <ProjectGuid>{317edb58-451c-4ad7-a2a8-8adac80fbd13}</ProjectGuid>
+    <RootNamespace>VKt</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>VKt</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -78,9 +79,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Program Files\glbinding\include;C:\Program Files\Java\jdk-14.0.1\include\win32;C:\Program Files\Java\jdk-14.0.1\include;$(IncludePath);$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/../include;$(ProjectDir)/../src;$(ProjectDir)/../../include;$(ProjectDir)/../../src</IncludePath>
+    <ExecutablePath>C:\Program Files\glbinding;C:\Program Files\Java\jdk-14.0.1\bin;$(VC_ExecutablePath_x64);$(CommonExecutablePath)</ExecutablePath>
+    <LibraryPath>$(ProjectDir)\..\lib;$(ProjectDir)\..\..\lib;$(ProjectDir)\lib;C:\Program Files\glbinding\lib;C:\Program Files\Java\jdk-14.0.1\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <ExecutablePath>C:\Program Files\glbinding;C:\Program Files\Java\jdk-14.0.1\bin;$(VC_ExecutablePath_x64);$(CommonExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files\glbinding\include;C:\Program Files\Java\jdk-14.0.1\include\win32;C:\Program Files\Java\jdk-14.0.1\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/../include;$(ProjectDir)/../src;$(ProjectDir)/../../include;$(ProjectDir)/../../src</IncludePath>
+    <LibraryPath>$(ProjectDir)\..\lib;$(ProjectDir)\..\..\lib;$(ProjectDir)\lib;C:\Program Files\glbinding\lib;C:\Program Files\Java\jdk-14.0.1\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,15 +127,20 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;JAVACPP_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;_DEBUG;JAVACPP_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
+      <ForcedIncludeFiles>macro.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <UndefinePreprocessorDefinitions>UNICODE</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>glfw3.lib;jawt.lib;jvm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,10 +149,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;JAVACPP_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;NDEBUG;JAVACPP_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <UndefinePreprocessorDefinitions>UNICODE</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,24 +161,94 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>glfw3.lib;jawt.lib;jvm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\vkt\include\glad\glad.h" />
+    <ClInclude Include="..\..\..\vkt\include\glad\khrplatform.h" />
+    <ClInclude Include="..\..\..\vkt\include\GLFW\glfw3.h" />
+    <ClInclude Include="..\..\..\vkt\include\GLFW\glfw3native.h" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\enums.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\handle.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\helpers.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\matching.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\spirv-mod.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkh\structures.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\core.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\essential.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\image.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\structs.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\utils.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\vector.hpp" />
+    <ClInclude Include="..\..\examples\include\stdafx.h" />
+    <ClInclude Include="..\..\include\vlr\Acceleration.hpp" />
+    <ClInclude Include="..\..\include\vlr\Accumulation.hpp" />
+    <ClInclude Include="..\..\include\vlr\AttributeSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\Background.hpp" />
+    <ClInclude Include="..\..\include\vlr\BindingSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\BufferViewSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\BuildCommand.hpp" />
+    <ClInclude Include="..\..\include\vlr\Config.hpp" />
+    <ClInclude Include="..\..\include\vlr\Constants.hpp" />
+    <ClInclude Include="..\..\include\vlr\Driver.hpp" />
+    <ClInclude Include="..\..\include\vlr\Framebuffer.hpp" />
+    <ClInclude Include="..\..\include\vlr\Geometry.hpp" />
+    <ClInclude Include="..\..\include\vlr\GeometrySet.hpp" />
+    <ClInclude Include="..\..\include\vlr\InstanceSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\MaterialSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\OptiXDenoise.hpp" />
+    <ClInclude Include="..\..\include\vlr\OthersCommand.hpp" />
+    <ClInclude Include="..\..\include\vlr\PipelineLayout.hpp" />
+    <ClInclude Include="..\..\include\vlr\Rasterization.hpp" />
+    <ClInclude Include="..\..\include\vlr\RayTracing.hpp" />
+    <ClInclude Include="..\..\include\vlr\RenderCommand.hpp" />
+    <ClInclude Include="..\..\include\vlr\Resampling.hpp" />
+    <ClInclude Include="..\..\include\vlr\SamplerSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\SetBase.hpp" />
+    <ClInclude Include="..\..\include\vlr\TextureSet.hpp" />
+    <ClInclude Include="..\..\include\vlr\VertexSet.hpp" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="macro.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\vkt\include\glad\glad.c" />
+    <ClCompile Include="..\..\examples\include\stdafx.cpp" />
+    <ClCompile Include="..\vlr\Acceleration.cpp" />
+    <ClCompile Include="..\vlr\Accumulation.cpp" />
+    <ClCompile Include="..\vlr\AttributeSet.cpp" />
+    <ClCompile Include="..\vlr\Background.cpp" />
+    <ClCompile Include="..\vlr\BindingSet.cpp" />
+    <ClCompile Include="..\vlr\BufferViewSet.cpp" />
+    <ClCompile Include="..\vlr\BuildCommand.cpp" />
+    <ClCompile Include="..\vlr\Config.cpp" />
+    <ClCompile Include="..\vlr\Driver.cpp" />
+    <ClCompile Include="..\vlr\Framebuffer.cpp" />
+    <ClCompile Include="..\vlr\Geometry.cpp" />
+    <ClCompile Include="..\vlr\GeometrySet.cpp" />
+    <ClCompile Include="..\vlr\InstanceSet.cpp" />
+    <ClCompile Include="..\vlr\MaterialSet.cpp" />
+    <ClCompile Include="..\vlr\OptiXDenoise.cpp" />
+    <ClCompile Include="..\vlr\OthersCommand.cpp" />
+    <ClCompile Include="..\vlr\PipelineLayout.cpp" />
+    <ClCompile Include="..\vlr\Rasterization.cpp" />
+    <ClCompile Include="..\vlr\RayTracing.cpp" />
+    <ClCompile Include="..\vlr\RenderCommand.cpp" />
+    <ClCompile Include="..\vlr\Resampling.cpp" />
+    <ClCompile Include="..\vlr\SamplerSet.cpp" />
+    <ClCompile Include="..\vlr\SetBase.cpp" />
+    <ClCompile Include="..\vlr\TextureSet.cpp" />
+    <ClCompile Include="..\vlr\VertexSet.cpp" />
+    <ClCompile Include="..\vlr\VMA.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="jnijavacpp.cpp" />
-    <ClCompile Include="jniValerABase.cpp" />
-    <ClCompile Include="jniValerACore.cpp" />
     <ClCompile Include="jniVKt.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\vkt\include\vkt3\readme.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

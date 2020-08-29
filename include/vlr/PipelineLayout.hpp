@@ -80,6 +80,7 @@ namespace vlr {
 
 namespace vlj {
     class PipelineLayout : public Wrap<vlr::PipelineLayout> {
+    public:
         PipelineLayout() : Wrap<vlr::PipelineLayout>() {};
         PipelineLayout(vkt::uni_ptr<vlr::PipelineLayout> object) : Wrap<vlr::PipelineLayout>(object) {};
         PipelineLayout(vkt::uni_ptr<vlr::Driver> driver) : Wrap<vlr::PipelineLayout>(std::make_shared<vlr::PipelineLayout>(driver)) {};

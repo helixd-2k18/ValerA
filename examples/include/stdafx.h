@@ -1,6 +1,10 @@
 #pragma once
 
 // 
+#ifndef STDAFX_H
+#define STDAFX_H
+
+// 
 #define VKT_ENABLE_GLFW_SUPPORT
 #define GLM_FORCE_SWIZZLE 
 #define GLM_SWIZZLE_XYZW 
@@ -60,3 +64,5 @@
 // 
 #include <misc/tiny_gltf.h>
 #include <misc/tinyexr.h>
+
+#endif
