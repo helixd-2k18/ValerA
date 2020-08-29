@@ -23,7 +23,7 @@ namespace vlr {
         vkt::uni_ptr<InstanceSet> instanceSet = {}; // Used By Top Level
 
         // 
-        VkPipeline pipeline = VK_NULL_HANDLE;
+        VkPipeline pipeline = VK_NULL_HANDLE, opaque = VK_NULL_HANDLE;
         //uint32_t geometryID = 0u; // 
         //uint32_t instanceID = 0u; // 
 

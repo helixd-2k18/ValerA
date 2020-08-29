@@ -73,6 +73,11 @@ struct PS_OUTPUT {
 
 #endif
 
+// Так как НЕ прозрачные объекты не имеют толком прозрачностей, или не должны иметь, предпочитаем ранее тестирование...
+#ifdef OPAQUE
+layout ( early_fragment_tests ) in;
+#endif
+
 // 
 //layout ( early_fragment_tests ) in; // Reduce Lag Rate! (but transparency may broken!)
 // Прозрачность с новой прошивкой починим! @RED21

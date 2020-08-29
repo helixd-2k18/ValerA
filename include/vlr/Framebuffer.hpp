@@ -9,14 +9,27 @@
 
 namespace vlr {
 
+    struct PipelineStages {
+        std::string vertexShader = "./shaders/rasterize.vert.spv";
+        std::string geometryShader = "./shaders/rasterize.geom.spv";
+        std::string fragmentShader = "./shaders/rasterize.frag.spv";
+    };
+
     struct PipelineCreateInfo {
         vkt::uni_ptr<PipelineLayout> layout = {};
         vkt::uni_ptr<Framebuffer> framebuffer = {};
         vkt::uni_ptr<InstanceSet> instanceSet = {};
         vkt::uni_ptr<Constants> constants = {};
-        std::string vertexShader = "./shaders/rasterize.vert.spv";
-        std::string geometryShader = "./shaders/rasterize.geom.spv";
-        std::string fragmentShader = "./shaders/rasterize.frag.spv";
+        PipelineStages translucent = {
+            .vertexShader = "./shaders/rasterize.vert.spv",
+            .geometryShader = "./shaders/rasterize.geom.spv",
+            .fragmentShader = "./shaders/rasterize.frag.spv"
+        };
+        PipelineStages opaque = {
+            .vertexShader = "./shaders/opaque.vert.spv",
+            .geometryShader = "./shaders/opaque.geom.spv",
+            .fragmentShader = "./shaders/opaque.frag.spv"
+        };
     };
 
     struct RayTracingCreateInfo {

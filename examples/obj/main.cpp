@@ -165,173 +165,8 @@ int main() {
 
     // 
     auto denoiser = std::make_shared<vlr::OptiXDenoise>(fw);
-    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 2u });
-    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
-    auto buffers = std::make_shared<vlr::BufferViewSet>(fw);
-
-    // 
-    auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
-        .bindings = bindings,
-        .attributes = accessors,
-        .bufferViews = buffers
-    });
-
-    // 
-    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
-    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {shapes.size()} }); // shapes.size()
-
-    // 
-    for (size_t s = 0; s < shapes.size(); s++) { // 
-        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = vertexCountAll[s] });
-        auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
-        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer[s] });
-
-        // 
-        //if (s == 0u) {
-            sets.push_back(vertexData);
-        //} else {
-            //sets.push_back(sets[0]);
-        //};
-
-        accelerations.push_back(acceleration);
-        geometries.push_back(geometrySet);
-        buffers->pushBufferView(sets.back()->getGpuBuffer());
-
-        // 
-        size_t indexOffset = 0; // Loop over faces(polygon)
-
-        // 
-        auto gdesc = vlr::GeometryDesc{
-            .firstVertex = 0u,//indexOffset,
-            .primitiveCount = uint32_t(indexOffset / 3u),
-            .material = uint32_t(shapes[s].mesh.material_ids[0u] != -1 ? shapes[s].mesh.material_ids[0u] : 0u),
-            .vertexAttribute = 0u
-        };
-
-        //
-        gdesc.mesh_flags.translucent = 1;
-
-        // 
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
-
-            // 
-            auto verticeCount = shapes[s].mesh.num_face_vertices[f];
-            for (size_t v = 0; v < verticeCount; v++) { //
-                tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + v];
-                vertexData->get(indexOffset + v).fPosition = glm::vec4(attrib.vertices[3 * idx.vertex_index + 0], attrib.vertices[3 * idx.vertex_index + 1], attrib.vertices[3 * idx.vertex_index + 2], 1.f);
-                if (idx.normal_index >= 0) { 
-                    vertexData->get(indexOffset + v).fNormal = glm::vec4(attrib.normals[3 * idx.normal_index + 0], attrib.normals[3 * idx.normal_index + 1], attrib.normals[3 * idx.normal_index + 2], 0.f); 
-                    gdesc.mesh_flags.hasNormal = 1;
-                };
-                if (idx.texcoord_index >= 0) {
-                    vertexData->get(indexOffset + v).fTexcoord = glm::vec4(attrib.texcoords[2 * idx.texcoord_index + 0], attrib.texcoords[2 * idx.texcoord_index + 1], 0.f, 0.f);
-                    gdesc.mesh_flags.hasTexcoord = 1;
-                };
-            };
-
-            indexOffset += verticeCount;
-        };
-
-        // 
-        gdesc.primitiveCount = uint32_t(indexOffset / 3u);
-
-        // 
-        uint32_t bID = uint32_t(s);
-        bindings->get(bID) = vkh::VkVertexInputBindingDescription{
-            .binding = bID, .stride = sizeof(FDStruct)
-        };
-
-        // 
-        //accessorCount = 0u; // for DEBUG
-
-        // 
-        accessors->get(gdesc.vertexAttribute = accessorCount++) = vkh::VkVertexInputAttributeDescription{
-            .location = 0u, .binding = bID,
-            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(offsetof(FDStruct, fPosition))
-        };
-
-        // 
-        accessors->get(gdesc.attributes[0u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
-            .location = 0u, .binding = bID,
-            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(offsetof(FDStruct, fTexcoord))
-        };
-
-        // 
-        accessors->get(gdesc.attributes[1u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
-            .location = 0u, .binding = bID,
-            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .offset = uint32_t(offsetof(FDStruct, fNormal))
-        };
-
-        // 
-        auto geometry = std::make_shared<vlr::Geometry>(vertexSet, gdesc);
-
-        // 
-        geometrySet->pushGeometry(geometry);
-        instanceSet->pushAcceleration(acceleration);
-
-        // 
-        auto geometryData = geometrySet->getVector();
-    };
-
-    // 
-    auto accessorsV = accessors->getVector();
-    auto bindingsV = bindings->getVector();
-
-    // 
-    fw->submitOnce([&](VkCommandBuffer cmd) {
-        bindings->setCommand(cmd);
-        accessors->setCommand(cmd);
-        for (size_t s = 0; s < shapes.size(); s++) {
-            sets[s]->setCommand(cmd);
-            geometries[s]->setCommand(cmd);
-        };
-    });
-
-    // 
     auto framebuffer = std::make_shared<vlr::Framebuffer>(fw);
     auto layout = std::make_shared<vlr::PipelineLayout>(fw);
-
-    // 
-    for (size_t s = 0; s < shapes.size(); s++) {
-        instanceSet->get(s) = vkh::VsGeometryInstance{
-            .customId = uint32_t(s),
-            .accelerationStructureHandle = accelerations[s]->getHandle() // Broken Feature, Set Manually
-        };
-    };
-
-    // 
-    auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
-        .layout = layout,
-        .framebuffer = framebuffer,
-        .instanceSet = instanceSet,
-        .constants = constants
-    });
-
-    // 
-    auto rayTracing = std::make_shared<vlr::RayTracing>(fw, vlr::RayTracingCreateInfo{
-        .layout = layout,
-        .framebuffer = framebuffer,
-        .accelerationTop = accelerationTop,
-        .constants = constants
-    });
-
-    //
-    auto renderCommand = std::make_shared<vlr::RenderCommand>(fw, vlr::RenderCommandCreateInfo{
-        .layout = layout,
-        .rayTracing = rayTracing,
-        .rasterization = rasterization
-    });
-
-    // 
-    auto buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
-        .layout = layout,
-        .accelerationTop = accelerationTop
-    });
-
-    
 
     //  
     auto materialSet = std::make_shared<vlr::MaterialSet>(fw, vlr::DataSetCreateInfo{ .count = std::max(uint32_t(materials.size()), 1u) });
@@ -343,11 +178,14 @@ int main() {
     // 
     std::string base_dir = "./";
     std::unordered_map<std::string, uint32_t> textures = {};
+    std::unordered_map<std::string, bool> opaqueTex = {};
     uint32_t idx = 0u;
 
     // 
     auto loadTexture = [&](std::string name) -> GLuint {
         // Only load the texture if it is not already loaded
+
+        bool isOpaque = true;
         if (textures.find(name) == textures.end()) {
             int w = 0u, h = 0u, comp = 4u;
 
@@ -370,8 +208,9 @@ int main() {
                 return -1;
             };
             std::cout << "Loaded texture: " << texture_filename << ", w = " << w << ", h = " << h << ", comp = " << comp << std::endl;
+            if (comp == 4) { isOpaque = false; };
 
- 
+            // 
             int width = w, height = h;
             unsigned char* rgba = image;
             const char* err = nullptr;
@@ -384,14 +223,14 @@ int main() {
                 //
                 auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
                     it->format = VK_FORMAT_R8G8B8A8_UNORM,
-                    it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
-                    it->usage = imageUsage;
+                        it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
+                        it->usage = imageUsage;
                     return it;
-                }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
-                    it->format = VK_FORMAT_R8G8B8A8_UNORM,
-                    it->subresourceRange = apres;
-                    return it;
-                }));
+                    }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
+                        it->format = VK_FORMAT_R8G8B8A8_UNORM,
+                            it->subresourceRange = apres;
+                        return it;
+                        }));
 
                 //
                 vkt::Vector<> imageBuf = {};
@@ -401,7 +240,7 @@ int main() {
                     memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
                     imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
                         .size = size_t(width) * size_t(height) * sizeof(glm::u8vec4), .usage = uploadUsage,
-                    }, memInfo));
+                        }, memInfo));
                     memcpy(imageBuf.data(), rgba, imageBuf.range());
                 };
 
@@ -417,8 +256,8 @@ int main() {
                         .imageSubresource = image.subresourceLayers(),
                         .imageOffset = {0u,0u,0u},
                         .imageExtent = {uint32_t(width),uint32_t(height),1u},
+                        });
                     });
-                });
 
                 // 
                 textureSet->pushImage(image);
@@ -426,6 +265,8 @@ int main() {
 
             stbi_image_free(image);
             textures.insert(std::make_pair(name, texture_id));
+        } else {
+            isOpaque = opaqueTex[name];
         };
 
         // If not found, force return -1
@@ -433,11 +274,16 @@ int main() {
             return -1;
         };
 
+        // 
+        opaqueTex[name] = isOpaque;
+
         // Return when possible
         return textures[name];
     };
 
 
+    //
+    std::vector<bool> opaque = {};
 
     // Material
     for (uint32_t i = 0; i < materials.size(); i++) {
@@ -455,6 +301,8 @@ int main() {
         mdk.normalTexture = loadTexture(mat.normal_texname);
         mdk.pbrAGMTexture = loadTexture(mat.specular_texname);
         if (mdk.normalTexture == -1) { mdk.normalTexture = loadTexture(mat.bump_texname); };
+
+        opaque.push_back(opaqueTex[mat.diffuse_texname]);
     };
 
     // Default Material
@@ -466,6 +314,7 @@ int main() {
         mdk.pbrAGMTexture = -1;
         mdk.emissionTexture = -1;
         mdk.diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
+        opaque.push_back(true);
     };
 
 
@@ -619,21 +468,173 @@ int main() {
 
 
     // 
+    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 2u });
+    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
+    auto buffers = std::make_shared<vlr::BufferViewSet>(fw);
+
+    // 
+    auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
+        .bindings = bindings,
+        .attributes = accessors,
+        .bufferViews = buffers
+    });
+
+    // 
+    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
+    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {shapes.size()} }); // shapes.size()
+
+    // 
+    for (size_t s = 0; s < shapes.size(); s++) { // 
+        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = vertexCountAll[s] });
+        auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
+        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer[s] });
+
+        // 
+        sets.push_back(vertexData);
+        accelerations.push_back(acceleration);
+        geometries.push_back(geometrySet);
+        buffers->pushBufferView(sets.back()->getGpuBuffer());
+
+        // 
+        size_t indexOffset = 0; // Loop over faces(polygon)
+
+        // 
+        auto gdesc = vlr::GeometryDesc{
+            .firstVertex = 0u,//indexOffset,
+            .primitiveCount = uint32_t(indexOffset / 3u),
+            .material = uint32_t(shapes[s].mesh.material_ids[0u] != -1 ? shapes[s].mesh.material_ids[0u] : 0u),
+            .vertexAttribute = 0u
+        };
+        gdesc.mesh_flags.translucent = !opaque[gdesc.material];
+
+        // 
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
+
+            // 
+            auto verticeCount = shapes[s].mesh.num_face_vertices[f];
+            for (size_t v = 0; v < verticeCount; v++) { //
+                tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + v];
+                vertexData->get(indexOffset + v).fPosition = glm::vec4(attrib.vertices[3 * idx.vertex_index + 0], attrib.vertices[3 * idx.vertex_index + 1], attrib.vertices[3 * idx.vertex_index + 2], 1.f);
+                if (idx.normal_index >= 0) {
+                    vertexData->get(indexOffset + v).fNormal = glm::vec4(attrib.normals[3 * idx.normal_index + 0], attrib.normals[3 * idx.normal_index + 1], attrib.normals[3 * idx.normal_index + 2], 0.f);
+                    gdesc.mesh_flags.hasNormal = 1;
+                };
+                if (idx.texcoord_index >= 0) {
+                    vertexData->get(indexOffset + v).fTexcoord = glm::vec4(attrib.texcoords[2 * idx.texcoord_index + 0], attrib.texcoords[2 * idx.texcoord_index + 1], 0.f, 0.f);
+                    gdesc.mesh_flags.hasTexcoord = 1;
+                };
+            };
+
+            indexOffset += verticeCount;
+        };
+
+        // 
+        gdesc.primitiveCount = uint32_t(indexOffset / 3u);
+
+        // 
+        uint32_t bID = uint32_t(s);
+        bindings->get(bID) = vkh::VkVertexInputBindingDescription{
+            .binding = bID, .stride = sizeof(FDStruct)
+        };
+
+        // 
+        //accessorCount = 0u; // for DEBUG
+
+        // 
+        accessors->get(gdesc.vertexAttribute = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+            .location = 0u, .binding = bID,
+            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+            .offset = uint32_t(offsetof(FDStruct, fPosition))
+        };
+
+        // 
+        accessors->get(gdesc.attributes[0u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+            .location = 0u, .binding = bID,
+            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+            .offset = uint32_t(offsetof(FDStruct, fTexcoord))
+        };
+
+        // 
+        accessors->get(gdesc.attributes[1u] = accessorCount++) = vkh::VkVertexInputAttributeDescription{
+            .location = 0u, .binding = bID,
+            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+            .offset = uint32_t(offsetof(FDStruct, fNormal))
+        };
+
+        // 
+        auto geometry = std::make_shared<vlr::Geometry>(vertexSet, gdesc);
+
+        // 
+        geometrySet->pushGeometry(geometry);
+        instanceSet->pushAcceleration(acceleration);
+
+        // 
+        auto geometryData = geometrySet->getVector();
+    };
+
+    // 
+    auto accessorsV = accessors->getVector();
+    auto bindingsV = bindings->getVector();
+
+    // 
+    fw->submitOnce([&](VkCommandBuffer cmd) {
+        bindings->setCommand(cmd);
+        accessors->setCommand(cmd);
+        for (size_t s = 0; s < shapes.size(); s++) {
+            sets[s]->setCommand(cmd);
+            geometries[s]->setCommand(cmd);
+        };
+    });
+
+    // 
+    for (size_t s = 0; s < shapes.size(); s++) {
+        instanceSet->get(s) = vkh::VsGeometryInstance{
+            .customId = uint32_t(s),
+            .accelerationStructureHandle = accelerations[s]->getHandle() // Broken Feature, Set Manually
+        };
+    };
+
+    // 
+    auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
+        .layout = layout,
+        .framebuffer = framebuffer,
+        .instanceSet = instanceSet,
+        .constants = constants
+    });
+
+    // 
+    auto rayTracing = std::make_shared<vlr::RayTracing>(fw, vlr::RayTracingCreateInfo{
+        .layout = layout,
+        .framebuffer = framebuffer,
+        .accelerationTop = accelerationTop,
+        .constants = constants
+    });
+
+    //
+    auto renderCommand = std::make_shared<vlr::RenderCommand>(fw, vlr::RenderCommandCreateInfo{
+        .layout = layout,
+        .rayTracing = rayTracing,
+        .rasterization = rasterization
+    });
+
+    // 
+    auto buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
+        .layout = layout,
+        .accelerationTop = accelerationTop
+    });
+
+
+    // 
     layout->setFramebuffer(framebuffer);
     layout->setBackground(background);
     layout->setMaterials(materialSet, textureSet, samplerSet);
     layout->setVertexSet(vertexSet);
-
 
     // 
     rasterization->setDescriptorSets(layout);
     rayTracing->setDescriptorSets(layout);
     renderCommand->setDescriptorSets(layout);
     buildCommand->setDescriptorSets(layout);
-
-
-
-
 
     // 
     //glm::dvec3 eye = glm::dvec3(5.f, 2.f, 2.f);
