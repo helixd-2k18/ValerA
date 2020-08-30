@@ -54,24 +54,60 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
         private native void allocate(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info);
+
+        // 
+        public native @UniPtr ValerACore.SetBase uniPtr();
+        public native @SharedPtr ValerACore.SetBase sharedPtr();
     };
 
 
     //
     @Name("vlj::AttributeSet")
-    public static class AttributeSet extends SetBase {};
+    public static class AttributeSet extends SetBase {
+        // 
+        public AttributeSet(@UniPtr ValerACore.AttributeSet object) { allocate(object); };
+        private native void allocate(@UniPtr ValerACore.AttributeSet object);
+
+        // 
+        public native @UniPtr ValerACore.AttributeSet uniPtr();
+        public native @SharedPtr ValerACore.AttributeSet sharedPtr();
+    };
 
     //
     @Name("vlj::BindingSet")
-    public static class BindingSet extends SetBase {};
+    public static class BindingSet extends SetBase {
+        // 
+        public BindingSet(@UniPtr ValerACore.BindingSet object) { allocate(object); };
+        private native void allocate(@UniPtr ValerACore.BindingSet object);
+
+        // 
+        public native @UniPtr ValerACore.BindingSet uniPtr();
+        public native @SharedPtr ValerACore.BindingSet sharedPtr();
+    };
 
     //
     @Name("vlj::MaterialSet")
-    public static class MaterialSet extends SetBase {};
+    public static class MaterialSet extends SetBase {
+        // 
+        public MaterialSet(@UniPtr ValerACore.MaterialSet object) { allocate(object); };
+        private native void allocate(@UniPtr ValerACore.MaterialSet object);
+
+        // 
+        public native @UniPtr ValerACore.MaterialSet uniPtr();
+        public native @SharedPtr ValerACore.MaterialSet sharedPtr();
+    };
 
     //
     @Name("vlj::Constants")
-    public static class Constants extends SetBase {};
+    public static class Constants extends SetBase {
+        // 
+        public Constants(@UniPtr ValerACore.Constants object) { allocate(object); };
+        private native void allocate(@UniPtr ValerACore.Constants object);
+
+        // 
+        public native @UniPtr ValerACore.Constants uniPtr();
+        public native @SharedPtr ValerACore.Constants sharedPtr();
+    };
 
     //
     //@Name("vlj::GeometrySet")
@@ -79,7 +115,15 @@ public class ValerABase implements InfoMapper {
 
     //
     @Name("vlj::InstanceSet")
-    public static class InstanceSet extends SetBase {};
+    public static class InstanceSet extends SetBase {
+        // 
+        public InstanceSet(@UniPtr ValerACore.InstanceSet object) { allocate(object); };
+        private native void allocate(@UniPtr ValerACore.InstanceSet object);
+
+        // 
+        public native @UniPtr ValerACore.InstanceSet uniPtr();
+        public native @SharedPtr ValerACore.InstanceSet sharedPtr();
+    };
 
 
     // 
@@ -101,6 +145,10 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
         private native void allocate(@UniPtr VKt.Driver driver, ValerACore.VertexSetCreateInfo info);
+
+        // 
+        public native @UniPtr ValerACore.VertexSet uniPtr();
+        public native @SharedPtr ValerACore.VertexSet sharedPtr();
     };
 
     //
@@ -122,6 +170,10 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver, ValerACore.AccelerationCreateInfo info);
         private native void allocate(@UniPtr VKt.Driver driver);
+
+        // 
+        public native @UniPtr ValerACore.Acceleration uniPtr();
+        public native @SharedPtr ValerACore.Acceleration sharedPtr();
     };
 
     //
@@ -143,6 +195,10 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr ValerACore.VertexSet vset, ValerACore.GeometryDesc info);
         private native void allocate(@UniPtr ValerACore.VertexSet vset);
+
+        // 
+        public native @UniPtr ValerACore.Geometry uniPtr();
+        public native @SharedPtr ValerACore.Geometry sharedPtr();
     };
 
     // 
@@ -168,6 +224,10 @@ public class ValerABase implements InfoMapper {
         //private native void allocate(@UniPtr VKt.Driver driver, DataSetCreateInfo info);
         private native void allocate(ValerACore.VertexSet driver);
         private native void allocate(ValerACore.VertexSet driver, ValerACore.DataSetCreateInfo info);
+
+        // 
+        public native @UniPtr ValerACore.GeometrySet uniPtr();
+        public native @SharedPtr ValerACore.GeometrySet sharedPtr();
     };
 
 
@@ -190,6 +250,10 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
         private native void allocate(@UniPtr VKt.Driver driver, VKt.ImageRegion region);
+
+        // 
+        public native @UniPtr ValerACore.Background uniPtr();
+        public native @SharedPtr ValerACore.Background sharedPtr();
     };
 
     //
@@ -209,6 +273,10 @@ public class ValerABase implements InfoMapper {
         // 
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
+
+        // 
+        public native @UniPtr ValerACore.BufferViewSet uniPtr();
+        public native @SharedPtr ValerACore.BufferViewSet sharedPtr();
     };
 
     //
@@ -228,6 +296,10 @@ public class ValerABase implements InfoMapper {
         // 
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
+
+        // 
+        public native @UniPtr ValerACore.TextureSet uniPtr();
+        public native @SharedPtr ValerACore.TextureSet sharedPtr();
     };
 
     //
@@ -247,6 +319,10 @@ public class ValerABase implements InfoMapper {
         // 
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
+
+        // 
+        public native @UniPtr ValerACore.SamplerSet uniPtr();
+        public native @SharedPtr ValerACore.SamplerSet sharedPtr();
     };
     
 
@@ -271,6 +347,10 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
         private native void allocate(@UniPtr VKt.Driver driver, ValerACore.RenderCommandCreateInfo info);
+
+        // 
+        public native @UniPtr ValerACore.RenderCommand uniPtr();
+        public native @SharedPtr ValerACore.RenderCommand sharedPtr();
     };
 
     // 
@@ -292,6 +372,10 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
         private native void allocate(@UniPtr VKt.Driver driver, ValerACore.BuildCommandCreateInfo info);
+
+        // 
+        public native @UniPtr ValerACore.BuildCommand uniPtr();
+        public native @SharedPtr ValerACore.BuildCommand sharedPtr();
     };
 
     // 
@@ -313,6 +397,10 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
         private native void allocate(@UniPtr VKt.Driver driver, ValerACore.RayTracingCreateInfo info);
+
+        // 
+        public native @UniPtr ValerACore.RayTracing uniPtr();
+        public native @SharedPtr ValerACore.RayTracing sharedPtr();
     };
 
     // 
@@ -334,6 +422,10 @@ public class ValerABase implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
         private native void allocate(@UniPtr VKt.Driver driver, ValerACore.PipelineCreateInfo info);
+
+        // 
+        public native @UniPtr ValerACore.Rasterization uniPtr();
+        public native @SharedPtr ValerACore.Rasterization sharedPtr();
     };
 
     // 
@@ -353,6 +445,10 @@ public class ValerABase implements InfoMapper {
         // 
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
+
+        // 
+        public native @UniPtr ValerACore.PipelineLayout uniPtr();
+        public native @SharedPtr ValerACore.PipelineLayout sharedPtr();
     };
 
     // 
@@ -372,6 +468,10 @@ public class ValerABase implements InfoMapper {
         // 
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
+
+        // 
+        public native @UniPtr ValerACore.Framebuffer uniPtr();
+        public native @SharedPtr ValerACore.Framebuffer sharedPtr();
     };
 
 
