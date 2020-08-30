@@ -93,7 +93,7 @@ namespace vlj {
         CALLIFY(getDescriptorPool);
         CALLIFY(getPipelineLayout);
         CALLIFY(getDescriptorSet);
-        CALLIFY(getDescriptorSets);
+        //CALLIFY(getDescriptorSets);
 
         // 
         CALLIFY(getDescriptorSetLayout);
@@ -117,6 +117,20 @@ namespace vlj {
         CALLIFY(setRasterization);
         CALLIFY(setInstanceSet);
         CALLIFY(setBackground);
+
+        // Java Compatible
+        virtual std::vector<int64_t>& getDescriptorSets() { 
+            std::vector<int64_t> sets = {};
+            const auto& objs = this->object->getDescriptorSets();
+            for (auto& obj : objs) { sets.push_back(int64_t(obj)); };
+            return sets;
+        };
+        virtual const std::vector<int64_t>& getDescriptorSets() const { 
+            std::vector<int64_t> sets = {};
+            const auto& objs = this->object->getDescriptorSets();
+            for (auto& obj : objs) { sets.push_back(int64_t(obj)); };
+            return sets;
+        };
 
         //CALLIFY(constructor);
     };

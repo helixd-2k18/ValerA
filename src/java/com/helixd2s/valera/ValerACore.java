@@ -105,6 +105,21 @@ public class ValerACore implements InfoMapper {
         public MaterialUnit() { allocate(); };
 
         private native void allocate();
+
+        // Vectors
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer diffuse();
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer pbrAGM();
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer normal();
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer emission();
+
+        // Texture Indices
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer diffuseTexture();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer pbrAGMTexture();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer normalTexture();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer emissionTexture();
+        
+        // 
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer udata();
     };
 
     // 
@@ -116,6 +131,14 @@ public class ValerACore implements InfoMapper {
         public AccelerationCreateInfo() { allocate(); };
 
         private native void allocate();
+
+        public native @MemberGetter @UniPtr InstanceSet instanceSet();
+        public native @MemberGetter @UniPtr GeometrySet geometrySet();
+        public native @MemberGetter @StdVector LongPointer initials();
+
+        public native @MemberSetter void instanceSet(@UniPtr InstanceSet instanceSet);
+        public native @MemberSetter void geometrySet(@UniPtr GeometrySet geometrySet);
+        public native @MemberSetter void initials(@StdVector LongPointer initials);
     };
 
     // 
@@ -127,6 +150,11 @@ public class ValerACore implements InfoMapper {
         public DataSetCreateInfo() { allocate(); };
 
         private native void allocate();
+
+        public native @MemberGetter @Cast("long*") LongPointer count();
+        public native @MemberGetter @Cast("int8_t*") BytePointer uniform();
+        public native @MemberGetter @Cast("int8_t*") BytePointer enableCPU();
+        public native @MemberGetter @Cast("int8_t*") BytePointer enableGL();
     };
 
     // 
@@ -138,6 +166,14 @@ public class ValerACore implements InfoMapper {
         public VertexSetCreateInfo() { allocate(); };
 
         private native void allocate();
+
+        public native @MemberGetter @UniPtr BindingSet bindings();
+        public native @MemberGetter @UniPtr AttributeSet attributes();
+        public native @MemberGetter @UniPtr BufferViewSet bufferViews();
+
+        public native @MemberSetter void bindings(@UniPtr BindingSet bindingSet);
+        public native @MemberSetter void attributes(@UniPtr AttributeSet attributes);
+        public native @MemberSetter void bufferViews(@UniPtr BufferViewSet bufferViews);
     };
 
     // 
@@ -149,6 +185,14 @@ public class ValerACore implements InfoMapper {
         public RenderCommandCreateInfo() { allocate(); };
 
         private native void allocate();
+
+        public native @MemberGetter @UniPtr PipelineLayout layout();
+        public native @MemberGetter @UniPtr RayTracing rayTracing();
+        public native @MemberGetter @UniPtr Rasterization rasterization();
+
+        public native @MemberSetter void layout(@UniPtr PipelineLayout layout);
+        public native @MemberSetter void rayTracing(@UniPtr RayTracing rayTracing);
+        public native @MemberSetter void rasterization(@UniPtr Rasterization rasterization);
     };
 
     // 
@@ -160,6 +204,12 @@ public class ValerACore implements InfoMapper {
         public BuildCommandCreateInfo() { allocate(); };
 
         private native void allocate();
+
+        public native @MemberGetter @UniPtr PipelineLayout layout();
+        public native @MemberGetter @UniPtr Acceleration accelerationTop();
+
+        public native @MemberSetter void layout(@UniPtr PipelineLayout layout);
+        public native @MemberSetter void accelerationTop(@UniPtr Acceleration acceleration);
     };
 
     //
@@ -171,6 +221,17 @@ public class ValerACore implements InfoMapper {
         public GeometryDesc() { allocate(); };
 
         private native void allocate();
+
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer transform();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer firstVertex();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer primitiveCount();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer material();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer mesh_flags();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer vertexAttribute();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer indexBufferView();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer indexType();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer reserved();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer attributes();
     };
 
     // 
@@ -196,6 +257,8 @@ public class ValerACore implements InfoMapper {
     };
 
 
+
+    
     // 
     @Name("vlr::SetBase")
     public static class SetBase extends Pointer {

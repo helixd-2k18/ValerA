@@ -53,9 +53,24 @@ namespace vlr {
         VkFramebuffer framebuffer = {};
         VkRenderPass renderPass = {};
         
+        // 
         std::vector<vkh::VkPipelineColorBlendAttachmentState> blendStates = {};
         std::vector<vkh::VkClearValue> clearValues = {};
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
+
+        // 
+        RenderPass* setBlendStates(vkh::VkPipelineColorBlendAttachmentState* ptr, int32_t size = 1u) {
+            blendStates.resize(size);
+            memcpy(blendStates.data(), ptr, size * sizeof(vkh::VkPipelineColorBlendAttachmentState));
+            return this;
+        };
+
+        // 
+        RenderPass* setClearValues(vkh::VkClearValue* ptr, int32_t size = 1u) {
+            clearValues.resize(size);
+            memcpy(clearValues.data(), ptr, size * sizeof(vkh::VkClearValue));
+            return this;
+        };
     };
 
     class Framebuffer : public std::enable_shared_from_this<Framebuffer> { protected: friend Rasterization; friend Resampling; friend RayTracing; friend PipelineLayout;

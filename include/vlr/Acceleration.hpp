@@ -9,7 +9,7 @@ namespace vlr {
     struct AccelerationCreateInfo {
         vkt::uni_ptr<InstanceSet> instanceSet = {}; // Top Level
         vkt::uni_ptr<GeometrySet> geometrySet = {}; // Bottom Level
-        std::vector<VkDeviceSize> initials = {};
+        std::vector<int64_t> initials = {};
     };
 
     class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing; friend PipelineLayout; friend BuildCommand; friend Rasterization;
@@ -37,8 +37,8 @@ namespace vlr {
         VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
         vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         VkAccelerationStructureKHR structure = VK_NULL_HANDLE;
-        vkt::Vector<uint8_t> gpuScratchBuffer = {};
-        vkt::Vector<uint8_t> TempBuffer = {};
+        vkt::VectorBase gpuScratchBuffer = {};
+        vkt::VectorBase TempBuffer = {};
 
     public: 
         Acceleration() { this->constructor(); };
