@@ -6,6 +6,7 @@
 #include "../include/bindings.hlsli"
 
 #define LAUNCH_ID GlobalInvocationID
+#define BETTER_DENOISE true
 
 // 
 float4 cbFetchW(const int ID, in int2 samplep){
@@ -22,7 +23,7 @@ float4 rbFetchW(const int ID, in int2 samplep){
 };
 
 // Bugged Here, Disable...
-float4 cbLoad(const int ID, in int2 samplep) {
+float4 cbLoad(const int ID, in int2 samplep, inout uint2 seed) {
     float4 center = cbFetchW(ID, samplep);
     float4 fixedt = center;
     int2 cxt = samplep + int2(1, 0);
@@ -33,13 +34,16 @@ float4 cbLoad(const int ID, in int2 samplep) {
     if (dot(fixedt.xyz,1.f.xxx) < 0.0001f || fixedt.w <= 0.0001f) { 
         if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else { fixedt =  max(xt, yt); };
     };
+#ifdef BETTER_DENOISE
+    if (BETTER_DENOISE) { fixedt.xyz *= float3(random(seed), random(seed), random(seed)) * 0.5f + 0.5f; };
+#endif
 #endif
     //return max(fixedt, float4(0.f.xxx, 1.f));
     return fixedt;
 };
 
 // Bugged Here, Disable...
-float4 rbLoad(const int ID, in int2 samplep) {
+float4 rbLoad(const int ID, in int2 samplep, inout uint2 seed) {
     float4 center = rbFetchW(ID, samplep);
     float4 fixedt = center;
     int2 cxt = samplep + int2(1, 0);
@@ -50,6 +54,9 @@ float4 rbLoad(const int ID, in int2 samplep) {
     if (dot(fixedt.xyz,1.f.xxx) < 0.0001f || fixedt.w <= 0.0001f) { 
         if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else { fixedt =  max(xt, yt); };
     };
+#ifdef BETTER_DENOISE
+    if (BETTER_DENOISE) { fixedt.xyz *= float3(random(seed), random(seed), random(seed)) * 0.5f + 0.5f; };
+#endif
 #endif
     //return max(fixedt, float4(0.f.xxx, 1.f));
     return fixedt;
@@ -112,11 +119,11 @@ void main()
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {\
             // Use Current Frame with CheckerBoard issue fix!
-            float4 refleclp = max(cbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f)) + max(rbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
-            float4 indirect = max(cbLoad(IW_INDIRECT, curPixel), float4(0.f.xxx, 0.f));
-            float4 refleclr = max(cbLoad(IW_REFLECLR, curPixel), float4(0.f.xxx, 0.f));
-            float4 shadows  = max(cbLoad(IW_SHADOWCL, curPixel), float4(0.f.xxx, 0.f));
-            float4 transpr  = max(cbLoad(IW_TRANSPAR, curPixel), float4(0.f.xxx, 0.f));
+            float4 refleclp = max(cbLoad(IW_REFLECLR, curPixel, seed), float4(0.f.xxx, 0.f)) + max(rbLoad(IW_REFLECLR, curPixel, seed), float4(0.f.xxx, 0.f));
+            float4 indirect = max(cbLoad(IW_INDIRECT, curPixel, seed), float4(0.f.xxx, 0.f));
+            float4 refleclr = max(cbLoad(IW_REFLECLR, curPixel, seed), float4(0.f.xxx, 0.f));
+            float4 shadows  = max(cbLoad(IW_SHADOWCL, curPixel, seed), float4(0.f.xxx, 0.f));
+            float4 transpr  = max(cbLoad(IW_TRANSPAR, curPixel, seed), float4(0.f.xxx, 0.f));
 
             // 
             float4 diffuse  = float4(MAT.diffuseColor.xyz * indirect.xyz, 1.f);
