@@ -44,6 +44,9 @@ namespace vlj {
         TextureSet(std::shared_ptr<vlr::TextureSet> object) : Wrap<vlr::TextureSet>(object) {};
 
         //CALLIFY(constructor);
+        CALLIFY(createDescriptorSet);
+        CALLIFY(pushImage);
+        CALLIFY(resetImages);
         CALLIFY(get);
     };
 };

@@ -9,7 +9,8 @@ namespace vlr {
 };
 
 namespace vlj {
-    class AttributeSet : public Wrap<vlr::AttributeSet> {
+    class AttributeSet : public Wrap<vlr::AttributeSet> { 
+        using T = VkVertexInputAttributeDescription;
     public:
         AttributeSet() : Wrap<vlr::AttributeSet>() {};
         AttributeSet(vkt::uni_ptr<vlr::AttributeSet> object) : Wrap<vlr::AttributeSet>(object) {};
@@ -19,9 +20,12 @@ namespace vlj {
         //CALLIFY(constructor);
         CALLIFY(getCpuBuffer);
         CALLIFY(getGpuBuffer);
-        CALLIFY(get);
+        //CALLIFY(get);
         CALLIFY(createDescriptorSet);
         CALLIFY(setCommand);
         CALLIFY(getVector);
+
+        virtual T* get(const uint32_t& I = 0u) { return &object->get(I); };
+        virtual const T* get(const uint32_t& I = 0u) const { return &object->get(I); };
     };
 };

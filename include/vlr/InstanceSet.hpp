@@ -46,6 +46,7 @@ namespace vlr {
 
 namespace vlj {
     class InstanceSet : public Wrap<vlr::InstanceSet> {
+        using T = vkh::VsGeometryInstance;
     public:
         InstanceSet() : Wrap<vlr::InstanceSet>() {};
         InstanceSet(vkt::uni_ptr<vlr::InstanceSet> object) : Wrap<vlr::InstanceSet>(object) {};
@@ -55,12 +56,16 @@ namespace vlj {
         //CALLIFY(constructor);
         CALLIFY(getCpuBuffer);
         CALLIFY(getGpuBuffer);
-        CALLIFY(get);
+        //CALLIFY(get);
         CALLIFY(createDescriptorSet);
         CALLIFY(setCommand);
         CALLIFY(getVector);
         CALLIFY(setAccelerations);
         CALLIFY(pushAcceleration);
         CALLIFY(resetAccelerations);
+
+        // 
+        virtual T* get(const uint32_t& I = 0u) { return &object->get(I); };
+        virtual const T* get(const uint32_t& I = 0u) const { return &object->get(I); };
     };
 };

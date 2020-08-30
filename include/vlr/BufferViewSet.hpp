@@ -55,6 +55,9 @@ namespace vlj {
         BufferViewSet(std::shared_ptr<vlr::BufferViewSet> object) : Wrap<vlr::BufferViewSet>(object) {};
 
         //CALLIFY(constructor);
+        CALLIFY(pushBufferView);
+        CALLIFY(resetBufferViews);
+        CALLIFY(createDescriptorSet);
         CALLIFY(get);
     };
 };

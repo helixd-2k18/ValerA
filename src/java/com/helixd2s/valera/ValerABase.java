@@ -71,6 +71,10 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.AttributeSet uniPtr();
         public native @SharedPtr ValerACore.AttributeSet sharedPtr();
+
+        // 
+        public native @Cast("long") @ByRef long get(int I);
+        public native @Cast("long") @ByRef long get();
     };
 
     //
@@ -83,6 +87,10 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.BindingSet uniPtr();
         public native @SharedPtr ValerACore.BindingSet sharedPtr();
+
+        // 
+        public native @Cast("long") @ByRef long get(int I);
+        public native @Cast("long") @ByRef long get();
     };
 
     //
@@ -277,6 +285,14 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.BufferViewSet uniPtr();
         public native @SharedPtr ValerACore.BufferViewSet sharedPtr();
+
+        // 
+        public native @ByRef VKt.Vector get(int I);
+
+        //
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void pushBufferView(@ByRef VKt.Vector vector);
+        public native void resetBufferViews();
     };
 
     //
@@ -300,6 +316,14 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.TextureSet uniPtr();
         public native @SharedPtr ValerACore.TextureSet sharedPtr();
+
+        // 
+        public native @ByRef VKt.ImageRegion get(int I);
+
+        //
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void pushImage(@ByRef VKt.ImageRegion image);
+        public native void resetImages();
     };
 
     //
@@ -323,6 +347,14 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.SamplerSet uniPtr();
         public native @SharedPtr ValerACore.SamplerSet sharedPtr();
+
+        // 
+        public native @Cast("long*") @ByRef  LongPointer get(int I);
+
+        //
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void pushSampler(@Cast("VkSampler") @ByRef long sampler);
+        public native void resetSamplers();
     };
     
 
