@@ -235,6 +235,24 @@ public class ValerACore implements InfoMapper {
     };
 
     // 
+    @Name("vlr::PipelineStages")
+    public static class PipelineStages extends Pointer {
+        static { Loader.load(); }
+
+        public PipelineStages(Pointer p) { super(p); };
+        public PipelineStages() { allocate(); };
+
+        private native void allocate();
+
+        public native @MemberSetter void vertexShader(@ByRef @StdString String vertexShader);
+        public native @MemberSetter void geometryShader(@ByRef @StdString String geometryShader);
+        public native @MemberSetter void fragmentShader(@ByRef @StdString String fragmentShader);
+        public native @MemberGetter @StdString @ByRef String vertexShader();
+        public native @MemberGetter @StdString @ByRef String geometryShader();
+        public native @MemberGetter @StdString @ByRef String fragmentShader();
+    };
+
+    // 
     @Name("vlr::PipelineCreateInfo")
     public static class PipelineCreateInfo extends Pointer {
         static { Loader.load(); }
@@ -243,6 +261,21 @@ public class ValerACore implements InfoMapper {
         public PipelineCreateInfo() { allocate(); };
 
         private native void allocate();
+
+        public native @MemberGetter @ByRef PipelineStages translucent();
+        public native @MemberGetter @ByRef PipelineStages opaque();
+        public native @MemberSetter void translucent(@ByRef PipelineStages translucent);
+        public native @MemberSetter void opaque(@ByRef PipelineStages opaque);
+
+        public native @MemberGetter @UniPtr PipelineLayout layout();
+        public native @MemberGetter @UniPtr Framebuffer framebuffer();
+        public native @MemberGetter @UniPtr InstanceSet instanceSet();
+        public native @MemberGetter @UniPtr Constants constants();
+
+        public native @MemberSetter void layout(@UniPtr PipelineLayout layout);
+        public native @MemberSetter void framebuffer(@UniPtr Framebuffer framebuffer);
+        public native @MemberSetter void instanceSet(@UniPtr InstanceSet instanceSet);
+        public native @MemberSetter void constants(@UniPtr Constants constants);
     };
 
     // 
@@ -254,11 +287,19 @@ public class ValerACore implements InfoMapper {
         public RayTracingCreateInfo() { allocate(); };
 
         private native void allocate();
+
+        public native @MemberGetter @UniPtr PipelineLayout layout();
+        public native @MemberGetter @UniPtr Framebuffer framebuffer();
+        public native @MemberGetter @UniPtr Acceleration accelerationTop();
+        public native @MemberGetter @UniPtr Constants constants();
+
+        public native @MemberSetter void layout(@UniPtr PipelineLayout layout);
+        public native @MemberSetter void framebuffer(@UniPtr Framebuffer framebuffer);
+        public native @MemberSetter void accelerationTop(@UniPtr Acceleration accelerationTop);
+        public native @MemberSetter void constants(@UniPtr Constants constants);
     };
 
 
-
-    
     // 
     @Name("vlr::SetBase")
     public static class SetBase extends Pointer {
@@ -288,6 +329,10 @@ public class ValerACore implements InfoMapper {
     //
     @Name("vlr::MaterialSet")
     public static class MaterialSet extends SetBase {};
+
+    //
+    @Name("vlr::Constants")
+    public static class Constants extends SetBase {};
 
     //
     //@Name("vlr::GeometrySet")
