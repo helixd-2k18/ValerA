@@ -49,7 +49,6 @@ PSOutput main(in PSInput inp)
     inp.position = gl_FragCoord;
     inp.vcoord = vcoord;
 #endif
-    //const int2 size = int2(textureSize(currImages[BW_RENDERED], 0)), samplep = int2(inp.position.x, inp.position.y);
 
     // Final Result Rendering
     PSOutput outp;

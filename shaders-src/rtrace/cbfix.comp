@@ -35,7 +35,7 @@ float4 cbLoad(const int ID, in int2 samplep, inout uint2 seed) {
         if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else { fixedt =  max(xt, yt); };
     };
 #ifdef BETTER_DENOISE
-    if (BETTER_DENOISE) { fixedt.xyz *= float3(random(seed), random(seed), random(seed)) * 0.5f + 0.5f; };
+    if (BETTER_DENOISE) { fixedt.xyz *= float3(random(seed), random(seed), random(seed)) + 0.5f; };
 #endif
 #endif
     //return max(fixedt, float4(0.f.xxx, 1.f));
@@ -55,7 +55,7 @@ float4 rbLoad(const int ID, in int2 samplep, inout uint2 seed) {
         if (dot(xt.xyz,1.f.xxx) > 0.0001f && dot(yt.xyz,1.f.xxx) > 0.0001f) { fixedt = .5f*(xt+ yt); } else { fixedt =  max(xt, yt); };
     };
 #ifdef BETTER_DENOISE
-    if (BETTER_DENOISE) { fixedt.xyz *= float3(random(seed), random(seed), random(seed)) * 0.5f + 0.5f; };
+    if (BETTER_DENOISE) { fixedt.xyz *= float3(random(seed), random(seed), random(seed)) + 0.5f; };
 #endif
 #endif
     //return max(fixedt, float4(0.f.xxx, 1.f));
@@ -100,8 +100,6 @@ void main()
         float3 geonrm = float3(0.f.xxx);
 
         // Replacement for rasterization
-        //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
-        //XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
         XHIT RPM; // currImages is Current Frame, prevImages is Previous Frame
         RPM.origin = superImageLoad(currImages[IW_POSITION], curPixel); // IW_POSITION - transformed, IW_ORIGINAL - not transformed
         RPM.gBarycentric = superImageLoad(currImages[IW_BARYCENT], curPixel);
@@ -139,11 +137,5 @@ void main()
 
         //superImageStore(currImages[IW_RENDERED], curPixel, cbLoad(IW_INDIRECT, curPixel));
     };
-
-    // 
-    //for (uint i=0;i<12;i++) {
-    //    const float4 pixof = superImageLoad(currImages[i], curPixel);
-    //    superImageStore(prevImages[i], curPixel, pixof);
-    //};
 
 };

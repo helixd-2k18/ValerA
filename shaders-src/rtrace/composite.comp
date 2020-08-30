@@ -59,8 +59,6 @@ void main()
         float3 geonrm = float3(0.f.xxx);
 
         // Replacement for rasterization
-        //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
-        //XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
         XHIT RPM; // currImages is Current Frame, prevImages is Previous Frame
         RPM.origin = superImageLoad(currImages[IW_POSITION], curPixel); // IW_POSITION - transformed, IW_ORIGINAL - not transformed
         RPM.gBarycentric = superImageLoad(currImages[IW_BARYCENT], curPixel);

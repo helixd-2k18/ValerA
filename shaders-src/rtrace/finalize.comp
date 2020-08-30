@@ -88,6 +88,8 @@ void main()
             // 
             indirect += shadows;
             indirect = max(indirect, float4(0.f.xxx, 0.f));
+            
+            // 
             if (refleclr.w < 0.0001f) { refleclr = refleclp; }; // When Reflection  is NOT found... 
             if ( transpr.w < 0.0001f) {  transpr = transpp;  }; // When Transparent is NOT found... 
 

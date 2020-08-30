@@ -145,13 +145,13 @@ int main() {
 
     // Loop over shapes
     VkDeviceSize accessorCount = 0u;
-    std::vector<std::vector<VkDeviceSize>> primitiveCountPer = {};
+    std::vector<std::vector<int64_t>> primitiveCountPer = {};
     std::vector<VkDeviceSize> vertexCountAll = {};
     for (size_t s = 0; s < shapes.size(); s++) {
         vertexCountAll.push_back(0ull);
         primitiveCountPer.push_back({});
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
-            primitiveCountPer.back().push_back(shapes[s].mesh.num_face_vertices[f]);
+            primitiveCountPer.back().push_back(int64_t(shapes[s].mesh.num_face_vertices[f]));
             vertexCountAll.back() += shapes[s].mesh.num_face_vertices[f];
             accessorCount++;
         };
@@ -481,7 +481,7 @@ int main() {
 
     // 
     auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
-    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {shapes.size()} }); // shapes.size()
+    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {int64_t(shapes.size())} }); // shapes.size()
 
     // 
     for (size_t s = 0; s < shapes.size(); s++) { // 

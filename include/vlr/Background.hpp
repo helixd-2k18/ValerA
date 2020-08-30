@@ -14,17 +14,17 @@ namespace vlr {
 
     public: 
         Background() { this->constructor(); };
-        Background(vkt::uni_ptr<Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = {}) { this->constructor(driver, image); };
+        Background(vkt::uni_ptr<Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = vkt::ImageRegion{}) { this->constructor(driver, image); };
         ~Background() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = {}) {
-            this->driver = driver;
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = vkt::ImageRegion{}) {
+            this->driver = driver, this->background = image.ref();
         };
 
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         //virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
-        virtual void setImage(vkt::ImageRegion image = {}) { this->background = image; };
+        virtual void setImage(vkt::uni_arg<vkt::ImageRegion> image = {}) { this->background = image.ref(); };
     };
 
 };
