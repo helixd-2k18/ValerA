@@ -12,14 +12,14 @@ namespace vlr {
         bool uniform = false, enableCPU = true, enableGL = false;
         
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}, const uint32_t& stride = 1u);
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = DataSetCreateInfo{}, const uint32_t& stride = 1u);
 
     private: 
         vkt::VectorBase cpuBuffer = {}, gpuBuffer = {};
         
     public:
         SetBase() { this->constructor(); };
-        SetBase(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}, const uint32_t& stride = 1u) { this->constructor(driver, info, stride); };
+        SetBase(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = DataSetCreateInfo{}, const uint32_t& stride = 1u) { this->constructor(driver, info, stride); };
         ~SetBase() {};
 
         // 
@@ -41,7 +41,7 @@ namespace vlr {
 
     public: 
         SetBase_T() : SetBase() { this->constructor(); };
-        SetBase_T(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = {}) { this->constructor(driver, info, sizeof(T)); };
+        SetBase_T(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = DataSetCreateInfo{}) { this->constructor(driver, info, sizeof(T)); };
         ~SetBase_T() {};
 
         // 
@@ -73,7 +73,7 @@ namespace vlj {
     public:
         SetBase() : Wrap<vlr::SetBase>() {};
         SetBase(vkt::uni_ptr<vlr::SetBase> object) : Wrap<vlr::SetBase>(object) {};
-        SetBase(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}, const uint32_t& stride = 1u) : Wrap<vlr::SetBase>(std::make_shared<vlr::SetBase>(driver, info, stride)) {};
+        SetBase(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = vlr::DataSetCreateInfo{}, const uint32_t& stride = 1u) : Wrap<vlr::SetBase>(std::make_shared<vlr::SetBase>(driver, info, stride)) {};
         SetBase(std::shared_ptr<vlr::SetBase> object) : Wrap<vlr::SetBase>(object) {};
 
         //CALLIFY(constructor);

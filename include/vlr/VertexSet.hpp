@@ -23,11 +23,11 @@ namespace vlr {
 
     public: 
         VertexSet() { this->constructor(); };
-        VertexSet(vkt::uni_ptr<Driver> driver, vkt::uni_arg<VertexSetCreateInfo> info = {}) { this->constructor(driver, info); };
+        VertexSet(vkt::uni_ptr<Driver> driver, vkt::uni_arg<VertexSetCreateInfo> info = VertexSetCreateInfo{}) { this->constructor(driver, info); };
         ~VertexSet() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<VertexSetCreateInfo> info = {}) {
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<VertexSetCreateInfo> info = VertexSetCreateInfo{}) {
             this->driver = driver;
             this->bufferViews = info->bufferViews;
             this->attributes = info->attributes;
@@ -91,7 +91,7 @@ namespace vlj {
     public:
         VertexSet() : Wrap<vlr::VertexSet>() {};
         VertexSet(vkt::uni_ptr<vlr::VertexSet> object) : Wrap<vlr::VertexSet>(object) {};
-        VertexSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::VertexSetCreateInfo> info = {}) : Wrap<vlr::VertexSet>(std::make_shared<vlr::VertexSet>(driver, info)) {};
+        VertexSet(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::VertexSetCreateInfo> info = vlr::VertexSetCreateInfo{}) : Wrap<vlr::VertexSet>(std::make_shared<vlr::VertexSet>(driver, info)) {};
         VertexSet(std::shared_ptr<vlr::VertexSet> object) : Wrap<vlr::VertexSet>(object) {};
 
         //CALLIFY(constructor);

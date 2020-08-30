@@ -42,11 +42,11 @@ namespace vlr {
 
     public: 
         Acceleration() { this->constructor(); };
-        Acceleration(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = {}) { this->constructor(driver, info); };
+        Acceleration(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = AccelerationCreateInfo{}) { this->constructor(driver, info); };
         ~Acceleration() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = {});
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = AccelerationCreateInfo{});
         virtual void updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build = false);
         virtual void setCommand(const VkCommandBuffer& cmd = VK_NULL_HANDLE); // buildAccelerationStructureCmd
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
@@ -60,7 +60,7 @@ namespace vlj {
     public:
         Acceleration() : Wrap<vlr::Acceleration>() {};
         Acceleration(vkt::uni_ptr<vlr::Acceleration> object) : Wrap<vlr::Acceleration>(object) {};
-        Acceleration(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::AccelerationCreateInfo> info = {}) : Wrap<vlr::Acceleration>(std::make_shared<vlr::Acceleration>(driver, info)) {};
+        Acceleration(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::AccelerationCreateInfo> info = vlr::AccelerationCreateInfo{}) : Wrap<vlr::Acceleration>(std::make_shared<vlr::Acceleration>(driver, info)) {};
         Acceleration(std::shared_ptr<vlr::Acceleration> object) : Wrap<vlr::Acceleration>(object) {};
 
         //CALLIFY(constructor);

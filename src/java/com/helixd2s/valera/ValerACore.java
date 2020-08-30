@@ -101,12 +101,8 @@ public class ValerACore implements InfoMapper {
     public static class MaterialUnit extends Pointer {
         static { Loader.load(); }
 
-        public MaterialUnit(Pointer p) {
-            super(p);
-        }
-        public MaterialUnit() {
-            allocate();
-        }
+        public MaterialUnit(Pointer p) { super(p); };
+        public MaterialUnit() { allocate(); };
 
         private native void allocate();
     };
@@ -121,7 +117,140 @@ public class ValerACore implements InfoMapper {
 
         private native void allocate();
     };
-    
+
+    // 
+    @Name("vlr::DataSetCreateInfo")
+    public static class DataSetCreateInfo extends Pointer {
+        static { Loader.load(); }
+
+        public DataSetCreateInfo(Pointer p) { super(p); };
+        public DataSetCreateInfo() { allocate(); };
+
+        private native void allocate();
+    };
+
+    // 
+    @Name("vlr::VertexSetCreateInfo")
+    public static class VertexSetCreateInfo extends Pointer {
+        static { Loader.load(); }
+
+        public VertexSetCreateInfo(Pointer p) { super(p); };
+        public VertexSetCreateInfo() { allocate(); };
+
+        private native void allocate();
+    };
+
+    // 
+    @Name("vlr::RenderCommandCreateInfo")
+    public static class RenderCommandCreateInfo extends Pointer {
+        static { Loader.load(); }
+
+        public RenderCommandCreateInfo(Pointer p) { super(p); };
+        public RenderCommandCreateInfo() { allocate(); };
+
+        private native void allocate();
+    };
+
+    // 
+    @Name("vlr::BuildCommandCreateInfo")
+    public static class BuildCommandCreateInfo extends Pointer {
+        static { Loader.load(); }
+
+        public BuildCommandCreateInfo(Pointer p) { super(p); };
+        public BuildCommandCreateInfo() { allocate(); };
+
+        private native void allocate();
+    };
+
+    //
+    @Name("vlr::GeometryDesc")
+    public static class GeometryDesc extends Pointer {
+        static { Loader.load(); }
+
+        public GeometryDesc(Pointer p) { super(p); };
+        public GeometryDesc() { allocate(); };
+
+        private native void allocate();
+    };
+
+    // 
+    @Name("vlr::PipelineCreateInfo")
+    public static class PipelineCreateInfo extends Pointer {
+        static { Loader.load(); }
+
+        public PipelineCreateInfo(Pointer p) { super(p); };
+        public PipelineCreateInfo() { allocate(); };
+
+        private native void allocate();
+    };
+
+    // 
+    @Name("vlr::RayTracingCreateInfo")
+    public static class RayTracingCreateInfo extends Pointer {
+        static { Loader.load(); }
+
+        public RayTracingCreateInfo(Pointer p) { super(p); };
+        public RayTracingCreateInfo() { allocate(); };
+
+        private native void allocate();
+    };
+
+
+    // 
+    @Name("vlr::SetBase")
+    public static class SetBase extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public SetBase(Pointer p) { super(p); };
+        public SetBase(@UniPtr VKt.Driver driver, DataSetCreateInfo info) { allocate(driver, info); };
+        public SetBase(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public SetBase() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, DataSetCreateInfo info);
+    };
+
+
+    //
+    @Name("vlr::AttributeSet")
+    public static class AttributeSet extends SetBase {};
+
+    //
+    @Name("vlr::BindingSet")
+    public static class BindingSet extends SetBase {};
+
+    //
+    @Name("vlr::MaterialSet")
+    public static class MaterialSet extends SetBase {};
+
+    //
+    //@Name("vlr::GeometrySet")
+    //public static class GeometrySet extends SetBase {};
+
+    //
+    @Name("vlr::InstanceSet")
+    public static class InstanceSet extends SetBase {};
+
+
+    // 
+    @Name("vlr::VertexSet")
+    public static class VertexSet extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public VertexSet(Pointer p) { super(p); };
+        public VertexSet(@UniPtr VKt.Driver driver, VertexSetCreateInfo info) { allocate(driver, info); };
+        public VertexSet(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public VertexSet() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, VertexSetCreateInfo info);
+    };
 
     //
     @Name("vlr::Acceleration")
@@ -130,14 +259,217 @@ public class ValerACore implements InfoMapper {
 
         // 
         public Acceleration(Pointer p) { super(p); };
-        public Acceleration(@UniPtr Driver driver, AccelerationCreateInfo info) { allocate(driver, info); };
-        public Acceleration(@UniPtr Driver driver) { allocate(driver); };
+        public Acceleration(@UniPtr VKt.Driver driver, AccelerationCreateInfo info) { allocate(driver, info); };
+        public Acceleration(@UniPtr VKt.Driver driver) { allocate(driver); };
         public Acceleration() { allocate(); };
 
         // 
         private native void allocate();
-        private native void allocate(@UniPtr Driver driver, AccelerationCreateInfo info);
-        private native void allocate(@UniPtr Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, AccelerationCreateInfo info);
+        private native void allocate(@UniPtr VKt.Driver driver);
     };
+
+    //
+    @Name("vlr::Geometry")
+    public static class Geometry extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public Geometry(Pointer p) { super(p); };
+        public Geometry(@UniPtr VertexSet vset, GeometryDesc info) { allocate(vset, info); };
+        public Geometry(@UniPtr VertexSet vset) { allocate(vset); };
+        public Geometry() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VertexSet vset, GeometryDesc info);
+        private native void allocate(@UniPtr VertexSet vset);
+    };
+
+    // 
+    @Name("vlr::GeometrySet")
+    public static class GeometrySet extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public GeometrySet(Pointer p) { super(p); };
+        public GeometrySet() { allocate(); };
+        //public GeometrySet(@UniPtr VKt.Driver driver, DataSetCreateInfo info) { allocate(driver, info); };
+        //public GeometrySet(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public GeometrySet(@UniPtr VertexSet driver, DataSetCreateInfo info) { allocate(driver, info); };
+        public GeometrySet(@UniPtr VertexSet driver) { allocate(driver); };
+
+        // 
+        private native void allocate();
+        //private native void allocate(@UniPtr VKt.Driver driver);
+        //private native void allocate(@UniPtr VKt.Driver driver, DataSetCreateInfo info);
+        private native void allocate(VertexSet driver);
+        private native void allocate(VertexSet driver, DataSetCreateInfo info);
+    };
+
+
+    //
+    @Name("vlr::Background")
+    public static class Background extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public Background(Pointer p) { super(p); };
+        public Background(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public Background(@UniPtr VKt.Driver driver, VKt.ImageRegion region) { allocate(driver, region); };
+        public Background() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, VKt.ImageRegion region);
+    };
+
+    //
+    @Name("vlr::BufferViewSet")
+    public static class BufferViewSet extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public BufferViewSet(Pointer p) { super(p); };
+        public BufferViewSet(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public BufferViewSet() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+    };
+
+    //
+    @Name("vlr::TextureSet")
+    public static class TextureSet extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public TextureSet(Pointer p) { super(p); };
+        public TextureSet(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public TextureSet() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+    };
+
+    //
+    @Name("vlr::SamplerSet")
+    public static class SamplerSet extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public SamplerSet(Pointer p) { super(p); };
+        public SamplerSet(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public SamplerSet() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+    };
+    
+
+
+
+    // 
+    @Name("vlr::RenderCommand")
+    public static class RenderCommand extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public RenderCommand(Pointer p) { super(p); };
+        public RenderCommand(@UniPtr VKt.Driver driver, RenderCommandCreateInfo info) { allocate(driver, info); };
+        public RenderCommand(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public RenderCommand() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, RenderCommandCreateInfo info);
+    };
+
+    // 
+    @Name("vlr::BuildCommand")
+    public static class BuildCommand extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public BuildCommand(Pointer p) { super(p); };
+        public BuildCommand(@UniPtr VKt.Driver driver, BuildCommandCreateInfo info) { allocate(driver, info); };
+        public BuildCommand(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public BuildCommand() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, BuildCommandCreateInfo info);
+    };
+
+    // 
+    @Name("vlr::RayTracing")
+    public static class RayTracing extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public RayTracing(Pointer p) { super(p); };
+        public RayTracing(@UniPtr VKt.Driver driver, RayTracingCreateInfo info) { allocate(driver, info); };
+        public RayTracing(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public RayTracing() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, RayTracingCreateInfo info);
+    };
+
+    // 
+    @Name("vlr::Rasterization")
+    public static class Rasterization extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public Rasterization(Pointer p) { super(p); };
+        public Rasterization(@UniPtr VKt.Driver driver, PipelineCreateInfo info) { allocate(driver, info); };
+        public Rasterization(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public Rasterization() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, PipelineCreateInfo info);
+    };
+
+    // 
+    @Name("vlr::PipelineLayout")
+    public static class PipelineLayout extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public PipelineLayout(Pointer p) { super(p); };
+        public PipelineLayout(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public PipelineLayout() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+    };
+
+    // 
+    @Name("vlr::Framebuffer")
+    public static class Framebuffer extends Pointer {
+        static { Loader.load(); }
+
+        // 
+        public Framebuffer(Pointer p) { super(p); };
+        public Framebuffer(@UniPtr VKt.Driver driver) { allocate(driver); };
+        public Framebuffer() { allocate(); };
+
+        // 
+        private native void allocate();
+        private native void allocate(@UniPtr VKt.Driver driver);
+    };
+
 
 };

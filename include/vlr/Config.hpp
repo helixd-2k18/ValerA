@@ -160,6 +160,10 @@ namespace vlj {
         virtual std::shared_ptr<T>& sharedPtr() { return object.get_shared(); };
         virtual const std::shared_ptr<T>& sharedPtr() const { return object.get_shared(); };
 
+        // 
+        virtual vkt::uni_ptr<T>& uniPtr() { return object; };
+        virtual const vkt::uni_ptr<T>& uniPtr() const { return object; };
+
     // 
     protected: friend Wrap; friend T; // 
         vkt::uni_ptr<T> object = {};

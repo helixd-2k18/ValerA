@@ -135,6 +135,8 @@
       <EnableModules>true</EnableModules>
       <ForcedIncludeFiles>macro.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <UndefinePreprocessorDefinitions>UNICODE</UndefinePreprocessorDefinitions>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,6 +156,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UndefinePreprocessorDefinitions>UNICODE</UndefinePreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -92,7 +92,6 @@ namespace vlr {
         virtual void imageToLinearCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd, const uint32_t& whatDenoise = 4u);
         virtual void linearToImageCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd, const uint32_t& whatDenoise = 4u);
     };
-
 };
 
 namespace vlj {

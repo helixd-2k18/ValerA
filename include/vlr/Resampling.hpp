@@ -26,12 +26,12 @@ namespace vlr {
 
     public: 
         Resampling() { this->constructor(); };
-        Resampling(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) { this->constructor(driver, info); };
+        Resampling(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info = PipelineCreateInfo{}) { this->constructor(driver, info); };
         ~Resampling() {};
 
         // 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info);
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info = PipelineCreateInfo{});
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         
     };
@@ -43,7 +43,7 @@ namespace vlj {
     public:
         Resampling() : Wrap<vlr::Resampling>() {};
         Resampling(vkt::uni_ptr<vlr::Resampling> object) : Wrap<vlr::Resampling>(object) {};
-        Resampling(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::PipelineCreateInfo> info = {}) : Wrap<vlr::Resampling>(std::make_shared<vlr::Resampling>(driver, info)) {};
+        Resampling(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::PipelineCreateInfo> info = vlr::PipelineCreateInfo{}) : Wrap<vlr::Resampling>(std::make_shared<vlr::Resampling>(driver, info)) {};
         Resampling(std::shared_ptr<vlr::Resampling> object) : Wrap<vlr::Resampling>(object) {};
 
         //CALLIFY(constructor);

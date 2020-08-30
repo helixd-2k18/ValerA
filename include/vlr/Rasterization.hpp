@@ -37,11 +37,11 @@ namespace vlr {
 
     public: 
         Rasterization() { this->constructor(); };
-        Rasterization(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info) { this->constructor(driver, info); };
+        Rasterization(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info = PipelineCreateInfo{}) { this->constructor(driver, info); };
 
         // 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info);
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info = PipelineCreateInfo{});
         virtual void drawCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout = {});
@@ -64,7 +64,7 @@ namespace vlj {
     public:
         Rasterization() : Wrap<vlr::Rasterization>() {};
         Rasterization(vkt::uni_ptr<vlr::Rasterization> object) : Wrap<vlr::Rasterization>(object) {};
-        Rasterization(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::PipelineCreateInfo> info) : Wrap<vlr::Rasterization>(std::make_shared<vlr::Rasterization>(driver, info)) {};
+        Rasterization(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::PipelineCreateInfo> info = vlr::PipelineCreateInfo{}) : Wrap<vlr::Rasterization>(std::make_shared<vlr::Rasterization>(driver, info)) {};
         Rasterization(std::shared_ptr<vlr::Rasterization> object) : Wrap<vlr::Rasterization>(object) {};
 
         //CALLIFY(constructor);

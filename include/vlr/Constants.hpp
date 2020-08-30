@@ -28,7 +28,7 @@ namespace vlj {
     public:
         Constants() : Wrap<vlr::Constants>() {};
         Constants(vkt::uni_ptr<vlr::Constants> object) : Wrap<vlr::Constants>(object) {};
-        Constants(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::Constants>(std::make_shared<vlr::Constants>(driver, info)) {};
+        Constants(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::DataSetCreateInfo> info = vlr::DataSetCreateInfo{}) : Wrap<vlr::Constants>(std::make_shared<vlr::Constants>(driver, info)) {};
         Constants(std::shared_ptr<vlr::Constants> object) : Wrap<vlr::Constants>(object) {};
 
         //CALLIFY(constructor);

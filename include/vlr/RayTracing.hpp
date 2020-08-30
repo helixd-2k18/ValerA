@@ -62,11 +62,11 @@ namespace vlr {
 
     public: 
         RayTracing() { this->constructor(); };
-        RayTracing(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = {}) { this->constructor(driver, info); };
+        RayTracing(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = RayTracingCreateInfo{}) { this->constructor(driver, info); };
         ~RayTracing() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = {});
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = RayTracingCreateInfo{});
         virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void setCommandFinal(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
         virtual void setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout = {});

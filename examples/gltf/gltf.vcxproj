@@ -136,6 +136,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAsManaged>false</CompileAsManaged>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,6 +163,7 @@
       <AdditionalOptions>/bigobj /FI $(ProjectDir)macro.h %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAsManaged>false</CompileAsManaged>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

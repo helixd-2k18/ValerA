@@ -18,11 +18,11 @@ namespace vlr {
 
     public: 
         BuildCommand() { this->constructor(); };
-        BuildCommand(vkt::uni_ptr<Driver> driver, vkt::uni_arg<BuildCommandCreateInfo> info = {}) { this->constructor(driver, info); };
+        BuildCommand(vkt::uni_ptr<Driver> driver, vkt::uni_arg<BuildCommandCreateInfo> info = BuildCommandCreateInfo{}) { this->constructor(driver, info); };
         ~BuildCommand() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<BuildCommandCreateInfo> info = {});
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<BuildCommandCreateInfo> info = BuildCommandCreateInfo{});
 
         // Set Top Level Acceleration
         virtual void setAccelerationTop(vkt::uni_ptr<Acceleration> accelerationTop) {
@@ -42,7 +42,7 @@ namespace vlj {
     public:
         BuildCommand() : Wrap<vlr::BuildCommand>() {};
         BuildCommand(vkt::uni_ptr<vlr::BuildCommand> object) : Wrap<vlr::BuildCommand>(object) {};
-        BuildCommand(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::BuildCommandCreateInfo> info = {}) : Wrap<vlr::BuildCommand>(std::make_shared<vlr::BuildCommand>(driver, info)) {};
+        BuildCommand(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::BuildCommandCreateInfo> info = vlr::BuildCommandCreateInfo{}) : Wrap<vlr::BuildCommand>(std::make_shared<vlr::BuildCommand>(driver, info)) {};
         BuildCommand(std::shared_ptr<vlr::BuildCommand> object) : Wrap<vlr::BuildCommand>(object) {};
 
         //CALLIFY(constructor);

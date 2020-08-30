@@ -12,12 +12,12 @@ namespace vlr {
 
     public: 
         GeometrySet() : SetBase_T<GeometryDesc>() { this->constructorExtend0(); };
-        GeometrySet(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) : SetBase_T<GeometryDesc>(vertexSet->driver, info) { this->constructorExtend0(vertexSet, info); };
+        GeometrySet(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = DataSetCreateInfo{}) : SetBase_T<GeometryDesc>(vertexSet->driver, info) { this->constructorExtend0(vertexSet, info); };
         ~GeometrySet() {};
 
         // 
         virtual void constructorExtend0() {};
-        virtual void constructorExtend0(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = {}) {
+        virtual void constructorExtend0(vkt::uni_ptr<VertexSet> vertexSet, vkt::uni_arg<DataSetCreateInfo> info = DataSetCreateInfo{}) {
             this->vertexSet = vertexSet;
         };
         virtual void pushGeometry(vkt::uni_ptr<Geometry> geometry);
@@ -48,7 +48,7 @@ namespace vlj {
     public:
         GeometrySet() : Wrap<vlr::GeometrySet>() {};
         GeometrySet(vkt::uni_ptr<vlr::GeometrySet> object) : Wrap<vlr::GeometrySet>(object) {};
-        GeometrySet(vkt::uni_ptr<vlr::VertexSet> vertexSet, vkt::uni_arg<vlr::DataSetCreateInfo> info = {}) : Wrap<vlr::GeometrySet>(std::make_shared<vlr::GeometrySet>(vertexSet, info)) {};
+        GeometrySet(vkt::uni_ptr<vlr::VertexSet> vertexSet, vkt::uni_arg<vlr::DataSetCreateInfo> info = vlr::DataSetCreateInfo{}) : Wrap<vlr::GeometrySet>(std::make_shared<vlr::GeometrySet>(vertexSet, info)) {};
         GeometrySet(std::shared_ptr<vlr::GeometrySet> object) : Wrap<vlr::GeometrySet>(object) {};
 
         //CALLIFY(constructor);
