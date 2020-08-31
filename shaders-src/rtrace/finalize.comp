@@ -74,6 +74,11 @@ void main()
         XPOL MAT = materialize(RPM, GEO);
 
         // 
+        const float inIOR = 1.f, outIOR = 1.6666f;
+        float reflectionPower = mix(clamp(pow(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
+        bool couldReflection = random(seed) <= reflectionPower;
+
+        // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
         {
             // Accumulation!
@@ -93,20 +98,13 @@ void main()
             if (refleclr.w < 0.0001f) { refleclr = refleclp; }; // When Reflection  is NOT found... 
             if ( transpr.w < 0.0001f) {  transpr = transpp;  }; // When Transparent is NOT found... 
 
-            // Correct Sampling
-            indirect = max(indirect, float4(0.f.xxx, 1.f));
-            refleclp = max(refleclp, float4(0.f.xxx, 1.f));
-            refleclr = max(refleclr, float4(0.f.xxx, 1.f));
-            transpp = max(transpp, float4(0.f.xxx, 1.f));
-            transpr = max(transpr, float4(0.f.xxx, 1.f));
-
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
             superImageStore(currImages[IW_REFLECLR], curPixel, refleclr);
             superImageStore(currImages[IW_SHADOWCL], curPixel, shadows);
             superImageStore(currImages[IW_TRANSPAR], curPixel, mix(transpp /transpp .w, transpr /max(transpr.w ,1.f), 0.5f.xxxx));
         };
-        
+
         // 
         for (uint i=0;i<12;i++) {
             const float4 pixof = superImageLoad(currImages[i], curPixel);
