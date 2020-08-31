@@ -86,7 +86,7 @@ void main()
         RayData tempRay;
         tempRay.pixelID = u16vec2(LAUNCH_ID);
         tempRay.meta = u8vec4(0u);
-        tempRay.emission = f16vec4(0.f.xxxx);
+        tempRay.emission = f16vec4(0.f.xxx, 1.f);
         tempRay.color = f16vec4(1.f.xxx, 1.f);
         tempRay.origin = RPM.origin.xyz;
 
