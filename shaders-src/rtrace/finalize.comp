@@ -74,7 +74,8 @@ void main()
         XPOL MAT = materialize(RPM, GEO);
 
         // 
-        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
+        //if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
+        {
             // Accumulation!
             float4 indirect = bLoad(IW_INDIRECT, curPixel) + rLoad(IW_INDIRECT, curPixel);
             float4 refleclp = bLoad(IW_REFLECLR, curPixel) + rLoad(IW_REFLECLR, curPixel);
@@ -87,11 +88,17 @@ void main()
 
             // 
             indirect += shadows;
-            indirect = max(indirect, float4(0.f.xxx, 0.f));
-            
+
             // 
             if (refleclr.w < 0.0001f) { refleclr = refleclp; }; // When Reflection  is NOT found... 
             if ( transpr.w < 0.0001f) {  transpr = transpp;  }; // When Transparent is NOT found... 
+
+            // Correct Sampling
+            indirect = max(indirect, float4(0.f.xxx, 1.f));
+            refleclp = max(refleclp, float4(0.f.xxx, 1.f));
+            refleclr = max(refleclr, float4(0.f.xxx, 1.f));
+            transpp = max(transpp, float4(0.f.xxx, 1.f));
+            transpr = max(transpr, float4(0.f.xxx, 1.f));
 
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
@@ -108,8 +115,9 @@ void main()
 
         // Use sampled reflection as previous frame
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            const float4 refleclp = bLoad(IW_REFLECLR, curPixel) + rLoad(IW_REFLECLR, curPixel);
-            const float4 maximize = max(refleclp / max(refleclp.w, 1.f), float4(0.f.xxx, 0.f));
+            float4 refleclp = bLoad(IW_REFLECLR, curPixel) + rLoad(IW_REFLECLR, curPixel);
+            float4 maximize = max(refleclp / max(refleclp.w, 1.f), float4(0.f.xxx, 0.f));
+            refleclp = max(refleclp, float4(0.f.xxx, 1.f));
             superImageStore(prevImages[IW_REFLECLR], curPixel, max(maximize*min(refleclp.w, 65536.f), float4(0.f.xxx, 0.f)));
         };
     };
