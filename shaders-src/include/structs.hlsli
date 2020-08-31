@@ -98,8 +98,8 @@ struct ColorChain {
 //uint lifetime(inout HitData hit, in uint a) { hit.meshID_meta = bitfieldInsert(hit.meshID_meta, a, 24, 4); return a; };
 // 
 const int fb=0;
-uint lifetime(inout RayData ray) { return bitfieldExtract(ray.meta.x, 3,4+fb); };
-uint lifetime(inout RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a,3,4+fb)); return a; };
+int lifetime(inout RayData ray) { return int(bitfieldExtract(ray.meta.x, 3,4+fb)); };
+int lifetime(inout RayData ray, in int a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, uint(a),3,4+fb)); return int(a); };
 // 
 uint kind(inout RayData ray) { return bitfieldExtract(ray.meta.x, 0, 3+fb); };
 uint kind(inout RayData ray, in uint a) { ray.meta.x = uint8_t(bitfieldInsert(ray.meta.x, a,0,3+fb)); return a; };

@@ -107,7 +107,7 @@ void main()
                 };
                 outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
 
-                lifetime(outRay, 2u);
+                lifetime(outRay, 2);
                 finished(outRay, false);
             } else { // SkyBox
                 outRay.origin = RPM.origin.xyz;
@@ -117,7 +117,7 @@ void main()
                 outRay.color = half4(0.f.xxxx);
                 
                 kind(outRay, DIFFUSE_RAY);
-                lifetime(outRay, 0u);
+                lifetime(outRay, 0);
                 finished(outRay, true);
             };
 
@@ -132,7 +132,7 @@ void main()
             outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
             kind(outRay, TRANSPC_RAY);
             
-            lifetime(outRay, 2u);
+            lifetime(outRay, 2);
             finished(outRay, false);
 
             emitRay(outRay);
@@ -154,7 +154,7 @@ void main()
 
                 //kind(outRay, SHADOWS_RAY);
                 kind(outRay, DIFFUSE_RAY);
-                lifetime(outRay, 0u);
+                lifetime(outRay, 0);
                 finished(outRay, true);
                 emitRay(outRay);
             };

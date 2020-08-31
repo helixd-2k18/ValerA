@@ -74,7 +74,7 @@ void main()
                     outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(xhit.direct.xyz, xhit.origin.xyz));
                     outRay.color = half4(0.f);
                     
-                    lifetime(outRay, 0u);
+                    lifetime(outRay, 0);
                     finished(outRay, true);
                 } else 
                 {   
@@ -107,7 +107,7 @@ void main()
                 outRay.emission = half4(signal);
 
                 //kind(outRay, SHADOWS_RAY);
-                lifetime(outRay, 0u);
+                lifetime(outRay, 0);
                 finished(outRay, true);
                 emitRay(outRay);
             };

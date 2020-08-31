@@ -60,7 +60,7 @@ RayData finishRay(inout RayData ray) {
 // 
 RayData finishBy(inout RayData ray) {
 #ifdef GLSL
-    if (dot(ray.color.xyz, 1.hf.xxx) <= 0.001f || lifetime(ray) <= 0u) { finishRay(ray); };
+    if (dot(ray.color.xyz, 1.hf.xxx) <= 0.001f || lifetime(ray) <= 0) { finishRay(ray); };
 #endif
     return ray;
 };
@@ -68,7 +68,7 @@ RayData finishBy(inout RayData ray) {
 // 
 void storeRay(in RayData ray, in uint rayID) {
 #ifdef GLSL
-    if (rayID != ~0u && rayID < LIMITS) { lifetime(ray, lifetime(ray)-1u); rays[0u].data[rayID] = ray; };
+    if (rayID != ~0u && rayID < LIMITS) { lifetime(ray, lifetime(ray)-1); rays[0u].data[rayID] = ray; };
 #endif
 };
 
