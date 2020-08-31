@@ -2,15 +2,6 @@
 #extension GL_EXT_ray_tracing          : require
 #extension GL_EXT_ray_query            : require
 #extension GL_ARB_post_depth_coverage  : require
-
-#ifdef AMD_SOLUTION
-#extension GL_AMD_shader_explicit_vertex_parameter : require
-#define BARYCOORD float3(1.f-gl_BaryCoordSmoothAMD.x-gl_BaryCoordSmoothAMD.y,gl_BaryCoordSmoothAMD)
-#else
-#extension GL_NV_fragment_shader_barycentric : require
-#define BARYCOORD gl_BaryCoordNV
-#endif
-
 #endif
 
 // 
@@ -96,7 +87,6 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
 {   // TODO: Re-Interpolate for Randomized Center
 #ifdef GLSL
     const float4 FragCoord = gl_FragCoord;
-    const float3 BaryWeights = BARYCOORD;
 
     PS_INPUT inp = { gl_FragCoord, fPosition, fTexcoord, fBarycent, uData, 0.f };
 #endif
@@ -137,7 +127,7 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
         outp.gPosition = inp.fPosition; // Save texcoord for Parallax Mapping with alpha channel
         outp.oMaterial = uintBitsToFloat(uint4(0u, 0u, 0u, floatBitsToUint(1.f)));
         outp.oGeoIndice = float4(inp.uData.xyz, 1.f);
-        outp.oBarycent = float4(max(BaryWeights, 0.0001f.xxx), 1.f);
+        outp.oBarycent = float4(max(inp.fBarycent.xyz, 0.0001f.xxx), 1.f);
         outp.FragDepth = inp.FragCoord.z;
     };
 

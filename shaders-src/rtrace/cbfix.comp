@@ -22,7 +22,7 @@ float4 rbFetchW(const int ID, in int2 samplep){
     return color / max(color.w, 1.f);
 };
 
-// Bugged Here, Disable...
+// 
 float4 cbLoad(const int ID, in int2 samplep, inout uint2 seed) {
     float4 center = cbFetchW(ID, samplep);
     float4 fixedt = center;
@@ -42,7 +42,7 @@ float4 cbLoad(const int ID, in int2 samplep, inout uint2 seed) {
     return fixedt;
 };
 
-// Bugged Here, Disable...
+// 
 float4 rbLoad(const int ID, in int2 samplep, inout uint2 seed) {
     float4 center = rbFetchW(ID, samplep);
     float4 fixedt = center;
