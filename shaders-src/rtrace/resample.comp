@@ -71,9 +71,20 @@ void main()
     uint4 cIndices = floatBitsToUint(superImageLoad(currImages[IW_INDICIES], topix));
 
     // 
+    XHIT RPM; // currImages is Current Frame, prevImages is Previous Frame
+    RPM.origin = superImageLoad(prevImages[IW_POSITION], curPixel); // IW_POSITION - transformed, IW_ORIGINAL - not transformed
+    RPM.gBarycentric = superImageLoad(prevImages[IW_BARYCENT], curPixel);
+    RPM.gIndices = floatBitsToUint(superImageLoad(prevImages[IW_INDICIES], curPixel));
+
+    // TODO: Optimize Fetching and Interpolation 
+    //XGEO GEO = interpolate(RPM);
+    //XPOL MAT = materialize(RPM, GEO);
+
+    // 
     if (
         //true
         //dot(imageLoad(prevImages[IW_BARYCENT], curPixel).xyz, 1.f.xxx) > 0.f && 
+        RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f && 
         indirect.w > 0.f && cindirect.w > 0.f && 
         cIndices.x == wIndices.x && cIndices.y == wIndices.y && 
         abs(screenpos.z - screensmp.z) < 0.0001f && 

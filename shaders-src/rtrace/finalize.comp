@@ -74,7 +74,7 @@ void main()
         XPOL MAT = materialize(RPM, GEO);
 
         // 
-        //if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
+        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
         {
             // Accumulation!
             float4 indirect = bLoad(IW_INDIRECT, curPixel) + rLoad(IW_INDIRECT, curPixel);
