@@ -10,8 +10,7 @@ namespace vlr {
 };
 
 namespace vlj {
-    class BindingSet : public Wrap<vlr::BindingSet> { 
-        using T = VkVertexInputBindingDescription;
+    class BindingSet : public Wrap<vlr::BindingSet> {
     public:
         BindingSet() : Wrap<vlr::BindingSet>() {};
         BindingSet(vkt::uni_ptr<vlr::BindingSet> object) : Wrap<vlr::BindingSet>(object) {};
@@ -26,7 +25,7 @@ namespace vlj {
         CALLIFY(setCommand);
         CALLIFY(getVector);
 
-        virtual T* get(const uint32_t& I = 0u) { return &object->get(I); };
-        virtual const T* get(const uint32_t& I = 0u) const { return &object->get(I); };
+        virtual VkVertexInputBindingDescription* get(const uint32_t& I = 0u) { return &object->get(I); };
+        virtual const VkVertexInputBindingDescription* get(const uint32_t& I = 0u) const { return &object->get(I); };
     };
 };

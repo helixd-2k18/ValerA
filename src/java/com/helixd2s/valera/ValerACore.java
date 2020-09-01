@@ -213,6 +213,40 @@ public class ValerACore implements InfoMapper {
     };
 
     //
+    @Name("vkh::VsGeometryInstance")
+    public static class VsGeometryInstance extends Pointer {
+        static { Loader.load(); }
+
+        public VsGeometryInstance(Pointer p) { super(p); };
+        public VsGeometryInstance() { allocate(); };
+
+        private native void allocate();
+
+        // 
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer transform();
+        public native @MemberGetter @Cast("byte*") @ByRef @Name("transform") BytePointer first();
+
+        // 
+        public int getInt24(int offset) {
+            return (first().get(offset) | (first().get(offset+1)<<8) | (first().get(offset+2)<<16));
+        };
+
+        // 
+        public void setInt24(int offset, int num24) {
+            BytePointer ptr = first();
+            ptr.put((long)(offset+0), (byte)(num24&0xFF));
+            ptr.put((long)(offset+1), (byte)((num24>>8)&0xFF));
+            ptr.put((long)(offset+2), (byte)((num24>>16)&0xFF));
+        };
+
+        // By Offsets
+        public static int CUSTOM_ID = 48;
+        public static int MASK = 51;
+        public static int INSTANCE_OFFSET = 52;
+        public static int FLAGS = 55;
+    };
+
+    //
     @Name("vlr::GeometryDesc")
     public static class GeometryDesc extends Pointer {
         static { Loader.load(); }
@@ -226,12 +260,46 @@ public class ValerACore implements InfoMapper {
         public native @MemberGetter @Cast("int*") @ByRef IntPointer firstVertex();
         public native @MemberGetter @Cast("int*") @ByRef IntPointer primitiveCount();
         public native @MemberGetter @Cast("int*") @ByRef IntPointer material();
-        public native @MemberGetter @Cast("int*") @ByRef IntPointer mesh_flags();
+        public native @MemberGetter @Cast("int8_t*") @ByRef BytePointer mesh_flags();
         public native @MemberGetter @Cast("int*") @ByRef IntPointer vertexAttribute();
         public native @MemberGetter @Cast("int*") @ByRef IntPointer indexBufferView();
         public native @MemberGetter @Cast("int*") @ByRef IntPointer indexType();
         public native @MemberGetter @Cast("int*") @ByRef IntPointer reserved();
         public native @MemberGetter @Cast("int*") @ByRef IntPointer attributes();
+
+        public native @MemberGetter @Cast("byte*") @ByRef @Name("transform") BytePointer first();
+
+        public int getInt24(int offset) {
+            return (first().get(offset) | (first().get(offset+1)<<8) | (first().get(offset+2)<<16));
+        };
+
+        public void setInt24(int offset, int num24) {
+            BytePointer ptr = first();
+            ptr.put((long)(offset+0), (byte)(num24&0xFF));
+            ptr.put((long)(offset+1), (byte)((num24>>8)&0xFF));
+            ptr.put((long)(offset+2), (byte)((num24>>16)&0xFF));
+        };
+    };
+
+    //
+    @Name("vlr::ConstantDesc")
+    public static class ConstantDesc extends Pointer {
+        static { Loader.load(); }
+
+        public ConstantDesc(Pointer p) { super(p); };
+        public ConstantDesc() { allocate(); };
+
+        private native void allocate();
+
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer projection();
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer projectionInv();
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer modelview();
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer modelviewInv();
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer modelviewPrev();
+        public native @MemberGetter @Cast("float*") @ByRef FloatPointer modelviewPrevInv();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer mdata();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer tdata();
+        public native @MemberGetter @Cast("int*") @ByRef IntPointer rdata();
     };
 
     // 

@@ -26,7 +26,6 @@ namespace vlr {
 
 namespace vlj {
     class MaterialSet : public Wrap<vlr::MaterialSet> {
-        using T = vlr::MaterialUnit;
     public:
         MaterialSet() : Wrap<vlr::MaterialSet>() {};
         MaterialSet(vkt::uni_ptr<vlr::MaterialSet> object) : Wrap<vlr::MaterialSet>(object) {};
@@ -41,7 +40,7 @@ namespace vlj {
         CALLIFY(setCommand);
         CALLIFY(getVector);
 
-        virtual T* get(const uint32_t& I = 0u) { return &object->get(I); };
-        virtual const T* get(const uint32_t& I = 0u) const { return &object->get(I); };
+        virtual vlr::MaterialUnit* get(const uint32_t& I = 0u) { return &object->get(I); };
+        virtual const vlr::MaterialUnit* get(const uint32_t& I = 0u) const { return &object->get(I); };
     };
 };

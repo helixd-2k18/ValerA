@@ -103,6 +103,9 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.MaterialSet uniPtr();
         public native @SharedPtr ValerACore.MaterialSet sharedPtr();
+
+        // 
+        public native ValerACore.MaterialUnit get(int I);
     };
 
     //
@@ -115,6 +118,10 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.Constants uniPtr();
         public native @SharedPtr ValerACore.Constants sharedPtr();
+
+        // 
+        public native ValerACore.ConstantDesc get(int I);
+        public native ValerACore.ConstantDesc get();
     };
 
     //
@@ -131,6 +138,9 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.InstanceSet uniPtr();
         public native @SharedPtr ValerACore.InstanceSet sharedPtr();
+
+        // 
+        public native ValerACore.VsGeometryInstance get(int I);
     };
 
 
@@ -236,6 +246,9 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.GeometrySet uniPtr();
         public native @SharedPtr ValerACore.GeometrySet sharedPtr();
+
+        // 
+        public native ValerACore.GeometryDesc get(int I);
     };
 
 
@@ -303,7 +316,7 @@ public class ValerABase implements InfoMapper {
         // 
         public TextureSet(@UniPtr ValerACore.TextureSet object) { allocate(object); };
         private native void allocate(@UniPtr ValerACore.TextureSet object);
-        
+
         // 
         public TextureSet(Pointer p) { super(p); };
         public TextureSet(@UniPtr VKt.Driver driver) { allocate(driver); };
@@ -349,7 +362,7 @@ public class ValerABase implements InfoMapper {
         public native @SharedPtr ValerACore.SamplerSet sharedPtr();
 
         // 
-        public native @Cast("long*") @ByRef  LongPointer get(int I);
+        public native @Cast("long*") @ByRef LongPointer get(int I);
 
         //
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);

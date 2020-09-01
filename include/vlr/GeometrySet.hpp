@@ -45,7 +45,6 @@ namespace vlr {
 
 namespace vlj {
     class GeometrySet : public Wrap<vlr::GeometrySet> {
-        using T = vlr::GeometryDesc;
     public:
         GeometrySet() : Wrap<vlr::GeometrySet>() {};
         GeometrySet(vkt::uni_ptr<vlr::GeometrySet> object) : Wrap<vlr::GeometrySet>(object) {};
@@ -61,8 +60,8 @@ namespace vlj {
         CALLIFY(getVector);
 
         // 
-        virtual T* get(const uint32_t& I = 0u) { return &object->get(I); };
-        virtual const T* get(const uint32_t& I = 0u) const { return &object->get(I); };
+        virtual vlr::GeometryDesc* get(const uint32_t& I = 0u) { return &object->get(I); };
+        virtual const vlr::GeometryDesc* get(const uint32_t& I = 0u) const { return &object->get(I); };
     };
 };
 

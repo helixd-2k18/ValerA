@@ -25,7 +25,6 @@ namespace vlr {
 
 namespace vlj {
     class Constants : public Wrap<vlr::Constants> {
-        using T = vlr::ConstantDesc;
     public:
         Constants() : Wrap<vlr::Constants>() {};
         Constants(vkt::uni_ptr<vlr::Constants> object) : Wrap<vlr::Constants>(object) {};
@@ -40,8 +39,8 @@ namespace vlj {
         CALLIFY(setCommand);
         CALLIFY(getVector);
 
-        virtual T* get(const uint32_t& I = 0u) { return &object->get(I); };
-        virtual const T* get(const uint32_t& I = 0u) const { return &object->get(I); };
+        virtual vlr::ConstantDesc* get(const uint32_t& I = 0u) { return &object->get(I); };
+        virtual const vlr::ConstantDesc* get(const uint32_t& I = 0u) const { return &object->get(I); };
         //CALLIFY(constructor);
     };
 };
