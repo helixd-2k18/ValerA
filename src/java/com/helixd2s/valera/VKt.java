@@ -294,7 +294,8 @@ public class VKt implements InfoMapper {
         public native @Cast("uintptr_t") long deviceAddress();
         public native @Cast("uintptr_t") long address(); // For Pointer Passes
         public native @Cast("uintptr_t") long mapv(long ptr);
-
+        public native @Name("operator=") @ByRef Vector put(@ByRef Vector x);
+        
         //
         public native long size();
         public native long range();

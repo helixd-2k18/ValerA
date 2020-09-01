@@ -225,6 +225,7 @@ public class ValerACore implements InfoMapper {
         // 
         public native @MemberGetter @Cast("float*") @ByRef FloatPointer transform();
         public native @MemberGetter @Cast("byte*") @ByRef @Name("transform") BytePointer first();
+        public native @MemberGetter @Cast("long*") @ByRef LongPointer accelerationStructureHandle();
 
         // 
         public int getInt24(int offset) {

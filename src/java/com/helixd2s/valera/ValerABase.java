@@ -58,6 +58,7 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.SetBase uniPtr();
         public native @SharedPtr ValerACore.SetBase sharedPtr();
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
 
@@ -75,6 +76,7 @@ public class ValerABase implements InfoMapper {
         // 
         public native @Cast("long") @ByRef long get(int I);
         public native @Cast("long") @ByRef long get();
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
     //
@@ -91,6 +93,7 @@ public class ValerABase implements InfoMapper {
         // 
         public native @Cast("long") @ByRef long get(int I);
         public native @Cast("long") @ByRef long get();
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
     //
@@ -106,6 +109,7 @@ public class ValerABase implements InfoMapper {
 
         // 
         public native ValerACore.MaterialUnit get(int I);
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
     //
@@ -122,6 +126,7 @@ public class ValerABase implements InfoMapper {
         // 
         public native ValerACore.ConstantDesc get(int I);
         public native ValerACore.ConstantDesc get();
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
     //
@@ -141,6 +146,7 @@ public class ValerABase implements InfoMapper {
 
         // 
         public native ValerACore.VsGeometryInstance get(int I);
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
 
@@ -167,6 +173,9 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.VertexSet uniPtr();
         public native @SharedPtr ValerACore.VertexSet sharedPtr();
+
+        //
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
     //
@@ -192,6 +201,9 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.Acceleration uniPtr();
         public native @SharedPtr ValerACore.Acceleration sharedPtr();
+
+        // 
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
     //
@@ -248,6 +260,7 @@ public class ValerABase implements InfoMapper {
         public native @SharedPtr ValerACore.GeometrySet sharedPtr();
 
         // 
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
         public native ValerACore.GeometryDesc get(int I);
     };
 
@@ -275,6 +288,9 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.Background uniPtr();
         public native @SharedPtr ValerACore.Background sharedPtr();
+
+        // 
+        public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
     //

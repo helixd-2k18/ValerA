@@ -101,5 +101,6 @@ namespace vlj {
         CALLIFY(getAttributeBuffer_T);
         CALLIFY(getBuffer);
         CALLIFY(getAttributeBuffer);
+        CALLIFY(createDescriptorSet);
     };
 };
