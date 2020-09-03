@@ -73,25 +73,25 @@ void main()
         XGEO GEO = interpolate(RPM);
         XPOL MAT = materialize(RPM, GEO);
         
+        // Accumulation!
+        float4 indirect = bLoad(IW_INDIRECT, curPixel) + rLoad(IW_INDIRECT, curPixel);
+        float4 refleclp = bLoad(IW_REFLECLR, curPixel) + rLoad(IW_REFLECLR, curPixel);
+        float4 transpp  = bLoad(IW_TRANSPAR, curPixel) + rLoad(IW_TRANSPAR, curPixel);
+
+        // 
+        float4 shadows  = bLoad(IW_SHADOWCL, curPixel);
+        float4 transpr  = bLoad(IW_TRANSPAR, curPixel);
+        float4 refleclr = bLoad(IW_REFLECLR, curPixel);
+
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
         {
-            // Accumulation!
-            float4 indirect = bLoad(IW_INDIRECT, curPixel) + rLoad(IW_INDIRECT, curPixel);
-            float4 refleclp = bLoad(IW_REFLECLR, curPixel) + rLoad(IW_REFLECLR, curPixel);
-            float4 transpp  = bLoad(IW_TRANSPAR, curPixel) + rLoad(IW_TRANSPAR, curPixel);
-
-            // 
-            float4 shadows  = bLoad(IW_SHADOWCL, curPixel);
-            float4 transpr  = bLoad(IW_TRANSPAR, curPixel);
-            float4 refleclr = bLoad(IW_REFLECLR, curPixel);
-
             // 
             indirect += shadows;
 
-            // 
-            if (refleclr.w < 0.0001f) { refleclr = refleclp; }; // When Reflection  is NOT found... 
-            if ( transpr.w < 0.0001f) {  transpr = transpp;  }; // When Transparent is NOT found... 
+            // Flickering issue...
+            //if (refleclr.w < 0.0001f) { refleclr = refleclp; }; // When Reflection  is NOT found... 
+            //if ( transpr.w < 0.0001f) {  transpr = transpp;  }; // When Transparent is NOT found... 
 
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
@@ -108,9 +108,7 @@ void main()
 
         // Use sampled reflection as previous frame
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            float4 refleclp = bLoad(IW_REFLECLR, curPixel) + rLoad(IW_REFLECLR, curPixel);
             float4 maximize = max(refleclp / max(refleclp.w, 1.f), float4(0.f.xxx, 0.f));
-            refleclp = max(refleclp, float4(0.f.xxx, 0.f));
             superImageStore(prevImages[IW_REFLECLR], curPixel, max(maximize*min(refleclp.w, 65536.f), float4(0.f.xxx, 0.f)));
         };
     };
