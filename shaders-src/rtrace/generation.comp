@@ -26,7 +26,17 @@ void main()
     const Box box = { -1.f.xxx, 1.f.xxx }; // TODO: Change Coordinate
     const float3 lightc = 32.f*4096.f.xxx/(sphere.w*sphere.w);
 
-    const uint2 lanQ = LAUNCH_ID.xy;//gl_LaunchIDEXT.xy;//gl_GlobalInvocationID.xy;
+    //const uint2 
+    //uint2 lanQ = LAUNCH_ID.xy;//gl_LaunchIDEXT.xy;//gl_GlobalInvocationID.xy;
+
+    // 
+    bool checker = bool(LocalInvocationIndex / (gl_WorkGroupSize.x * gl_WorkGroupSize.y / 2));
+    uint localY = (LocalInvocationIndex / gl_WorkGroupSize.x) % (gl_WorkGroupSize.y / 2);
+    uint localX = LocalInvocationIndex % gl_WorkGroupSize.x;
+    uint2 localXY = uint2(localX, (localY*2)+((localX&1)^uint(checker)));//LocalInvocationID.xy;
+    
+    // 
+    uint2 lanQ = gl_WorkGroupID.xy * gl_WorkGroupSize.xy + localXY;
     uint2 launchSize = imageSize(currImages[IW_POSITION]); launchSize.x >>= 2;
 
     // 
@@ -34,7 +44,7 @@ void main()
     const int2 sizPixel = int2(launchSize);
 
     // WARNING! Quality may critically drop when move! 
-    const bool checker = bool(((curPixel.x ^ curPixel.y) ^ (constants.rdata.x^1u))&1u);
+    //const bool checker = bool(((curPixel.x ^ curPixel.y) ^ (constants.rdata.x^1u))&1u);
 
     {
         //
@@ -84,7 +94,7 @@ void main()
         
         // Emit Diffuse Indirect Ray
         RayData tempRay;
-        tempRay.pixelID = u16vec2(LAUNCH_ID);
+        tempRay.pixelID = u16vec2(lanQ);
         tempRay.meta = u8vec4(0u);
         tempRay.emission = f16vec4(0.f.xxx, 1.f);
         tempRay.color = f16vec4(1.f.xxx, 1.f);
