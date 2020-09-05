@@ -614,6 +614,9 @@ public class ValerABase implements InfoMapper {
         //
         public native void imageToLinearCopyCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @ByRef @Cast("uint32_t") int whatDenoise);
         public native void linearToImageCopyCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @ByRef @Cast("uint32_t") int whatDenoise);
+
+        //
+        public native @ByRef VKt.ImageRegion getFramebuffer(@Cast("uint32_t") int I);
     };
 
 
