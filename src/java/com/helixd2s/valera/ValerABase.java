@@ -59,6 +59,10 @@ public class ValerABase implements InfoMapper {
         public native @UniPtr ValerACore.SetBase uniPtr();
         public native @SharedPtr ValerACore.SetBase sharedPtr();
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+
+        // 
+        public native @ByRef @UniPtr VKt.Vector getCpuBuffer();
+        public native @ByRef @UniPtr VKt.Vector getGpuBuffer();
     };
 
 
@@ -204,6 +208,11 @@ public class ValerABase implements InfoMapper {
 
         // 
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+
+        // 
+        public native void updateAccelerationStructure(ValerACore.AccelerationCreateInfo info);
+        public native void setCommand(@Cast("VkCommandBuffer") long info);
+        public native @Cast("int64_t") long getHandle();
     };
 
     //
@@ -229,6 +238,10 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.Geometry uniPtr();
         public native @SharedPtr ValerACore.Geometry sharedPtr();
+
+        //
+        public native void setIndexBuffer(@Cast("uint32_t") int indexBufferView, @Cast("VkIndexType") int indexType);
+        public native void setVertexBuffer(@Cast("uint32_t") int vertexAttribute);
     };
 
     // 
@@ -291,6 +304,7 @@ public class ValerABase implements InfoMapper {
 
         // 
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void setImage(@ByRef VKt.ImageRegion image);
     };
 
     //
@@ -412,6 +426,12 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.RenderCommand uniPtr();
         public native @SharedPtr ValerACore.RenderCommand sharedPtr();
+        
+        //
+        public native void setRasterization(@UniPtr ValerACore.Rasterization rasterization);
+        public native void setRayTracing(@UniPtr ValerACore.RayTracing rayTracing);
+        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+        public native void setDescriptorSets(@ByRef ValerACore.PipelineLayout pipelineLayout);
     };
 
     // 
@@ -437,6 +457,12 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.BuildCommand uniPtr();
         public native @SharedPtr ValerACore.BuildCommand sharedPtr();
+
+        //
+        public native void setAccelerationTop(@UniPtr @ByRef ValerACore.Acceleration acceleration);
+        public native void setDescriptorSets(@UniPtr @ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+        public native void setCommandTop(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
     };
 
     // 
@@ -462,6 +488,19 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.RayTracing uniPtr();
         public native @SharedPtr ValerACore.RayTracing sharedPtr();
+
+        // 
+        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+        public native void setCommandFinal(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+
+        // 
+        public native void setDescriptorSets(@UniPtr @ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void setAccelerationTop(@UniPtr @ByRef ValerACore.Acceleration acceleration);
+        public native void setConstants(@UniPtr @ByRef ValerACore.Constants constants);
+
+        //
+        //public native @UniPtr VKt.UIntVector getCounters();
+        //public native @UniPtr ValerACore.Constants getConstants();
     };
 
     // 
@@ -487,6 +526,16 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.Rasterization uniPtr();
         public native @SharedPtr ValerACore.Rasterization sharedPtr();
+
+        // 
+        public native void drawCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+        public native void setDescriptorSets(@UniPtr @ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void setInstanceSet(@UniPtr @ByRef ValerACore.InstanceSet acceleration);
+        public native void setConstants(@UniPtr @ByRef ValerACore.Constants constants);
+
+        //
+        //public native @UniPtr ValerACore.Constants getConstants();
     };
 
     // 
@@ -510,6 +559,29 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.PipelineLayout uniPtr();
         public native @SharedPtr ValerACore.PipelineLayout sharedPtr();
+
+        // 
+        public native void setMaterials(@UniPtr ValerACore.MaterialSet materialSet, @UniPtr ValerACore.TextureSet textureSet, @UniPtr ValerACore.SamplerSet samplerSet);
+        public native @Name("setVertexSet<vlr::VertexSet>") void setVertexSet(@UniPtr ValerACore.VertexSet vertexData);
+        public native @Name("setFramebuffer<vlr::Framebuffer>") void setFramebuffer(@UniPtr ValerACore.Framebuffer framebuffer);
+        public native @Name("setAccelerationTop<vlr::Acceleration>") void setAccelerationTop(@UniPtr ValerACore.Acceleration acceleration);
+        public native @Name("setConstants<vlr::Constants>") void setConstants(@UniPtr ValerACore.Constants constants);
+        public native @Name("setRayTracing<vlr::RayTracing>") void setRayTracing(@UniPtr ValerACore.RayTracing rayTracing);
+        public native @Name("setRasterization<vlr::Rasterization>") void setRasterization(@UniPtr ValerACore.Rasterization rayTracing);
+        public native @Name("setInstanceSet<vlr::InstanceSet>") void setInstanceSet(@UniPtr ValerACore.InstanceSet instanceSet);
+        public native @Name("setBackground<vlr::Background>") void setBackground(@UniPtr ValerACore.Background background);
+
+        // 
+        public native @StdVector LongPointer getDescriptorSets();
+
+        // 
+        public native @Cast("int64_t") @ByRef long getDescriptorSet(int I);
+        public native @Cast("int64_t") @ByRef long getDescriptorSetLayout(int I);
+        public native @Cast("int64_t") @ByRef long getPipelineCache();
+        public native @Cast("int64_t") @ByRef long getBindingPipelineLayout();
+        public native @Cast("int64_t") @ByRef long getTransformPipelineLayout();
+        public native @Cast("int64_t") @ByRef long getDescriptorPool();
+        public native @Cast("int64_t") @ByRef long getPipelineLayout();
     };
 
     // 
@@ -533,6 +605,15 @@ public class ValerABase implements InfoMapper {
         // 
         public native @UniPtr ValerACore.Framebuffer uniPtr();
         public native @SharedPtr ValerACore.Framebuffer sharedPtr();
+
+        //
+        public native void createRenderPass();
+        public native void createDescriptorSet(@UniPtr @ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void createFramebuffer(@Cast("uint32_t") int width, @Cast("uint32_t") int height);
+
+        //
+        public native void imageToLinearCopyCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @ByRef @Cast("uint32_t") int whatDenoise);
+        public native void linearToImageCopyCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @ByRef @Cast("uint32_t") int whatDenoise);
     };
 
 

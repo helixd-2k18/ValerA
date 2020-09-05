@@ -73,5 +73,6 @@ namespace vlj {
         CALLIFY(setDescriptorSets);
         CALLIFY(setInstanceSet);
         CALLIFY(setConstants);
+        //CALLIFY(getConstants);
     };
 };

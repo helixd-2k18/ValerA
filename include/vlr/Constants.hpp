@@ -38,6 +38,7 @@ namespace vlj {
         CALLIFY(createDescriptorSet);
         CALLIFY(setCommand);
         CALLIFY(getVector);
+        //CALLIFY(getConstants);
 
         virtual vlr::ConstantDesc* get(const uint32_t& I = 0u) { return &object->get(I); };
         virtual const vlr::ConstantDesc* get(const uint32_t& I = 0u) const { return &object->get(I); };

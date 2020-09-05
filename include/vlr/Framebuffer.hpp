@@ -118,5 +118,12 @@ namespace vlj {
         Framebuffer(std::shared_ptr<vlr::Framebuffer> object) : Wrap<vlr::Framebuffer>(object) {};
 
         //CALLIFY(constructor);
+        CALLIFY(createRenderPass);
+        CALLIFY(createFramebuffer);
+        CALLIFY(createDescriptorSet);
+
+        // 
+        CALLIFY(imageToLinearCopyCommand);
+        CALLIFY(linearToImageCopyCommand);
     };
 };

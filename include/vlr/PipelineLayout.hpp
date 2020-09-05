@@ -41,6 +41,7 @@ namespace vlr {
         virtual VkPipelineLayout getTransformPipelineLayout() const { return transformLayout; };
         virtual VkDescriptorPool getDescriptorPool() const { return driver->getDescriptorPool(); };
 
+        // 
         virtual VkDescriptorSetLayout getDescriptorSetLayout(const uint32_t& I) const { return layouts[I]; };
         virtual VkDescriptorSetLayout getSetLayout() const { return layouts[0u]; };
         virtual VkDescriptorSetLayout getTextureSetLayout() const { return layouts[1u]; };

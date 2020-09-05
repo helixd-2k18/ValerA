@@ -45,6 +45,10 @@ namespace vlj {
         BuildCommand(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vlr::BuildCommandCreateInfo> info = vlr::BuildCommandCreateInfo{}) : Wrap<vlr::BuildCommand>(std::make_shared<vlr::BuildCommand>(driver, info)) {};
         BuildCommand(std::shared_ptr<vlr::BuildCommand> object) : Wrap<vlr::BuildCommand>(object) {};
 
+        CALLIFY(setAccelerationTop);
+        CALLIFY(setDescriptorSets);
+        CALLIFY(setCommand);
+        CALLIFY(setCommandTop);
         //CALLIFY(constructor);
     };
 };
