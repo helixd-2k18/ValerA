@@ -29,7 +29,7 @@ public class ValerACore implements InfoMapper {
 
     // 
     public void map(InfoMap infoMap) {
-        infoMap.put(new Info("vkt::uni_ptr").skip().annotations("@UniPtr"));
+        infoMap.put(new Info("std::shared_ptr").skip().annotations("@UniPtr"));
     };
 
     // 
