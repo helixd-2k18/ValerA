@@ -18,9 +18,7 @@ namespace vlr {
         ~Background() {};
 
         virtual void constructor() {};
-        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = vkt::ImageRegion{}) {
-            this->driver = driver, this->background = image.ref();
-        };
+        virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = vkt::ImageRegion{});
 
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         //virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
