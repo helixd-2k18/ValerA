@@ -32,7 +32,7 @@ namespace vlj {
     public:
         Background() : Wrap<vlr::Background>() {};
         Background(vkt::uni_ptr<vlr::Background> object) : Wrap<vlr::Background>(object) {};
-        Background(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = {}) : Wrap<vlr::Background>(std::make_shared<vlr::Background>(driver, image)) {};
+        Background(vkt::uni_ptr<vlr::Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = vkt::ImageRegion{}) : Wrap<vlr::Background>(std::make_shared<vlr::Background>(driver, image)) {};
         Background(std::shared_ptr<vlr::Background> object) : Wrap<vlr::Background>(object) {};
 
         //CALLIFY(constructor);
