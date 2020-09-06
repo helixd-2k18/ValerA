@@ -94,6 +94,10 @@ public class ValerACore implements InfoMapper {
 
         //
         public native long memoryAllocationInfoPtr();
+
+        // 
+        public native @UniPtr VKt.Driver uniPtr();
+        public native @SharedPtr VKt.Driver sharedPtr();
     };
     
     // 

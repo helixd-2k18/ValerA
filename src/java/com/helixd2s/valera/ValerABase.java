@@ -151,6 +151,7 @@ public class ValerABase implements InfoMapper {
         // 
         public native ValerACore.VsGeometryInstance get(int I);
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+        public native void pushAcceleration(@ByRef ValerACore.Acceleration acceleration);
     };
 
 
