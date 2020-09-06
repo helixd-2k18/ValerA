@@ -2616,6 +2616,72 @@ JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_00024Vector_range(JNIEnv* e
     }
     return rarg;
 }
+JNIEXPORT jint JNICALL Java_com_helixd2s_valera_VKt_00024Vector_getGLMemory(JNIEnv* env, jobject obj) {
+    ::vkt::VectorBase* ptr = (::vkt::VectorBase*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
+    if (ptr == NULL) {
+        env->ThrowNew(JavaCPP_getClass(env, 8), "This pointer address is NULL.");
+        return 0;
+    }
+    jlong position = env->GetLongField(obj, JavaCPP_positionFID);
+    ptr += position;
+    jint rarg = 0;
+    jthrowable exc = NULL;
+    try {
+        int rval = ptr->getGLMemory();
+        rarg = (jint)rval;
+    } catch (...) {
+        exc = JavaCPP_handleException(env, 7);
+    }
+
+    if (exc != NULL) {
+        env->Throw(exc);
+    }
+    return rarg;
+}
+JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_00024Vector_mapv(JNIEnv* env, jobject obj, jlong arg0) {
+    ::vkt::VectorBase* ptr = (::vkt::VectorBase*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
+    if (ptr == NULL) {
+        env->ThrowNew(JavaCPP_getClass(env, 8), "This pointer address is NULL.");
+        return 0;
+    }
+    jlong position = env->GetLongField(obj, JavaCPP_positionFID);
+    ptr += position;
+    jlong rarg = 0;
+    jthrowable exc = NULL;
+    try {
+        uintptr_t rval = (uintptr_t)ptr->mapv(arg0);
+        rarg = (jlong)rval;
+    } catch (...) {
+        exc = JavaCPP_handleException(env, 7);
+    }
+
+    if (exc != NULL) {
+        env->Throw(exc);
+    }
+    return rarg;
+}
+JNIEXPORT jint JNICALL Java_com_helixd2s_valera_VKt_00024Vector_getGL(JNIEnv* env, jobject obj) {
+    ::vkt::VectorBase* ptr = (::vkt::VectorBase*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
+    if (ptr == NULL) {
+        env->ThrowNew(JavaCPP_getClass(env, 8), "This pointer address is NULL.");
+        return 0;
+    }
+    jlong position = env->GetLongField(obj, JavaCPP_positionFID);
+    ptr += position;
+    jint rarg = 0;
+    jthrowable exc = NULL;
+    try {
+        int rval = ptr->getGL();
+        rarg = (jint)rval;
+    } catch (...) {
+        exc = JavaCPP_handleException(env, 7);
+    }
+
+    if (exc != NULL) {
+        env->Throw(exc);
+    }
+    return rarg;
+}
 JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_00024Vector_deviceAddress(JNIEnv* env, jobject obj) {
     ::vkt::VectorBase* ptr = (::vkt::VectorBase*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
     if (ptr == NULL) {
@@ -2660,50 +2726,6 @@ JNIEXPORT jint JNICALL Java_com_helixd2s_valera_VKt_00024Vector_getGLBuffer(JNIE
     }
     return rarg;
 }
-JNIEXPORT jint JNICALL Java_com_helixd2s_valera_VKt_00024Vector_getGL(JNIEnv* env, jobject obj) {
-    ::vkt::VectorBase* ptr = (::vkt::VectorBase*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
-    if (ptr == NULL) {
-        env->ThrowNew(JavaCPP_getClass(env, 8), "This pointer address is NULL.");
-        return 0;
-    }
-    jlong position = env->GetLongField(obj, JavaCPP_positionFID);
-    ptr += position;
-    jint rarg = 0;
-    jthrowable exc = NULL;
-    try {
-        int rval = ptr->getGL();
-        rarg = (jint)rval;
-    } catch (...) {
-        exc = JavaCPP_handleException(env, 7);
-    }
-
-    if (exc != NULL) {
-        env->Throw(exc);
-    }
-    return rarg;
-}
-JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_00024Vector_mapv(JNIEnv* env, jobject obj, jlong arg0) {
-    ::vkt::VectorBase* ptr = (::vkt::VectorBase*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
-    if (ptr == NULL) {
-        env->ThrowNew(JavaCPP_getClass(env, 8), "This pointer address is NULL.");
-        return 0;
-    }
-    jlong position = env->GetLongField(obj, JavaCPP_positionFID);
-    ptr += position;
-    jlong rarg = 0;
-    jthrowable exc = NULL;
-    try {
-        uintptr_t rval = (uintptr_t)ptr->mapv(arg0);
-        rarg = (jlong)rval;
-    } catch (...) {
-        exc = JavaCPP_handleException(env, 7);
-    }
-
-    if (exc != NULL) {
-        env->Throw(exc);
-    }
-    return rarg;
-}
 JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_00024Vector_getDescriptorPtr(JNIEnv* env, jobject obj) {
     ::vkt::VectorBase* ptr = (::vkt::VectorBase*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
     if (ptr == NULL) {
@@ -2717,28 +2739,6 @@ JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_00024Vector_getDescriptorPt
     try {
         uintptr_t rval = (uintptr_t)ptr->getDescriptorPtr();
         rarg = (jlong)rval;
-    } catch (...) {
-        exc = JavaCPP_handleException(env, 7);
-    }
-
-    if (exc != NULL) {
-        env->Throw(exc);
-    }
-    return rarg;
-}
-JNIEXPORT jint JNICALL Java_com_helixd2s_valera_VKt_00024Vector_getGLMemory(JNIEnv* env, jobject obj) {
-    ::vkt::VectorBase* ptr = (::vkt::VectorBase*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
-    if (ptr == NULL) {
-        env->ThrowNew(JavaCPP_getClass(env, 8), "This pointer address is NULL.");
-        return 0;
-    }
-    jlong position = env->GetLongField(obj, JavaCPP_positionFID);
-    ptr += position;
-    jint rarg = 0;
-    jthrowable exc = NULL;
-    try {
-        int rval = ptr->getGLMemory();
-        rarg = (jint)rval;
     } catch (...) {
         exc = JavaCPP_handleException(env, 7);
     }
@@ -2838,28 +2838,6 @@ JNIEXPORT void JNICALL Java_com_helixd2s_valera_VKt_00024ImageRegion_allocate__L
         env->Throw(exc);
     }
 }
-JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_00024ImageRegion_getDescriptorPtr(JNIEnv* env, jobject obj) {
-    ::vkt::ImageRegion* ptr = (::vkt::ImageRegion*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
-    if (ptr == NULL) {
-        env->ThrowNew(JavaCPP_getClass(env, 8), "This pointer address is NULL.");
-        return 0;
-    }
-    jlong position = env->GetLongField(obj, JavaCPP_positionFID);
-    ptr += position;
-    jlong rarg = 0;
-    jthrowable exc = NULL;
-    try {
-        uintptr_t rval = (uintptr_t)ptr->getDescriptorPtr();
-        rarg = (jlong)rval;
-    } catch (...) {
-        exc = JavaCPP_handleException(env, 7);
-    }
-
-    if (exc != NULL) {
-        env->Throw(exc);
-    }
-    return rarg;
-}
 JNIEXPORT jint JNICALL Java_com_helixd2s_valera_VKt_00024ImageRegion_getGLMemory(JNIEnv* env, jobject obj) {
     ::vkt::ImageRegion* ptr = (::vkt::ImageRegion*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
     if (ptr == NULL) {
@@ -2895,6 +2873,28 @@ JNIEXPORT jint JNICALL Java_com_helixd2s_valera_VKt_00024ImageRegion_getGLImage(
     try {
         int rval = ptr->getGLImage();
         rarg = (jint)rval;
+    } catch (...) {
+        exc = JavaCPP_handleException(env, 7);
+    }
+
+    if (exc != NULL) {
+        env->Throw(exc);
+    }
+    return rarg;
+}
+JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_00024ImageRegion_getDescriptorPtr(JNIEnv* env, jobject obj) {
+    ::vkt::ImageRegion* ptr = (::vkt::ImageRegion*)jlong_to_ptr(env->GetLongField(obj, JavaCPP_addressFID));
+    if (ptr == NULL) {
+        env->ThrowNew(JavaCPP_getClass(env, 8), "This pointer address is NULL.");
+        return 0;
+    }
+    jlong position = env->GetLongField(obj, JavaCPP_positionFID);
+    ptr += position;
+    jlong rarg = 0;
+    jthrowable exc = NULL;
+    try {
+        uintptr_t rval = (uintptr_t)ptr->getDescriptorPtr();
+        rarg = (jlong)rval;
     } catch (...) {
         exc = JavaCPP_handleException(env, 7);
     }
@@ -3479,6 +3479,24 @@ JNIEXPORT void JNICALL Java_com_helixd2s_valera_VKt_00024Device_allocate(JNIEnv*
     }
 }
 
+JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_createCommandBuffer(JNIEnv* env, jclass cls, jobject arg0, jlong arg1, jbyte arg2, jbyte arg3) {
+    ::xvk::Device* ptr0 = arg0 == NULL ? NULL : (::xvk::Device*)jlong_to_ptr(env->GetLongField(arg0, JavaCPP_addressFID));
+    jlong position0 = arg0 == NULL ? 0 : env->GetLongField(arg0, JavaCPP_positionFID);
+    ptr0 += position0;
+    jlong rarg = 0;
+    jthrowable exc = NULL;
+    try {
+        VkCommandBuffer rval = (VkCommandBuffer)vkt::createCommandBuffer(ptr0, (VkCommandPool)arg1, arg2, arg3);
+        rarg = (jlong)rval;
+    } catch (...) {
+        exc = JavaCPP_handleException(env, 7);
+    }
+
+    if (exc != NULL) {
+        env->Throw(exc);
+    }
+    return rarg;
+}
 JNIEXPORT void JNICALL Java_com_helixd2s_valera_VKt_createSemaphore(JNIEnv* env, jclass cls, jobject arg0, jlongArray arg1, jintArray arg2, jlong arg3) {
     ::xvk::Device* ptr0 = arg0 == NULL ? NULL : (::xvk::Device*)jlong_to_ptr(env->GetLongField(arg0, JavaCPP_addressFID));
     jlong position0 = arg0 == NULL ? 0 : env->GetLongField(arg0, JavaCPP_positionFID);
@@ -3509,6 +3527,43 @@ JNIEXPORT void JNICALL Java_com_helixd2s_valera_VKt_submitCmdAsync(JNIEnv* env, 
     jthrowable exc = NULL;
     try {
         vkt::submitCmdAsync(ptr0, (VkQueue)arg1, adapter2, (vkh::VkSubmitInfo*)arg3);
+    } catch (...) {
+        exc = JavaCPP_handleException(env, 7);
+    }
+
+    VkCommandBuffer* rptr2 = (VkCommandBuffer*)adapter2;
+    void* rowner2 = adapter2.owner;
+    if (rptr2 != (VkCommandBuffer*)ptr2) {
+        VectorAdapter< VkCommandBuffer >::deallocate(rowner2);
+    }
+    if (arg2 != NULL) env->ReleaseLongArrayElements(arg2, (jlong*)ptr2, 0);
+    if (exc != NULL) {
+        env->Throw(exc);
+    }
+}
+JNIEXPORT void JNICALL Java_com_helixd2s_valera_VKt_initializeGL(JNIEnv* env, jclass cls, jlong arg0) {
+    jthrowable exc = NULL;
+    try {
+        vkt::initializeGL((GLFWglproc(*)(const char*))arg0);
+    } catch (...) {
+        exc = JavaCPP_handleException(env, 7);
+    }
+
+    if (exc != NULL) {
+        env->Throw(exc);
+    }
+}
+JNIEXPORT void JNICALL Java_com_helixd2s_valera_VKt_submitCmd(JNIEnv* env, jclass cls, jobject arg0, jlong arg1, jlongArray arg2, jlong arg3) {
+    ::xvk::Device* ptr0 = arg0 == NULL ? NULL : (::xvk::Device*)jlong_to_ptr(env->GetLongField(arg0, JavaCPP_addressFID));
+    jlong position0 = arg0 == NULL ? 0 : env->GetLongField(arg0, JavaCPP_positionFID);
+    ptr0 += position0;
+    jlong* ptr2 = arg2 == NULL ? NULL : env->GetLongArrayElements(arg2, NULL);
+    jlong size2 = arg2 == NULL ? 0 : env->GetArrayLength(arg2);
+    void* owner2 = (void*)ptr2;
+    VectorAdapter< VkCommandBuffer > adapter2((VkCommandBuffer*)ptr2, size2, owner2);
+    jthrowable exc = NULL;
+    try {
+        vkt::submitCmd(ptr0, (VkQueue)arg1, adapter2, (vkh::VkSubmitInfo*)arg3);
     } catch (...) {
         exc = JavaCPP_handleException(env, 7);
     }
@@ -3569,61 +3624,6 @@ JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_createCompute__Lcom_helixd2
         VectorAdapter< uint32_t >::deallocate(rowner1);
     }
     if (arg1 != NULL) env->ReleaseIntArrayElements(arg1, (jint*)ptr1, 0);
-    if (exc != NULL) {
-        env->Throw(exc);
-    }
-    return rarg;
-}
-JNIEXPORT void JNICALL Java_com_helixd2s_valera_VKt_initializeGL(JNIEnv* env, jclass cls, jlong arg0) {
-    jthrowable exc = NULL;
-    try {
-        vkt::initializeGL((GLFWglproc(*)(const char*))arg0);
-    } catch (...) {
-        exc = JavaCPP_handleException(env, 7);
-    }
-
-    if (exc != NULL) {
-        env->Throw(exc);
-    }
-}
-JNIEXPORT void JNICALL Java_com_helixd2s_valera_VKt_submitCmd(JNIEnv* env, jclass cls, jobject arg0, jlong arg1, jlongArray arg2, jlong arg3) {
-    ::xvk::Device* ptr0 = arg0 == NULL ? NULL : (::xvk::Device*)jlong_to_ptr(env->GetLongField(arg0, JavaCPP_addressFID));
-    jlong position0 = arg0 == NULL ? 0 : env->GetLongField(arg0, JavaCPP_positionFID);
-    ptr0 += position0;
-    jlong* ptr2 = arg2 == NULL ? NULL : env->GetLongArrayElements(arg2, NULL);
-    jlong size2 = arg2 == NULL ? 0 : env->GetArrayLength(arg2);
-    void* owner2 = (void*)ptr2;
-    VectorAdapter< VkCommandBuffer > adapter2((VkCommandBuffer*)ptr2, size2, owner2);
-    jthrowable exc = NULL;
-    try {
-        vkt::submitCmd(ptr0, (VkQueue)arg1, adapter2, (vkh::VkSubmitInfo*)arg3);
-    } catch (...) {
-        exc = JavaCPP_handleException(env, 7);
-    }
-
-    VkCommandBuffer* rptr2 = (VkCommandBuffer*)adapter2;
-    void* rowner2 = adapter2.owner;
-    if (rptr2 != (VkCommandBuffer*)ptr2) {
-        VectorAdapter< VkCommandBuffer >::deallocate(rowner2);
-    }
-    if (arg2 != NULL) env->ReleaseLongArrayElements(arg2, (jlong*)ptr2, 0);
-    if (exc != NULL) {
-        env->Throw(exc);
-    }
-}
-JNIEXPORT jlong JNICALL Java_com_helixd2s_valera_VKt_createCommandBuffer(JNIEnv* env, jclass cls, jobject arg0, jlong arg1, jbyte arg2, jbyte arg3) {
-    ::xvk::Device* ptr0 = arg0 == NULL ? NULL : (::xvk::Device*)jlong_to_ptr(env->GetLongField(arg0, JavaCPP_addressFID));
-    jlong position0 = arg0 == NULL ? 0 : env->GetLongField(arg0, JavaCPP_positionFID);
-    ptr0 += position0;
-    jlong rarg = 0;
-    jthrowable exc = NULL;
-    try {
-        VkCommandBuffer rval = (VkCommandBuffer)vkt::createCommandBuffer(ptr0, (VkCommandPool)arg1, arg2, arg3);
-        rarg = (jlong)rval;
-    } catch (...) {
-        exc = JavaCPP_handleException(env, 7);
-    }
-
     if (exc != NULL) {
         env->Throw(exc);
     }

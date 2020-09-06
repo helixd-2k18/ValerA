@@ -81,6 +81,14 @@ public class ValerABase implements InfoMapper {
         public native @Cast("long") @ByRef long get(int I);
         public native @Cast("long") @ByRef long get();
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+
+        //
+        public AttributeSet(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info) { allocate(driver, info); };
+        public AttributeSet(@UniPtr VKt.Driver driver) { allocate(driver); };
+
+        // 
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info);
     };
 
     //
@@ -98,6 +106,14 @@ public class ValerABase implements InfoMapper {
         public native @Cast("long") @ByRef long get(int I);
         public native @Cast("long") @ByRef long get();
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+
+        //
+        public BindingSet(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info) { allocate(driver, info); };
+        public BindingSet(@UniPtr VKt.Driver driver) { allocate(driver); };
+
+        // 
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info);
     };
 
     //
@@ -114,6 +130,14 @@ public class ValerABase implements InfoMapper {
         // 
         public native ValerACore.MaterialUnit get(int I);
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+
+        //
+        public MaterialSet(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info) { allocate(driver, info); };
+        public MaterialSet(@UniPtr VKt.Driver driver) { allocate(driver); };
+
+        // 
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info);
     };
 
     //
@@ -131,6 +155,14 @@ public class ValerABase implements InfoMapper {
         public native ValerACore.ConstantDesc get(int I);
         public native ValerACore.ConstantDesc get();
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
+
+        //
+        public Constants(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info) { allocate(driver, info); };
+        public Constants(@UniPtr VKt.Driver driver) { allocate(driver); };
+
+        // 
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info);
     };
 
     //
@@ -152,6 +184,14 @@ public class ValerABase implements InfoMapper {
         public native ValerACore.VsGeometryInstance get(int I);
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
         public native void pushAcceleration(@ByRef ValerACore.Acceleration acceleration);
+
+        //
+        public InstanceSet(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info) { allocate(driver, info); };
+        public InstanceSet(@UniPtr VKt.Driver driver) { allocate(driver); };
+
+        // 
+        private native void allocate(@UniPtr VKt.Driver driver);
+        private native void allocate(@UniPtr VKt.Driver driver, ValerACore.DataSetCreateInfo info);
     };
 
 
