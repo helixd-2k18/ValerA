@@ -92,7 +92,8 @@ namespace vlr {
         //auto allocInfo = this->driver->memoryAllocationInfo();
         auto allocator = this->driver->getAllocator();
         auto vmaMemInfo = vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY };
-
+        vmaMemInfo.deviceDispatch = driver->getDeviceDispatch().get_shared();
+        vmaMemInfo.instanceDispatch = driver->getInstanceDispatch().get_shared();
 
         // 
         std::vector<VkImageView> rasterAttachments = {};
@@ -121,6 +122,8 @@ namespace vlr {
                 // 
                 vkt::commandBarrier(this->driver->getDeviceDispatch(), cmd);
                 vkt::imageBarrier(cmd, vkt::ImageBarrierInfo{
+                    .instanceDispatch = driver->getInstanceDispatch(),
+                    .deviceDispatch = driver->getDeviceDispatch(),
                     .image = depthStencilImage.getImage(),
                     .targetLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                     .originLayout = VK_IMAGE_LAYOUT_GENERAL,

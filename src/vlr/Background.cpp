@@ -28,6 +28,8 @@ namespace vlr {
         if (!(this->background.has() && (*image).has())) {   //
             vkt::VmaMemoryInfo memInfo = {};
             memInfo.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+            memInfo.deviceDispatch = driver->getDeviceDispatch().get_shared();
+            memInfo.instanceDispatch = driver->getInstanceDispatch().get_shared();
 
             // 
             auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(driver->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
@@ -52,7 +54,7 @@ namespace vlr {
             };
 
             //
-            driver->submitOnce([&](VkCommandBuffer& cmd) {
+            driver->submitOnce([&,this](VkCommandBuffer& cmd) {
                 image.transfer(cmd);
                 driver->getDeviceDispatch()->CmdCopyBufferToImage(cmd, imageBuf.buffer(), image.getImage(), image.getImageLayout(), 1u, vkh::VkBufferImageCopy{
                     .bufferOffset = imageBuf.offset(),

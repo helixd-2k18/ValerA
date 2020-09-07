@@ -174,9 +174,6 @@
     <ClInclude Include="macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\glad\glad.h">
-      <Filter>Header Files\glad</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\glad\khrplatform.h">
       <Filter>Header Files\glad</Filter>
     </ClInclude>
@@ -187,9 +184,6 @@
     </ClCompile>
     <ClCompile Include="..\..\examples\include\stdafx.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\vkt\include\glad\glad.c">
-      <Filter>Source Files\glad</Filter>
     </ClCompile>
     <ClCompile Include="..\vlr\Acceleration.cpp">
       <Filter>Source Files\vlr</Filter>
