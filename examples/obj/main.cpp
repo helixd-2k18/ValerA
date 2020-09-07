@@ -125,7 +125,7 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
 
     //
-    std::string inputfile = "cube.obj";
+    std::string inputfile = "teapot.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
