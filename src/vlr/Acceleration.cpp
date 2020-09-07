@@ -67,7 +67,7 @@ namespace vlr {
                 geometryDesc.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
 
                 // 
-                offsetDesc.primitiveCount = uint32_t(instanceSet->getGpuBuffer().size());
+                offsetDesc.primitiveCount = std::min(uint32_t(std::min(instanceSet->getGpuBuffer().size(), this->instanceCount)), this->dataCreate[i].maxPrimitiveCount);
                 offsetDesc.transformOffset = 0u;
                 offsetDesc.primitiveOffset = instanceSet->getGpuBuffer().offset();
                 offsetDesc.firstVertex = 0u;
@@ -76,19 +76,20 @@ namespace vlr {
                 buildGInfo.push_back(geometryDesc);
                 offsetInfo.push_back(offsetDesc);
             };
-        } else 
+        } else
         if (geometrySet.has()) {
             // Generate Building Info
             for (uint32_t i=0u;i<geometrySet->geometries.size();i++) 
             {   // 
-                auto geometry = geometrySet->geometries[i];
-                auto attribute = geometry->vertexSet->getAttribute(geometry->desc->vertexAttribute);
-                auto binding = geometry->vertexSet->getBinding(attribute.binding);
+                auto& geometry = geometrySet->geometries[i];
+                auto& objectDesc = (geometrySet->get(i) = geometry->desc);
+                auto& attribute = geometry->vertexSet->getAttribute(objectDesc.vertexAttribute);
+                auto& binding = geometry->vertexSet->getBinding(attribute.binding);
                 auto offsetDesc = vkh::VkAccelerationStructureBuildOffsetInfoKHR{};
-                auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eOpaque = (geometry->desc->mesh_flags.translucent ? 0u : 1u), .eNoDuplicateAnyHitInvocation = 1 };
+                auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eOpaque = (objectDesc.mesh_flags.translucent ? 0u : 1u), .eNoDuplicateAnyHitInvocation = 1 };
                 auto geometryDesc = vkh::VkAccelerationStructureGeometryKHR{ .flags = buildGeometryFlags };
                 auto triangleDesc = vkh::VkAccelerationStructureGeometryTrianglesDataKHR{};
-                auto buffer = geometry->vertexSet->getAttributeBuffer(geometry->desc->vertexAttribute);
+                auto buffer = geometry->vertexSet->getAttributeBuffer(objectDesc.vertexAttribute);
 
                 // 
                 triangleDesc.transformData = geometrySet->getGpuBuffer()->deviceAddress();
@@ -97,9 +98,9 @@ namespace vlr {
                 triangleDesc.vertexData = buffer->deviceAddress();
 
                 // 
-                if (geometry->desc->indexBufferView != ~0u && geometry->desc->indexBufferView != -1 && geometry->desc->indexType != VK_INDEX_TYPE_NONE_KHR) {
-                    triangleDesc.indexData = geometry->vertexSet->getBuffer(geometry->desc->indexBufferView)->deviceAddress();
-                    triangleDesc.indexType = VkIndexType(geometry->desc->indexType);
+                if (objectDesc.indexBufferView != ~0u && objectDesc.indexBufferView != -1 && objectDesc.indexType != VK_INDEX_TYPE_NONE_KHR) {
+                    triangleDesc.indexData = geometry->vertexSet->getBuffer(objectDesc.indexBufferView)->deviceAddress();
+                    triangleDesc.indexType = VkIndexType(objectDesc.indexType);
                 } else {
                     triangleDesc.indexType = VK_INDEX_TYPE_NONE_KHR;
                     triangleDesc.indexData = VK_NULL_HANDLE;
@@ -112,15 +113,15 @@ namespace vlr {
                 geometryDesc.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
 
                 // 
-                offsetDesc.firstVertex = geometry->desc->firstVertex;
-                offsetDesc.primitiveCount = geometry->desc->primitiveCount;
+                offsetDesc.firstVertex = objectDesc.firstVertex;
+                offsetDesc.primitiveCount = std::min(objectDesc.primitiveCount, this->dataCreate[i].maxPrimitiveCount);
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
 
                 // Shifting...
                 // https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccelerationStructureBuildOffsetInfoKHR.html
                 if (triangleDesc.indexType != VK_INDEX_TYPE_NONE_KHR) {
                     offsetDesc.firstVertex += buffer.offset() / triangleDesc.vertexStride;
-                    offsetDesc.primitiveOffset += geometry->vertexSet->getBuffer(geometry->desc->indexBufferView).offset();
+                    offsetDesc.primitiveOffset += geometry->vertexSet->getBuffer(objectDesc.indexBufferView).offset();
                 } else {
                     offsetDesc.primitiveOffset += buffer.offset(); // Vertex Anti-Bug-Tale
                 };
@@ -158,7 +159,7 @@ namespace vlr {
 
     // 
     void Acceleration::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info) {
-        this->driver = driver;
+        this->driver = driver, this->instanceCount = info->maxInstanceCount;
         if (info.has()) {
             this->geometrySet = info->geometrySet;
             this->instanceSet = info->instanceSet;

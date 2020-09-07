@@ -253,6 +253,7 @@ public class ValerABase implements InfoMapper {
         // 
         public native void updateAccelerationStructure(ValerACore.AccelerationCreateInfo info);
         public native void setCommand(@Cast("VkCommandBuffer") long info);
+        public native void setInstanceCount(@Cast("VkDeviceSize") long count);
         public native @Cast("int64_t") long getHandle();
     };
 
@@ -283,6 +284,9 @@ public class ValerABase implements InfoMapper {
         //
         public native void setIndexBuffer(@Cast("uint32_t") int indexBufferView, @Cast("VkIndexType") int indexType);
         public native void setVertexBuffer(@Cast("uint32_t") int vertexAttribute);
+        
+        // 
+        public native ValerACore.GeometryDesc getDesc();
     };
 
     // 

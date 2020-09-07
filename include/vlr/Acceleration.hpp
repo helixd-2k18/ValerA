@@ -10,6 +10,7 @@ namespace vlr {
         vkt::uni_ptr<InstanceSet> instanceSet = {}; // Top Level
         vkt::uni_ptr<GeometrySet> geometrySet = {}; // Bottom Level
         std::vector<int64_t> initials = {};
+        VkDeviceSize maxInstanceCount = 256ull;
     };
 
     class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing; friend PipelineLayout; friend BuildCommand; friend Rasterization;
@@ -40,6 +41,9 @@ namespace vlr {
         vkt::VectorBase gpuScratchBuffer = {};
         vkt::VectorBase TempBuffer = {};
 
+        //
+        VkDeviceSize instanceCount = 256ull;
+
     public: 
         Acceleration() { this->constructor(); };
         Acceleration(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info = AccelerationCreateInfo{}) { this->constructor(driver, info); };
@@ -50,6 +54,7 @@ namespace vlr {
         virtual void updateAccelerationStructure(vkt::uni_arg<AccelerationCreateInfo> info, const bool& build = false);
         virtual void setCommand(const VkCommandBuffer& cmd = VK_NULL_HANDLE); // buildAccelerationStructureCmd
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
+        virtual void setInstanceCount(const VkDeviceSize& count) { this->instanceCount = count; };
         virtual uint64_t getHandle();
     };
 
@@ -68,5 +73,6 @@ namespace vlj {
         CALLIFY(setCommand);
         CALLIFY(createDescriptorSet);
         CALLIFY(getHandle);
+        CALLIFY(setInstanceCount);
     };
 };

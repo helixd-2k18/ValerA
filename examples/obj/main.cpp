@@ -125,7 +125,7 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
 
     //
-    std::string inputfile = "lost_empire.obj";
+    std::string inputfile = "cube.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -145,13 +145,10 @@ int main() {
 
     // Loop over shapes
     VkDeviceSize accessorCount = 0u;
-    std::vector<std::vector<int64_t>> primitiveCountPer = {};
-    std::vector<VkDeviceSize> vertexCountAll = {};
+    std::vector<int64_t> vertexCountAll = {};
     for (size_t s = 0; s < shapes.size(); s++) {
         vertexCountAll.push_back(0ull);
-        primitiveCountPer.push_back({});
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
-            primitiveCountPer.back().push_back(int64_t(shapes[s].mesh.num_face_vertices[f]));
             vertexCountAll.back() += shapes[s].mesh.num_face_vertices[f];
             accessorCount++;
         };
@@ -485,9 +482,9 @@ int main() {
 
     // 
     for (size_t s = 0; s < shapes.size(); s++) { // 
-        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = vertexCountAll[s] });
+        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = VkDeviceSize(vertexCountAll[s]) });
         auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
-        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCountPer[s] });
+        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = { int64_t(VkDeviceSize(vertexCountAll[s])/3) } });
 
         // 
         sets.push_back(vertexData);

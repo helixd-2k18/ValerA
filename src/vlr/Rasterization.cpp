@@ -161,8 +161,8 @@ namespace vlr {
             auto& geometrySet = this->instanceSet->accelerations[instanceDesc.customId]->geometrySet;
             for (uint32_t j = 0; j < geometrySet->geometries.size(); j++) {
                 auto& geometry = geometrySet->geometries[j];
-                auto& geometryDesc = geometry->desc;
-                if (geometryDesc->mesh_flags.translucent) {
+                auto& geometryDesc = (geometrySet->get(j) = geometry->desc);
+                if (geometryDesc.mesh_flags.translucent) {
                     translucent.push_back({
                         .geometry = geometry,
                         .idx = glm::uvec4(i, j, 0u, 0u)
