@@ -100,12 +100,11 @@ namespace vlr {
         // 
         auto& instanceDesc = this->instanceSet->get(meta.x);
         auto& geometrySet = this->instanceSet->accelerations[instanceDesc.customId]->geometrySet;
-        auto& desc = geometrySet->get(meta.y);
-        //auto geometry = geometrySet->geometries[meta.y];
+        auto& geometry = geometrySet->geometries[meta.y];
 
         // 
         device->CmdPushConstants(rasterCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(meta), &meta);
-        device->CmdDraw(rasterCommand, desc.primitiveCount * 3u, 1u, desc.firstVertex, 0u); // TODO: Instanced Support
+        device->CmdDraw(rasterCommand, geometry->desc.primitiveCount, 1u, geometry->desc.firstVertex, 0u); // TODO: Instanced Support
     };
 
     // 
@@ -152,8 +151,7 @@ namespace vlr {
         });
 
         // 
-        std::vector<RasterObject> opaque = {};
-        std::vector<RasterObject> translucent = {};
+        std::vector<RasterObject> opaque = {}, translucent = {};
 
         // 
         for (uint32_t i = 0u; i < this->instanceSet->getGpuBuffer().size(); i++) {
@@ -161,8 +159,7 @@ namespace vlr {
             auto& geometrySet = this->instanceSet->accelerations[instanceDesc.customId]->geometrySet;
             for (uint32_t j = 0; j < geometrySet->geometries.size(); j++) {
                 auto& geometry = geometrySet->geometries[j];
-                auto& geometryDesc = (geometrySet->get(j) = geometry->desc);
-                if (geometryDesc.mesh_flags.translucent) {
+                if ((geometrySet->get(j) = geometry->desc).mesh_flags.translucent) {
                     translucent.push_back({
                         .geometry = geometry,
                         .idx = glm::uvec4(i, j, 0u, 0u)
@@ -181,7 +178,7 @@ namespace vlr {
         device->CmdBindDescriptorSets(rasterCommand, VK_PIPELINE_BIND_POINT_GRAPHICS, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
         device->CmdSetViewport(rasterCommand, 0u, 1u, viewport);
         device->CmdSetScissor(rasterCommand, 0u, 1u, renderArea);
-        device->CmdSetPrimitiveTopologyEXT(rasterCommand, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+        device->CmdSetPrimitiveTopologyEXT(rasterCommand, VK_PRIMITIVE_TOPOLOGY_POINT_LIST);
         device->CmdBeginRenderPass(rasterCommand, vkh::VkRenderPassBeginInfo{ .renderPass = framebuffer->rasterFBO.renderPass, .framebuffer = framebuffer->rasterFBO.framebuffer, .renderArea = renderArea, .clearValueCount = static_cast<uint32_t>(framebuffer->rasterFBO.clearValues.size()), .pClearValues = framebuffer->rasterFBO.clearValues.data() }, VK_SUBPASS_CONTENTS_INLINE);
         for (auto& obj : opaque) { this->drawCommand(rasterCommand, obj.idx); };
         device->CmdEndRenderPass(rasterCommand);
@@ -191,7 +188,7 @@ namespace vlr {
         device->CmdBindDescriptorSets(rasterCommand, VK_PIPELINE_BIND_POINT_GRAPHICS, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
         device->CmdSetViewport(rasterCommand, 0u, 1u, viewport);
         device->CmdSetScissor(rasterCommand, 0u, 1u, renderArea);
-        device->CmdSetPrimitiveTopologyEXT(rasterCommand, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+        device->CmdSetPrimitiveTopologyEXT(rasterCommand, VK_PRIMITIVE_TOPOLOGY_POINT_LIST);
         device->CmdBeginRenderPass(rasterCommand, vkh::VkRenderPassBeginInfo{ .renderPass = framebuffer->rasterFBO.renderPass, .framebuffer = framebuffer->rasterFBO.framebuffer, .renderArea = renderArea, .clearValueCount = static_cast<uint32_t>(framebuffer->rasterFBO.clearValues.size()), .pClearValues = framebuffer->rasterFBO.clearValues.data() }, VK_SUBPASS_CONTENTS_INLINE);
         for (auto& obj : translucent) { this->drawCommand(rasterCommand, obj.idx); };
         device->CmdEndRenderPass(rasterCommand);

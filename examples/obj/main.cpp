@@ -125,7 +125,7 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
 
     //
-    std::string inputfile = "teapot.obj";
+    std::string inputfile = "cube.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -135,7 +135,7 @@ int main() {
     std::string err = "";
 
     //
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile.c_str());
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile.c_str(), nullptr, true);
     if (!warn.empty()) { std::cout << warn << std::endl; }
     if (!err.empty()) { std::cerr << err << std::endl; }
     if (!ret) { exit(1); }
@@ -143,22 +143,7 @@ int main() {
     // For Debug! 
     //shapes.push_back(shapes[0]);
 
-    // Loop over shapes
-    VkDeviceSize accessorCount = 0u;
-    std::vector<int64_t> vertexCountAll = {};
-    for (size_t s = 0; s < shapes.size(); s++) {
-        vertexCountAll.push_back(0ull);
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
-            vertexCountAll.back() += shapes[s].mesh.num_face_vertices[f];
-            accessorCount++;
-        };
-    };
 
-    // 
-    accessorCount = 0u;
-    std::vector<vkt::uni_ptr<vlr::SetBase_T<FDStruct>>> sets = {};
-    std::vector<vkt::uni_ptr<vlr::Acceleration>> accelerations = {};
-    std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
 
     // 
     auto denoiser = std::make_shared<vlr::OptiXDenoise>(fw);
@@ -464,6 +449,26 @@ int main() {
     };
 
 
+    // Loop over shapes
+    VkDeviceSize accessorCount = 0u;
+    std::vector<int64_t> vertexCounts = {};
+    std::vector<int64_t> primitiveCounts = {};
+    for (size_t s = 0; s < shapes.size(); s++) {
+        vertexCounts.push_back(0ull);
+        primitiveCounts.push_back(0ull);
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
+            vertexCounts.back() += shapes[s].mesh.num_face_vertices[f];
+            primitiveCounts.back() += 1;
+            accessorCount++;
+        };
+    };
+
+    // 
+    accessorCount = 0u;
+    std::vector<vkt::uni_ptr<vlr::SetBase_T<FDStruct>>> sets = {};
+    std::vector<vkt::uni_ptr<vlr::Acceleration>> accelerations = {};
+    std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
+
     // 
     auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 2u });
     auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() * 3u });
@@ -482,32 +487,22 @@ int main() {
 
     // 
     for (size_t s = 0; s < shapes.size(); s++) { // 
-        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = VkDeviceSize(vertexCountAll[s]) });
+        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = VkDeviceSize(vertexCounts[s]) });
         auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
-        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = { int64_t(VkDeviceSize(vertexCountAll[s])/3) } });
-
-        // 
-        sets.push_back(vertexData);
-        accelerations.push_back(acceleration);
-        geometries.push_back(geometrySet);
-        buffers->pushBufferView(sets.back()->getGpuBuffer());
-
-        // 
-        size_t indexOffset = 0; // Loop over faces(polygon)
+        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = { primitiveCounts[s]} });
 
         // 
         auto gdesc = vlr::GeometryDesc{
             .firstVertex = 0u,//indexOffset,
-            .primitiveCount = uint32_t(indexOffset / 3u),
+            .primitiveCount = uint32_t(primitiveCounts[s]),
             .material = uint32_t(shapes[s].mesh.material_ids[0u] != -1 ? shapes[s].mesh.material_ids[0u] : 0u),
             .vertexAttribute = 0u
         };
         gdesc.mesh_flags.translucent = !opaque[gdesc.material];
 
         // 
+        size_t indexOffset = 0; // Loop over faces(polygon)
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
-
-            // 
             auto verticeCount = shapes[s].mesh.num_face_vertices[f];
             for (size_t v = 0; v < verticeCount; v++) { //
                 tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + v];
@@ -521,12 +516,8 @@ int main() {
                     gdesc.mesh_flags.hasTexcoord = 1;
                 };
             };
-
             indexOffset += verticeCount;
         };
-
-        // 
-        gdesc.primitiveCount = uint32_t(indexOffset / 3u);
 
         // 
         uint32_t bID = uint32_t(s);
@@ -559,10 +550,13 @@ int main() {
         };
 
         // 
-        auto geometry = std::make_shared<vlr::Geometry>(vertexSet, gdesc);
+        sets.push_back(vertexData);
+        accelerations.push_back(acceleration);
+        geometries.push_back(geometrySet);
 
         // 
-        geometrySet->pushGeometry(geometry);
+        buffers->pushBufferView(sets.back()->getGpuBuffer());
+        geometrySet->pushGeometry(std::make_shared<vlr::Geometry>(vertexSet, gdesc));
         instanceSet->pushAcceleration(acceleration);
 
         // 

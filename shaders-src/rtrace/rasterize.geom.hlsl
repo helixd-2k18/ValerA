@@ -58,7 +58,7 @@ struct PS_INPUT
 // 
 STATIC const float3 bary[3] = { float3(1.f,0.f,0.f), float3(0.f,1.f,0.f), float3(0.f,0.f,1.f) };
 #ifdef GLSL
-layout (triangles) in;
+layout (points) in;
 layout (triangle_strip, max_vertices = 3) out;
 void main() 
 #else
