@@ -490,7 +490,7 @@ int main() {
         .bindings = bindings,
         .attributes = accessors,
         .bufferViews = buffers
-        });
+    });
 
     // 
     auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
@@ -502,7 +502,7 @@ int main() {
         std::vector<int64_t> initials = { primitiveCounts[s] };
         auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = VkDeviceSize(geometryCounts[s]) });
         auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
-        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = fixture[s] }); // Unknown Behaviour
+        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCounts, .initialID = s }); // Unknown Behaviour
 
         // 
         auto gdesc = vlr::GeometryDesc{

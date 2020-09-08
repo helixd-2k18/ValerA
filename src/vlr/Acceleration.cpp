@@ -44,11 +44,8 @@ namespace vlr {
         offsetPtr.clear(); offsetPtr.resize(0u);
         buildGPtr.clear(); buildGPtr.resize(0u);
 
-        //
-        auto maxGeometryCount = 0ull;
-        for (auto& bcreate : this->dataCreate) {
-            maxGeometryCount += bcreate.maxPrimitiveCount;
-        };
+        // For monopolar Turing architecture
+        auto maxGeometryCount = this->dataCreate[initialID].maxPrimitiveCount;
 
         // 
         if (info.has()) {
@@ -74,7 +71,7 @@ namespace vlr {
                 geometryDesc.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
 
                 // 
-                offsetDesc.primitiveCount = uint32_t(std::min(std::min(gpuBuffer.size(), this->instanceCount), maxGeometryCount));
+                offsetDesc.primitiveCount = std::min(uint32_t(std::min(gpuBuffer.size(), this->instanceCount)), (maxGeometryCount = this->dataCreate[initialID + i].maxPrimitiveCount));
                 offsetDesc.transformOffset = 0u;
                 offsetDesc.primitiveOffset = gpuBuffer.offset();
                 offsetDesc.firstVertex = 0u;
@@ -121,7 +118,7 @@ namespace vlr {
 
                 // 
                 offsetDesc.firstVertex = objectDesc.firstVertex;
-                offsetDesc.primitiveCount = std::min(objectDesc.primitiveCount, uint32_t(maxGeometryCount));
+                offsetDesc.primitiveCount = std::min(objectDesc.primitiveCount, maxGeometryCount = this->dataCreate[initialID + i].maxPrimitiveCount);
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
 
                 // Shifting...
@@ -166,7 +163,7 @@ namespace vlr {
 
     // 
     void Acceleration::constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<AccelerationCreateInfo> info) {
-        this->driver = driver, this->instanceCount = info->maxInstanceCount;
+        this->driver = driver, this->instanceCount = info->maxInstanceCount, this->initialID = info->initialID;
         if (info.has()) {
             this->geometrySet = info->geometrySet;
             this->instanceSet = info->instanceSet;
@@ -220,7 +217,7 @@ namespace vlr {
             // TODO: fix memoryProperties issue
             auto usage = vkh::VkBufferUsageFlags{.eTransferDst = 1, .eStorageTexelBuffer = 1, .eStorageBuffer = 1, .eVertexBuffer = 1, .eSharedDeviceAddress = 1 };
             TempBuffer = vkt::Vector<uint8_t>(std::make_shared<vkt::VmaBufferAllocation>(this->driver->getAllocator(), vkh::VkBufferCreateInfo{
-                .size = requirements.memoryRequirements.size * 16u,
+                .size = requirements.memoryRequirements.size,
                 .usage = usage,
             }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
 

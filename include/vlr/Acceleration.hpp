@@ -11,6 +11,9 @@ namespace vlr {
         vkt::uni_ptr<GeometrySet> geometrySet = {}; // Bottom Level
         std::vector<int64_t> initials = {};
         VkDeviceSize maxInstanceCount = 256ull;
+
+        // Used for monopoly-based Turing architecture
+        uintptr_t initialID = 0ull;
     };
 
     class Acceleration : public std::enable_shared_from_this<Acceleration> { protected: friend RayTracing; friend PipelineLayout; friend BuildCommand; friend Rasterization;
@@ -43,6 +46,7 @@ namespace vlr {
 
         //
         VkDeviceSize instanceCount = 256ull;
+        uintptr_t initialID = 0ull;
 
     public: 
         Acceleration() { this->constructor(); };
