@@ -79,3 +79,8 @@ Clone with `git clone -c core.symlinks=true https://github.com/hyperearth/LancER
 
 - helix.d@IMN
 - RTX@NVIDIA
+
+
+## P.S. Of Turing
+
+Архитектура Turing оказалась крайне ебанутой по своей сути. Потому жду NVIDIA Ampere (RTX-3070 или AMD RDNA-2 (RX 6900 XT). Проблема в особенностях Acceleration Structure, позволяющей работать лишь в монопольном режиме. 
