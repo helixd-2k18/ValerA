@@ -79,7 +79,7 @@ int main() {
     glfwSetFramebufferSizeCallback(manager.window, framebuffer_size_callback);
     //vkt::initializeGL(); // PentaXIL
 
-    /* 
+    /*
     // At init, on linux/android.
     // For android replace librenderdoc.so with libVkLayer_GLES_RenderDoc.so
     if (void* mod = dlopen("librenderdoc.so", RTLD_NOW | RTLD_NOLOAD))
@@ -112,7 +112,7 @@ int main() {
     auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
 
     //
-    std::string inputfile = "cube.obj";
+    std::string inputfile = "Chess_Set.obj";
     tinyobj::attrib_t attrib = {};
     std::vector<tinyobj::shape_t> shapes = {};
     std::vector<tinyobj::material_t> materials = {};
@@ -234,7 +234,8 @@ int main() {
 
             stbi_image_free(image);
             textures.insert(std::make_pair(name, texture_id));
-        } else {
+        }
+        else {
             isOpaque = opaqueTex[name];
         };
 
@@ -323,14 +324,14 @@ int main() {
             //
             auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
                 it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
-                it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
-                it->usage = imageUsage;
+                    it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
+                    it->usage = imageUsage;
                 return it;
-            }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
-                it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
-                it->subresourceRange = apres;
-                return it;
-            }));
+                }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
+                    it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                        it->subresourceRange = apres;
+                    return it;
+                    }));
 
             //
             vkt::Vector<> imageBuf = {};
@@ -338,7 +339,7 @@ int main() {
                 memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
                 imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
                     .size = size_t(width) * size_t(height) * sizeof(glm::vec4), .usage = uploadUsage,
-                }, memInfo));
+                    }, memInfo));
                 memcpy(imageBuf.data(), rgba, size_t(width) * size_t(height) * sizeof(glm::vec4));
             };
 
@@ -354,8 +355,8 @@ int main() {
                     .imageSubresource = image.subresourceLayers(),
                     .imageOffset = {0u,0u,0u},
                     .imageExtent = {uint32_t(width),uint32_t(height),1u},
+                    });
                 });
-            });
 
             //
             background->setImage(image);
@@ -383,14 +384,14 @@ int main() {
             //
             auto image = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(fw->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
                 it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
-                it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
-                it->usage = imageUsage;
+                    it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
+                    it->usage = imageUsage;
                 return it;
-            }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
-                it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
-                it->subresourceRange = apres;
-                return it;
-            }));
+                }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
+                    it->format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                        it->subresourceRange = apres;
+                    return it;
+                    }));
 
             //
             vkt::Vector<> imageBuf = {};
@@ -398,7 +399,7 @@ int main() {
                 memInfo.memUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
                 imageBuf = vkt::Vector<>(std::make_shared<vkt::VmaBufferAllocation>(fw->getAllocator(), vkh::VkBufferCreateInfo{ // experimental: callify
                     .size = size_t(width) * size_t(height) * sizeof(glm::vec4), .usage = uploadUsage,
-                }, memInfo));
+                    }, memInfo));
                 memcpy(imageBuf.data(), rgba, size_t(width) * size_t(height) * sizeof(glm::vec4));
             };
 
@@ -414,8 +415,8 @@ int main() {
                     .imageSubresource = image.subresourceLayers(),
                     .imageOffset = {0u,0u,0u},
                     .imageExtent = {uint32_t(width),uint32_t(height),1u},
+                    });
                 });
-            });
 
             // 
             textureSet->pushImage(image);
@@ -429,7 +430,7 @@ int main() {
             .minFilter = VK_FILTER_LINEAR,
             .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
             .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT
-        }, nullptr, &sampler);
+            }, nullptr, &sampler);
 
         // 
         samplerSet->pushSampler(sampler);
@@ -443,14 +444,18 @@ int main() {
     std::vector<int64_t> geometryCounts = {};
     std::vector<int64_t> primitiveCounts = {};
     std::vector<std::vector<int64_t>> verticeCounts = {};
+    std::vector<std::vector<int64_t>> fixture = {};
     for (size_t s = 0; s < shapes.size(); s++) {
         geometryCounts.push_back(0ull);
         primitiveCounts.push_back(0ull);
         verticeCounts.push_back({});
+        fixture.push_back({});
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
             verticeCounts.back().push_back(shapes[s].mesh.num_face_vertices[f]);
             geometryCounts.back() += verticeCounts.back().back();
             primitiveCounts.back() += 1;
+            fixture.back().push_back(1);
+
             if ((verticeCounts.back().back() % VerticePer) != 0) { // Wrong Debug
                 std::cerr << "Primitive is NOT triangles..." << std::endl;
                 std::cerr << "Used: " << shapes[s].mesh.num_face_vertices[f] << std::endl;
@@ -485,7 +490,7 @@ int main() {
         .bindings = bindings,
         .attributes = accessors,
         .bufferViews = buffers
-    });
+        });
 
     // 
     auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = shapes.size() });
@@ -494,9 +499,10 @@ int main() {
     // 
     uintptr_t accessorCount = 0ull;
     for (size_t s = 0; s < shapes.size(); s++) { // 
+        std::vector<int64_t> initials = { primitiveCounts[s] };
         auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = VkDeviceSize(geometryCounts[s]) });
-        auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
-        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = { primitiveCounts[s]} });
+        auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
+        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = fixture[s] }); // Unknown Behaviour
 
         // 
         auto gdesc = vlr::GeometryDesc{
@@ -597,7 +603,7 @@ int main() {
         .framebuffer = framebuffer,
         .instanceSet = instanceSet,
         .constants = constants
-    });
+        });
 
     // 
     auto rayTracing = std::make_shared<vlr::RayTracing>(fw, vlr::RayTracingCreateInfo{
@@ -605,20 +611,20 @@ int main() {
         .framebuffer = framebuffer,
         .accelerationTop = accelerationTop,
         .constants = constants
-    });
+        });
 
     //
     auto renderCommand = std::make_shared<vlr::RenderCommand>(fw, vlr::RenderCommandCreateInfo{
         .layout = layout,
         .rayTracing = rayTracing,
         .rasterization = rasterization
-    });
+        });
 
     // 
     auto buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
         .layout = layout,
         .accelerationTop = accelerationTop
-    });
+        });
 
 
     // 
@@ -705,6 +711,15 @@ int main() {
     auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
 
     // 
+    /*fw->submitOnce([&](VkCommandBuffer& cmd)
+    {
+        buildCommand->setCommand(rtCommand);
+        instanceSet->setCommand(rtCommand, true);
+        buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
+    });*/
+
+
+    // 
     {
         buildCommand->setCommand(rtCommand);
         instanceSet->setCommand(rtCommand, true);
@@ -715,6 +730,8 @@ int main() {
         constants->setCommand(rtCommand, true);
         renderCommand->setCommand(rtCommand);
         framebuffer->imageToLinearCopyCommand(rtCommand, FBufID);
+
+        // 
         vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
         fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
     };

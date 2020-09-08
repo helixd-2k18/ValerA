@@ -44,6 +44,12 @@ namespace vlr {
         offsetPtr.clear(); offsetPtr.resize(0u);
         buildGPtr.clear(); buildGPtr.resize(0u);
 
+        //
+        auto maxGeometryCount = 0ull;
+        for (auto& bcreate : this->dataCreate) {
+            maxGeometryCount += bcreate.maxPrimitiveCount;
+        };
+
         // 
         if (info.has()) {
             this->geometrySet = info->geometrySet;
@@ -58,18 +64,19 @@ namespace vlr {
                 auto buildGeometryFlags = vkh::VkGeometryFlagsKHR{ .eNoDuplicateAnyHitInvocation = 1 };
                 auto geometryDesc = vkh::VkAccelerationStructureGeometryKHR{ .flags = buildGeometryFlags };
                 auto instanceDesc = vkh::VkAccelerationStructureGeometryInstancesDataKHR{};
+                auto gpuBuffer = instanceSet->getGpuBuffer();
 
                 // 
                 //std::cout << "Instance Sizeof = " << sizeof(vkh::VsGeometryInstance) << std::endl;
-                instanceDesc.data = instanceSet->getGpuBuffer()->deviceAddress();
+                instanceDesc.data = gpuBuffer->deviceAddress();
                 instanceDesc.arrayOfPointers = false;
                 geometryDesc.geometry.instances = instanceDesc;
                 geometryDesc.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
 
                 // 
-                offsetDesc.primitiveCount = std::min(uint32_t(std::min(instanceSet->getGpuBuffer().size(), this->instanceCount)), this->dataCreate[i].maxPrimitiveCount);
+                offsetDesc.primitiveCount = uint32_t(std::min(std::min(gpuBuffer.size(), this->instanceCount), maxGeometryCount));
                 offsetDesc.transformOffset = 0u;
-                offsetDesc.primitiveOffset = instanceSet->getGpuBuffer().offset();
+                offsetDesc.primitiveOffset = gpuBuffer.offset();
                 offsetDesc.firstVertex = 0u;
 
                 // 
@@ -114,7 +121,7 @@ namespace vlr {
 
                 // 
                 offsetDesc.firstVertex = objectDesc.firstVertex;
-                offsetDesc.primitiveCount = std::min(objectDesc.primitiveCount, this->dataCreate[i].maxPrimitiveCount);
+                offsetDesc.primitiveCount = std::min(objectDesc.primitiveCount, uint32_t(maxGeometryCount));
                 offsetDesc.transformOffset = i * sizeof(GeometryDesc);
 
                 // Shifting...
@@ -145,7 +152,7 @@ namespace vlr {
         this->bdHeadInfo.ppGeometries = buildGPtr.data();
         this->bdHeadInfo.type = this->create.type;
         this->bdHeadInfo.flags = this->create.flags;
-        this->bdHeadInfo.geometryArrayOfPointers = true;
+        this->bdHeadInfo.geometryArrayOfPointers = false;
         this->bdHeadInfo.dstAccelerationStructure = this->structure;
         this->bdHeadInfo.srcAccelerationStructure = VK_NULL_HANDLE;
         this->bdHeadInfo.update = false;
@@ -213,7 +220,7 @@ namespace vlr {
             // TODO: fix memoryProperties issue
             auto usage = vkh::VkBufferUsageFlags{.eTransferDst = 1, .eStorageTexelBuffer = 1, .eStorageBuffer = 1, .eVertexBuffer = 1, .eSharedDeviceAddress = 1 };
             TempBuffer = vkt::Vector<uint8_t>(std::make_shared<vkt::VmaBufferAllocation>(this->driver->getAllocator(), vkh::VkBufferCreateInfo{
-                .size = requirements.memoryRequirements.size,
+                .size = requirements.memoryRequirements.size * 16u,
                 .usage = usage,
             }, vkt::VmaMemoryInfo{ .memUsage = VMA_MEMORY_USAGE_GPU_ONLY }));
 
