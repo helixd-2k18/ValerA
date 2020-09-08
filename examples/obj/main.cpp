@@ -79,18 +79,6 @@ int main() {
     glfwSetFramebufferSizeCallback(manager.window, framebuffer_size_callback);
     //vkt::initializeGL(); // PentaXIL
 
-
-    RENDERDOC_API_1_1_2* rdoc_api = NULL;
-
-    // At init, on windows
-    if (HMODULE mod = GetModuleHandleA("renderdoc.dll"))
-    {
-        pRENDERDOC_GetAPI RENDERDOC_GetAPI =
-            (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
-        int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&rdoc_api);
-        assert(ret == 1);
-    }
-
     /* 
     // At init, on linux/android.
     // For android replace librenderdoc.so with libVkLayer_GLES_RenderDoc.so
@@ -101,7 +89,6 @@ int main() {
         assert(ret == 1);
     }
     */
-
 
     // BUT FOR NOW REQUIRED GPU BUFFERS! NOT JUST COPY DATA!
     const auto  imageUsage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
@@ -448,23 +435,42 @@ int main() {
         samplerSet->pushSampler(sampler);
     };
 
+    // 
+    const uint32_t VerticePer = 3u;
 
     // Loop over shapes
-    VkDeviceSize accessorCount = 0u;
-    std::vector<int64_t> vertexCounts = {};
+    bool broken = false;
+    std::vector<int64_t> geometryCounts = {};
     std::vector<int64_t> primitiveCounts = {};
+    std::vector<std::vector<int64_t>> verticeCounts = {};
     for (size_t s = 0; s < shapes.size(); s++) {
-        vertexCounts.push_back(0ull);
+        geometryCounts.push_back(0ull);
         primitiveCounts.push_back(0ull);
+        verticeCounts.push_back({});
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
-            vertexCounts.back() += shapes[s].mesh.num_face_vertices[f];
+            verticeCounts.back().push_back(shapes[s].mesh.num_face_vertices[f]);
+            geometryCounts.back() += verticeCounts.back().back();
             primitiveCounts.back() += 1;
-            accessorCount++;
+            if ((verticeCounts.back().back() % VerticePer) != 0) { // Wrong Debug
+                std::cerr << "Primitive is NOT triangles..." << std::endl;
+                std::cerr << "Used: " << shapes[s].mesh.num_face_vertices[f] << std::endl;
+                broken = true; break;
+            };
+            if (verticeCounts.back().back() != VerticePer) { // Counting Debug
+                std::cerr << "Wrong Primitive (NOT just triangle or complex)" << std::endl;
+                std::cerr << "Used: " << shapes[s].mesh.num_face_vertices[f] << std::endl;
+                std::cerr << "Required: " << VerticePer << std::endl;
+                broken = true; break;
+            };
         };
     };
 
     // 
-    accessorCount = 0u;
+    if (broken) {
+        glfwTerminate(); system("pause"); exit(-1); assert(false);
+    };
+
+    // 
     std::vector<vkt::uni_ptr<vlr::SetBase_T<FDStruct>>> sets = {};
     std::vector<vkt::uni_ptr<vlr::Acceleration>> accelerations = {};
     std::vector<vkt::uni_ptr<vlr::GeometrySet>> geometries = {};
@@ -486,8 +492,9 @@ int main() {
     auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {int64_t(shapes.size())} }); // shapes.size()
 
     // 
+    uintptr_t accessorCount = 0ull;
     for (size_t s = 0; s < shapes.size(); s++) { // 
-        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = VkDeviceSize(vertexCounts[s]) });
+        auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = VkDeviceSize(geometryCounts[s]) });
         auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = shapes.size() });
         auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = { primitiveCounts[s]} });
 
@@ -502,9 +509,8 @@ int main() {
 
         // 
         size_t indexOffset = 0; // Loop over faces(polygon)
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) { //
-            auto verticeCount = shapes[s].mesh.num_face_vertices[f];
-            for (size_t v = 0; v < verticeCount; v++) { //
+        for (size_t f = 0; f < primitiveCounts[s]; f++) { //
+            for (size_t v = 0; v < verticeCounts[s][f]; v++) { //
                 tinyobj::index_t idx = shapes[s].mesh.indices[indexOffset + v];
                 vertexData->get(indexOffset + v).fPosition = glm::vec4(attrib.vertices[3 * idx.vertex_index + 0], attrib.vertices[3 * idx.vertex_index + 1], attrib.vertices[3 * idx.vertex_index + 2], 1.f);
                 if (idx.normal_index >= 0) {
@@ -516,7 +522,7 @@ int main() {
                     gdesc.mesh_flags.hasTexcoord = 1;
                 };
             };
-            indexOffset += verticeCount;
+            indexOffset += verticeCounts[s][f];
         };
 
         // 
@@ -716,7 +722,7 @@ int main() {
     // Path Tracing...
     auto fnCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
     {
-        framebuffer->linearToImageCopyCommand(fnCommand, FBufID);
+        //framebuffer->linearToImageCopyCommand(fnCommand, FBufID);
         rayTracing->setCommandFinal(fnCommand);
         vkt::commandBarrier(fw->getDeviceDispatch(), fnCommand);
         fw->getDeviceDispatch()->EndCommandBuffer(fnCommand);
@@ -809,6 +815,7 @@ int main() {
                 }, nullptr));
             };
 
+            /*
             {   // 
                 cudaExternalSemaphoreWaitParams waitParams{};
                 std::memset(&waitParams, 0, sizeof(waitParams));
@@ -827,22 +834,30 @@ int main() {
                 sigParams.params.fence.value = ++fenceValue;
                 cudaSignalExternalSemaphoresAsync(&cuWaitSemaphore, nullptr, 1, nullptr);
             };
+            */
 
             // 
-            {
+            /*{
                 vk::SemaphoreWaitInfo waitInfo = {};
                 waitInfo.semaphoreCount = 1u;
                 waitInfo.pSemaphores = reinterpret_cast<vk::Semaphore*>(&waitSemaphore);
                 waitInfo.pValues = &fenceValue;
-                fw->getDeviceDispatch()->WaitSemaphoresKHR((VkSemaphoreWaitInfo*)&waitInfo, 1000000);
-            };
+                fw->getDeviceDispatch()->WaitSemaphoresKHR((VkSemaphoreWaitInfo*)&waitInfo, 1000 * 1000);
+            };*/
 
             // Next Compute After Denoise
-            waitSemaphores = {};
+            waitSemaphores = { signalSemaphore };
             signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
+            waitStages = { vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 } };
             {
+                // 
+                vk::TimelineSemaphoreSubmitInfo timelineInfo = {};
+                timelineInfo.waitSemaphoreValueCount = 1;
+                timelineInfo.pWaitSemaphoreValues = &fenceValue;
+
                 // Submit command once
                 vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+                    .pNext = &timelineInfo,
                     .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
                     .commandBufferCount = 1u, .pCommandBuffers = &fnCommand,
                     .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()

@@ -7,7 +7,7 @@
 
 // 
 #include "./stdafx.h"
-#include "renderdoc_app.h"
+//#include "renderdoc_app.h"
 
 //
 namespace vkx {
