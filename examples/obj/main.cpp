@@ -499,10 +499,10 @@ int main() {
     // 
     uintptr_t accessorCount = 0ull;
     for (size_t s = 0; s < shapes.size(); s++) { // 
-        std::vector<int64_t> initials = { primitiveCounts[s] };
+        std::vector<int64_t> initials = { primitiveCounts[s], 1u }; // NVIDIA Turing has broken AS creation, so needs additional element (i.e. crutch)
         auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = VkDeviceSize(geometryCounts[s]) });
         auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
-        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = primitiveCounts, .initialID = s }); // Unknown Behaviour
+        auto acceleration = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = initials }); // Unknown Behaviour
 
         // 
         auto gdesc = vlr::GeometryDesc{
