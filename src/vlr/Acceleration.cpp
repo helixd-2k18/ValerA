@@ -170,8 +170,16 @@ namespace vlr {
         };
         auto device = this->driver->getDeviceDispatch();
 
+        // NVIDIA Turing has broken AS creation, so needs additional element (i.e. crutch)
+        if (!instanceSet.has()) {
+            // Native bug-fix for Turing
+            info->initials.push_back(1ll);
+        };
+
         // FOR CREATE!
         this->dataCreate.resize(info->initials.size()); uintptr_t I = 0ull;
+
+        // 
         for (auto& BC : this->dataCreate) {
             BC = vkh::VkAccelerationStructureCreateGeometryTypeInfoKHR{};
             if (instanceSet.has()) {
