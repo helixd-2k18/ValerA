@@ -127,6 +127,7 @@ void main()
             float4 diffuse  = float4(MAT.diffuseColor.xyz * indirect.xyz, 1.f);
             diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, reflectionPower);
             diffuse.xyz = mix(diffuse.xyz, transpr.xyz, 1.f-MAT.diffuseColor.w);
+            diffuse.xyz += MAT.emissionColor.xyz;
             if (refleclr.w < 0.0001f) { refleclr = refleclp; };
 
             // 

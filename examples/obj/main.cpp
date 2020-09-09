@@ -270,6 +270,7 @@ int main() {
         mdk.diffuseTexture = loadTexture(mat.diffuse_texname);
         mdk.normalTexture = loadTexture(mat.normal_texname);
         mdk.pbrAGMTexture = loadTexture(mat.specular_texname);
+        mdk.emissionTexture = loadTexture(mat.emissive_texname);
         if (mdk.normalTexture == -1) { mdk.normalTexture = loadTexture(mat.bump_texname); };
 
         opaque.push_back(opaqueTex[mat.diffuse_texname]);
@@ -802,12 +803,12 @@ int main() {
 
             //
             double scal = glfwGetTime();
-            glm::dmat4 trans = glm::scale(glm::sin(scal) * 0.1f + glm::dvec3(1.f, 1.f, 1.f));
+            glm::dmat4 trans = glm::scale(glm::dvec3(1.0, 1.0, 1.0));//glm::scale(glm::sin(scal) * 0.1f + glm::dvec3(1.f, 1.f, 1.f));
 
             // 
             for (size_t s = 0; s < shapes.size(); s++) {
                 instanceSet->get(s) = vkh::VsGeometryInstance{
-                    .transform = glm::mat3x4(glm::transpose(mv)),
+                    .transform = glm::mat3x4(glm::transpose(mv * trans)),
                     .customId = uint32_t(s),
                     .accelerationStructureHandle = accelerations[s]->getHandle() // Broken Feature, Set Manually
                 };
