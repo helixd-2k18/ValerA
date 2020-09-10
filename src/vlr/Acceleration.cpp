@@ -83,7 +83,8 @@ namespace vlr {
         } else
         if (geometrySet.has()) {
             // Generate Building Info
-            for (uint32_t i=0u;i<geometrySet->geometries.size();i++) 
+            const size_t geometryCount = std::min(this->dataCreate.size() - 1, geometrySet->geometries.size());
+            for (uint32_t i=0u;i< geometryCount;i++)
             {   // 
                 auto& geometry = geometrySet->geometries[i];
                 auto& objectDesc = (geometrySet->get(i) = geometry->desc);
