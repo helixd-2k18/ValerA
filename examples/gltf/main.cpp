@@ -70,7 +70,7 @@ int main() {
     glfwSetFramebufferSizeCallback(manager.window, framebuffer_size_callback);
     //vkt::initializeGL(); // PentaXIL
 
-
+    /*
     RENDERDOC_API_1_1_2* rdoc_api = NULL;
 
     // At init, on windows
@@ -80,7 +80,7 @@ int main() {
             (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
         int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&rdoc_api);
         assert(ret == 1);
-    }
+    }*/
 
     /* 
     // At init, on linux/android.
@@ -100,8 +100,8 @@ int main() {
     tinygltf::TinyGLTF loader = {};
 
     // 
-    const float unitScale = 1.f, unitHeight = -0.f;
-    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "Cube.gltf");
+    const float unitScale = 100.f, unitHeight = -0.f;
+    const bool ret = loader.LoadASCIIFromFile(&model, &err, &wrn, "BoomBoxWithAxes.gltf");
 
     // 
     //const float unitScale = 100.f, unitHeight = -0.f;
@@ -208,11 +208,11 @@ int main() {
         const auto& meshData = model.meshes[j];
 
         // 
-        std::vector<uintptr_t> primitiveCountPer = {};
-        uintptr_t vertexCountAll = 0u; bool ctype = true;//false;
+        std::vector<int64_t> primitiveCountPer = {};
+        int64_t vertexCountAll = 0u; bool ctype = true;//false;
         for (uint32_t v = 0; v < meshData.primitives.size(); v++) {
             const auto& primitive = meshData.primitives[v];
-            uintptr_t vertexCount = 0u;
+            int64_t vertexCount = 0u;
             if (primitive.indices >= 0) {
                 vertexCount = model.accessors[primitive.indices].count;
                 if (model.accessors[primitive.indices].componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT) { ctype = true; };
@@ -246,9 +246,9 @@ int main() {
                     // 
                     uint32_t location = 0u;
                     if (NM[i] == "POSITION") { location = 0u; };
-                    if (NM[i] == "TEXCOORD_0") { location = 1u; };
-                    if (NM[i] == "NORMAL") { location = 2u; };
-                    if (NM[i] == "TANGENT") { location = 3u; };
+                    if (NM[i] == "TEXCOORD_0") { location = 1u; geometryDesc.mesh_flags.hasTexcoord = 1; };
+                    if (NM[i] == "NORMAL") { location = 2u; geometryDesc.mesh_flags.hasNormal = 1; };
+                    if (NM[i] == "TANGENT") { location = 3u; geometryDesc.mesh_flags.hasTangent = 1; };
 
                     // 
                     auto type = VK_FORMAT_R32G32B32_SFLOAT;
@@ -266,6 +266,10 @@ int main() {
                 };
             };
 
+            //
+            geometryDesc.material = primitive.material;
+            geometryDesc.primitiveCount = primitiveCountPer[v];
+
             // 
             if (primitive.indices >= 0) { // determine index type
                 auto& attribute = model.accessors[primitive.indices];
@@ -273,8 +277,6 @@ int main() {
                 const auto range = vkt::tiled(uint64_t(BV.byteLength), uint64_t(4ull)) * uint64_t(4ull);
 
                 // 
-                geometryDesc.primitiveCount = primitiveCountPer[v];
-                geometryDesc.material = primitive.material;
                 geometryDesc.indexBufferView = attribute.bufferView;
                 geometryDesc.indexType = attribute.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT ? VK_INDEX_TYPE_UINT16 : (attribute.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE ? VK_INDEX_TYPE_UINT8_EXT : VK_INDEX_TYPE_UINT32);
             };
@@ -310,6 +312,11 @@ int main() {
     std::shared_ptr<std::function<void(const tinygltf::Node&, glm::dmat4, int)>> vertexCounter = {};
     vertexCounter = std::make_shared<std::function<void(const tinygltf::Node&, glm::dmat4, int)>>([&](const tinygltf::Node& gnode, glm::dmat4 inTransform, int recursive)->void {
         instanceCounter++;
+        if (gnode.children.size() > 0 && gnode.mesh < 0) {
+            for (int n = 0; n < gnode.children.size(); n++) {
+                if (recursive >= 0) (*vertexCounter)(model.nodes[gnode.children[n]], glm::dmat4(inTransform), recursive - 1);
+            };
+        };
     });
 
     // Counting itself...
@@ -407,7 +414,7 @@ int main() {
 
     // Material 
     for (uint32_t i = 0; i < model.materials.size(); i++) {
-        const auto& mat = model.materials[i]; vlr::MaterialUnit& mdk = materialSet->get(0u);
+        const auto& mat = model.materials[i]; vlr::MaterialUnit& mdk = materialSet->get(i);
         mdk = vlr::MaterialUnit{};
         mdk.diffuseTexture = mat.pbrMetallicRoughness.baseColorTexture.index;
         mdk.normalTexture = mat.normalTexture.index;
@@ -706,13 +713,29 @@ int main() {
 
     // 
     auto counters = rayTracing->getCounters();
+    auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
+    {
+        buildCommand->setCommand(rtCommand);
+        instanceSet->setCommand(rtCommand, true);
+        buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
+
+        // 
+        materialSet->setCommand(rtCommand);
+        constants->setCommand(rtCommand, true);
+        renderCommand->setCommand(rtCommand);
+        rayTracing->setCommandFinal(rtCommand);
+
+        // 
+        vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
+        fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
+    };
 
     // 
     while (!glfwWindowShouldClose(manager.window)) { // 
         glfwPollEvents();
 
         // 
-        if (rdoc_api) rdoc_api->StartFrameCapture(NULL, NULL);
+        //if (rdoc_api) rdoc_api->StartFrameCapture(NULL, NULL);
 
         // 
         int64_t n_semaphore = currSemaphore, c_semaphore = (currSemaphore + 1) % framebuffers.size(); // Next Semaphore
@@ -736,11 +759,12 @@ int main() {
             // 
             Shared::TimeCallback(glfwGetTime()*1000.0);
             glm::mat4 proj = cameraController->handle().project();
+            glm::mat4 tran = cameraController->translation();
 
             // 
-            constants->get(0u).modelview = glm::transpose(glm::mat4x3(proj));
+            constants->get(0u).modelview = glm::transpose(glm::mat4x3(proj * tran));
             constants->get(0u).projection = glm::transpose(glm::mat4x4(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
-            constants->get(0u).modelviewInv = glm::transpose(glm::mat4x3(glm::inverse(proj)));
+            constants->get(0u).modelviewInv = glm::transpose(glm::mat4x3(glm::inverse(proj * tran)));
             constants->get(0u).projectionInv = glm::transpose(glm::mat4x4(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
 
             // Create render submission 
@@ -749,26 +773,6 @@ int main() {
                 vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 },
                 vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
             };
-
-            // 
-            auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
-            instanceSet->setCommand(rtCommand);
-            materialSet->setCommand(rtCommand);
-            constants->setCommand(rtCommand, true);
-            buildCommand->setCommand(rtCommand);
-            renderCommand->setCommand(rtCommand);
-            vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
-
-            // 
-            fw->getDeviceDispatch()->CmdCopyBuffer(rtCommand, counters->getGpuBuffer(), counters->getCpuBuffer(), 1u, vkh::VkBufferCopy{
-                counters->getGpuBuffer().offset(),
-                counters->getCpuBuffer().offset(),
-                counters->getCpuBuffer().range()
-            });
-
-
-            fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
-            //break; // FOR DEBUG!!
 
             // Submit command once
             //renderer->setupCommands();
@@ -859,7 +863,7 @@ int main() {
         }));
 
         // 
-        if (rdoc_api) rdoc_api->EndFrameCapture(NULL, NULL);
+        //if (rdoc_api) rdoc_api->EndFrameCapture(NULL, NULL);
     };
 
     // 
