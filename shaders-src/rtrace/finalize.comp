@@ -88,16 +88,13 @@ void main()
         {
             // 
             indirect += shadows;
-
-            // Flickering issue...
-            //if (refleclr.w < 0.0001f) { refleclr = refleclp; }; // When Reflection  is NOT found... 
-            //if ( transpr.w < 0.0001f) {  transpr = transpp;  }; // When Transparent is NOT found... 
-
+            
             // 
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
-            superImageStore(currImages[IW_REFLECLR], curPixel, refleclr);
             superImageStore(currImages[IW_SHADOWCL], curPixel, shadows);
+            superImageStore(currImages[IW_REFLECLR], curPixel, refleclr);
             superImageStore(currImages[IW_TRANSPAR], curPixel, mix(transpp /transpp .w, transpr /max(transpr.w ,1.f), 0.5f.xxxx));
+            //superImageStore(currImages[IW_REFLECLR], curPixel, mix(refleclp/refleclp.w, refleclr/max(refleclr.w,1.f), 0.5f.xxxx));
         };
 
         // 

@@ -124,15 +124,18 @@ void main()
             float4 transpr  = max(cbLoad(IW_TRANSPAR, curPixel, seed), float4(0.f.xxx, 0.f));
 
             // 
-            float4 diffuse  = float4(MAT.diffuseColor.xyz * indirect.xyz, 1.f);
-            diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, reflectionPower);
-            diffuse.xyz = mix(diffuse.xyz, transpr.xyz, 1.f-MAT.diffuseColor.w);
-            diffuse.xyz += MAT.emissionColor.xyz;
+            refleclr = mix(refleclr, refleclp, MAT.specularColor.y * 0.5f);
             if (refleclr.w < 0.0001f) { refleclr = refleclp; };
 
             // 
+            float4 diffuse = float4(MAT.diffuseColor.xyz * indirect.xyz, 1.f);
+            diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, reflectionPower);
+            diffuse.xyz = mix(diffuse.xyz, transpr.xyz, 1.f-MAT.diffuseColor.w);
+            diffuse.xyz += MAT.emissionColor.xyz;
+
+            // 
             imageStore(rasteredImages[RS_INDIRECT], curPixel, float4(diffuse.xyz, 1.f));
-            imageStore(rasteredImages[RS_REFLECLR], curPixel, mix(refleclp, refleclr, 0.5f.xxxx));
+            imageStore(rasteredImages[RS_REFLECLR], curPixel, refleclr);
             imageStore(rasteredImages[RS_ALBEDOBF], curPixel, MAT.diffuseColor);
             imageStore(rasteredImages[RS_NORMALED], curPixel, MAT.mapNormal);
         };

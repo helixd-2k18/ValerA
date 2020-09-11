@@ -81,10 +81,15 @@ void main()
             superImageStore(currImages[IW_ADAPTIVE], curPixel, float4(0.f.xxxx));
             superImageStore(currImages[IW_TRANSPAR], curPixel, float4(0.f.xxxx));
             superImageStore(currImages[IW_RENDERED], curPixel, float4(0.f.xxxx));
+            superImageStore(resampleImages[IW_REFLECLR], curPixel, float4(0.f.xxxx));
 
             // Nullify Resampling
-            superImageStore(resampleImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));
+            
             //atomicSuperImageAdd3(currImages[IW_RENDERED], curPixel, toLinear(float4(0.f, 0.9f, 1.f, 1.f)));
+        };
+
+        for (uint i=0;i<12;i++) {
+            superImageStore(resampleImages[i], curPixel, float4(0.f.xxxx));
         };
 
         // 
