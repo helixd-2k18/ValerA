@@ -106,8 +106,8 @@ void main()
 
         // Use sampled reflection as previous frame
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            const float4 TP = interpol(IW_TRANSPAR, curPixel, 15.f);
-            const float4 RP = interpol(IW_REFLECLR, curPixel, MAT.specularColor.y * 15.f);
+            const float4 TP = interpol(IW_TRANSPAR, curPixel, 1.f + 14.f);
+            const float4 RP = interpol(IW_REFLECLR, curPixel, 1.f + MAT.specularColor.y * 14.f);
             superImageStore(prevImages[IW_TRANSPAR], curPixel, TP);
             superImageStore(prevImages[IW_REFLECLR], curPixel, RP);
         };
