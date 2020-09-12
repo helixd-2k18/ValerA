@@ -125,9 +125,11 @@ void main()
             float4 shadows  = max(cbLoad(IW_SHADOWCL, curPixel, seed), float4(0.f.xxx, 0.f));
             float4 transpr  = max(cbLoad(IW_TRANSPAR, curPixel, seed), float4(0.f.xxx, 0.f));
             float4 refleclp = max(rbLoad(IW_REFLECLR, curPixel, seed), float4(0.f.xxx, 0.f));
+            float4 transpp  = max(rbLoad(IW_TRANSPAR, curPixel, seed), float4(0.f.xxx, 0.f));
 
             // 
             refleclr = mix(refleclr, refleclp, MAT.specularColor.y);
+            transpp  = mix(transpr , transpp , 0.5f);
 
             // 
             float4 diffuse = float4(MAT.diffuseColor.xyz * indirect.xyz, 1.f);

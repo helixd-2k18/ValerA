@@ -24,6 +24,17 @@ float4 rLoad(const int ID, in int2 samplep){
     return color;
 };
 
+// 
+float4 interpol(const int ID, in int2 curPixel, in float maxSamples){
+    const float4 transpr  = bLoad(IW_TRANSPAR, curPixel);
+    const float4 transpp  = rLoad(IW_TRANSPAR, curPixel);
+    const float samples = transpp.w;
+
+    // 
+    float4 color = fma(transpp, (min(samples, maxSamples) / max(samples, 1.f)).xxxx, transpr);
+    return color;
+};
+
 
 // TODO: HLSL
 #ifdef GLSL
@@ -72,24 +83,12 @@ void main()
         // TODO: Optimize Fetching and Interpolation 
         XGEO GEO = interpolate(RPM);
         XPOL MAT = materialize(RPM, GEO);
-        
+
         // Accumulation!
-        float4 indirect = bLoad(IW_INDIRECT, curPixel) + rLoad(IW_INDIRECT, curPixel);
-        float4 shadows  = bLoad(IW_SHADOWCL, curPixel);
-
-        // 
-        float4 transpr  = bLoad(IW_TRANSPAR, curPixel);
-        float4 refleclr = bLoad(IW_REFLECLR, curPixel);
-
-        // 
-        float4 transpp  = rLoad(IW_TRANSPAR, curPixel) + transpr;
-        float4 refleclp = rLoad(IW_REFLECLR, curPixel) + refleclr;
-
-        // 
-        refleclr /= max(refleclr.w, 1.f);
-        refleclp /= max(refleclp.w, 1.f);
-        transpp /= max(transpp.w, 1.f);
-        transpr /= max(transpr.w, 1.f);
+        const float4 indirect = bLoad(IW_INDIRECT, curPixel) + rLoad(IW_INDIRECT, curPixel);
+        const float4 shadows  = bLoad(IW_SHADOWCL, curPixel);
+        const float4 transpr  = bLoad(IW_TRANSPAR, curPixel);
+        const float4 refleclr = bLoad(IW_REFLECLR, curPixel);
 
         // 
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
@@ -97,19 +96,20 @@ void main()
             superImageStore(currImages[IW_SHADOWCL], curPixel, shadows);
             superImageStore(currImages[IW_REFLECLR], curPixel, refleclr);
             superImageStore(currImages[IW_INDIRECT], curPixel, indirect);
-            superImageStore(currImages[IW_TRANSPAR], curPixel, mix(transpp, transpr, 0.5f.xxxx));
+            superImageStore(currImages[IW_TRANSPAR], curPixel, transpr);
         };
 
         // 
         for (uint i=0;i<12;i++) {
-            const float4 pixof = superImageLoad(currImages[i], curPixel);
-            superImageStore(prevImages[i], curPixel, pixof);
+            superImageStore(prevImages[i], curPixel, superImageLoad(currImages[i], curPixel));
         };
 
         // Use sampled reflection as previous frame
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
-            refleclp = mix(refleclr, refleclp, MAT.specularColor.y);
-            superImageStore(prevImages[IW_REFLECLR], curPixel, refleclp);
+            const float4 TP = interpol(IW_TRANSPAR, curPixel, 15.f);
+            const float4 RP = interpol(IW_REFLECLR, curPixel, MAT.specularColor.y * 15.f);
+            superImageStore(prevImages[IW_TRANSPAR], curPixel, TP);
+            superImageStore(prevImages[IW_REFLECLR], curPixel, RP);
         };
     };
 
