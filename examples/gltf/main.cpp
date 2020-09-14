@@ -713,22 +713,6 @@ int main() {
 
     // 
     auto counters = rayTracing->getCounters();
-    auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
-    {
-        buildCommand->setCommand(rtCommand);
-        instanceSet->setCommand(rtCommand, true);
-        buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
-
-        // 
-        materialSet->setCommand(rtCommand);
-        constants->setCommand(rtCommand, true);
-        renderCommand->setCommand(rtCommand);
-        rayTracing->setCommandFinal(rtCommand);
-
-        // 
-        vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
-        fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
-    };
 
     // 
     while (!glfwWindowShouldClose(manager.window)) { // 
@@ -774,13 +758,29 @@ int main() {
                 vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
             };
 
+            // 
+            auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, true);
+            {
+                buildCommand->setCommand(rtCommand);
+                instanceSet->setCommand(rtCommand, true);
+                buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
+
+                // 
+                materialSet->setCommand(rtCommand);
+                constants->setCommand(rtCommand, true);
+                renderCommand->setCommand(rtCommand);
+                rayTracing->setCommandFinal(rtCommand);
+
+                // 
+                vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
+                fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
+            };
+
             // Submit command once
-            //renderer->setupCommands();
-            vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+            fw->submitUtilize({ rtCommand }, vkh::VkSubmitInfo{
                 .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
-                .commandBufferCount = 1u, .pCommandBuffers = &rtCommand,
                 .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
-            }, {}));
+            });
 
             // 
             waitSemaphores = { framebuffers[currentBuffer].computeSemaphore }, signalSemaphores = { framebuffers[currentBuffer].drawSemaphore };

@@ -708,42 +708,6 @@ int main() {
 
     //
     const uint32_t FBufID = 4u;
-    auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
-
-    // 
-    /*fw->submitOnce([&](VkCommandBuffer& cmd)
-    {
-        buildCommand->setCommand(rtCommand);
-        instanceSet->setCommand(rtCommand, true);
-        buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
-    });*/
-
-
-    // 
-    {
-        buildCommand->setCommand(rtCommand);
-        instanceSet->setCommand(rtCommand, true);
-        buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
-
-        // 
-        materialSet->setCommand(rtCommand);
-        constants->setCommand(rtCommand, true);
-        renderCommand->setCommand(rtCommand);
-        framebuffer->imageToLinearCopyCommand(rtCommand, FBufID);
-
-        // 
-        vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
-        fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
-    };
-
-    // Path Tracing...
-    auto fnCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
-    {
-        //framebuffer->linearToImageCopyCommand(fnCommand, FBufID);
-        rayTracing->setCommandFinal(fnCommand);
-        vkt::commandBarrier(fw->getDeviceDispatch(), fnCommand);
-        fw->getDeviceDispatch()->EndCommandBuffer(fnCommand);
-    };
 
     // 
     while (!glfwWindowShouldClose(manager.window)) { // 
@@ -814,6 +778,24 @@ int main() {
                 };
             };
 
+            // 
+            auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, true);
+            {
+                buildCommand->setCommand(rtCommand);
+                instanceSet->setCommand(rtCommand, true);
+                buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
+
+                // 
+                materialSet->setCommand(rtCommand);
+                constants->setCommand(rtCommand, true);
+                renderCommand->setCommand(rtCommand);
+                framebuffer->imageToLinearCopyCommand(rtCommand, FBufID);
+
+                // 
+                vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
+                fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
+            };
+
             {   // Path Tracing Command...
                 signalSemaphores = { signalSemaphore };
                 ++fenceValue;
@@ -824,12 +806,11 @@ int main() {
                 timelineInfo.pSignalSemaphoreValues = &fenceValue;
 
                 // 
-                vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+                fw->submitUtilize({ rtCommand }, vkh::VkSubmitInfo{
                     .pNext = &timelineInfo,
                     .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
-                    .commandBufferCount = 1u, .pCommandBuffers = &rtCommand,
                     .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
-                }, nullptr));
+                });
             };
 
             /*
@@ -866,19 +847,27 @@ int main() {
             waitSemaphores = { signalSemaphore };
             signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
             waitStages = { vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 } };
-            {
-                // 
+
+
+            // Path Tracing...
+            auto fnCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, true);
+            {   //framebuffer->linearToImageCopyCommand(fnCommand, FBufID);
+                rayTracing->setCommandFinal(fnCommand);
+                vkt::commandBarrier(fw->getDeviceDispatch(), fnCommand);
+                fw->getDeviceDispatch()->EndCommandBuffer(fnCommand);
+            };
+
+            {   // 
                 vk::TimelineSemaphoreSubmitInfo timelineInfo = {};
                 timelineInfo.waitSemaphoreValueCount = 1;
                 timelineInfo.pWaitSemaphoreValues = &fenceValue;
 
                 // Submit command once
-                vkh::handleVk(fw->getDeviceDispatch()->QueueSubmit(queue, 1u, vkh::VkSubmitInfo{
+                fw->submitUtilize({ fnCommand }, vkh::VkSubmitInfo{
                     .pNext = &timelineInfo,
                     .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
-                    .commandBufferCount = 1u, .pCommandBuffers = &fnCommand,
                     .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
-                }, {}));
+                });
             };
 
             // 
