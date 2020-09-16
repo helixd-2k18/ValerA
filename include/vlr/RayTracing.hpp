@@ -67,8 +67,8 @@ namespace vlr {
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<RayTracingCreateInfo> info = RayTracingCreateInfo{});
-        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
-        virtual void setCommandFinal(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
+        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, vkt::uni_arg<glm::uvec4> meta = glm::uvec4(0u));
+        virtual void setCommandFinal(vkt::uni_arg<VkCommandBuffer> rasterCommand, vkt::uni_arg<glm::uvec4> meta = glm::uvec4(0u));
         virtual void setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout = {});
         virtual void swapRayData() {
             std::swap(this->rayDataSetFlip0, this->rayDataSetFlip1); // Swap

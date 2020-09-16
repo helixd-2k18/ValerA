@@ -17,6 +17,26 @@ namespace vlj {
         Driver() : Wrap<vlr::Driver>(std::make_shared<vlr::Driver>()) {};
         Driver(std::shared_ptr<vlr::Driver> object) : Wrap<vlr::Driver>(object) {};
 
+        // For Java
+        virtual vlr::Driver* submitCmd(std::vector<int64_t> cmds, vkt::uni_arg<vkh::VkSubmitInfo> smbi = vkh::VkSubmitInfo{}) {
+            return object->submitCmd(vkt::vector_cast<VkCommandBuffer>(cmds), smbi);
+        };
+
+        // 
+        virtual vlr::Driver* submitCmd(vkt::uni_arg<VkCommandBuffer> cmds, vkt::uni_arg<vkh::VkSubmitInfo> smbi = vkh::VkSubmitInfo{}) {
+            return object->submitCmd(cmds, smbi);
+        };
+
+        // For Java
+        virtual vlr::Driver* submitUtilize(std::vector<int64_t> cmds, vkt::uni_arg<vkh::VkSubmitInfo> smbi = vkh::VkSubmitInfo{}) {
+            return object->submitUtilize(vkt::vector_cast<VkCommandBuffer>(cmds), smbi);
+        };
+
+        // 
+        virtual vlr::Driver* submitUtilize(vkt::uni_arg<VkCommandBuffer> cmds, vkt::uni_arg<vkh::VkSubmitInfo> smbi = vkh::VkSubmitInfo{}) {
+            return object->submitUtilize(cmds, smbi);
+        };
+
         //CALLIFY(constructor);
         CALLIFY(getPhysicalDevice);
         CALLIFY(getDeviceDispatch);
@@ -31,6 +51,8 @@ namespace vlj {
         CALLIFY(getDescriptorPool);
         CALLIFY(getMemoryProperties);
         CALLIFY(getAllocator);
+        //CALLIFY(submitUtilize);
+        //CALLIFY(submitCmd);
         //CALLIFY(submitCommandWithSync);
         //CALLIFY(getDepthImageView);
         CALLIFY(getDepthImage);

@@ -32,7 +32,7 @@ namespace vlr {
         // 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<PipelineCreateInfo> info = PipelineCreateInfo{});
-        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
+        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, vkt::uni_arg<glm::uvec4> meta = glm::uvec4(0u));
         
     };
 

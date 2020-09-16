@@ -98,6 +98,12 @@ public class ValerACore implements InfoMapper {
         // 
         public native @UniPtr VKt.Driver uniPtr();
         public native @SharedPtr VKt.Driver sharedPtr();
+        
+        // 
+        public native VKt.Driver submitUtilize(@StdVector long commandBuffers[], @Cast("vkh::VkSubmitInfo*") long smbi);
+        public native VKt.Driver submitCmd(@StdVector long commandBuffers[], @Cast("vkh::VkSubmitInfo*") long smbi);
+        public native VKt.Driver submitUtilize(@Cast("VkCommandBuffer") long commandBuffer, @Cast("vkh::VkSubmitInfo*") long smbi);
+        public native VKt.Driver submitCmd(@Cast("VkCommandBuffer") long commandBuffer, @Cast("vkh::VkSubmitInfo*") long smbi);
     };
     
     // 

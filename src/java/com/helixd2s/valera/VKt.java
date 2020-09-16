@@ -226,9 +226,9 @@ public class VKt implements InfoMapper {
     public static native @Name("vkt::submitCmd")
     void submitCmd(Device device, @Cast("VkQueue") long queue, @StdVector @Cast("VkCommandBuffer*") long[] cmds, @Cast("vkh::VkSubmitInfo*") long smbi);
 
-    //
-    public static native @Name("vkt::submitCmdAsync")
-    void submitCmdAsync(Device device, @Cast("VkQueue") long queue, @StdVector @Cast("VkCommandBuffer*") long[] cmds, @Cast("vkh::VkSubmitInfo*") long smbi);
+    // TODO: 
+    //public static native @Name("vkt::submitCmdAsync")
+    //void submitCmdAsync(Device device, @Cast("VkQueue") long queue, @StdVector @Cast("VkCommandBuffer*") long[] cmds, @Cast("vkh::VkSubmitInfo*") long smbi);
 
     //
     public static native @Name("vkt::createCommandBuffer") @Cast("VkCommandBuffer")

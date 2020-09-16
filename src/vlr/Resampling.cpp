@@ -40,7 +40,7 @@ namespace vlr {
         vkh::handleVk(device->CreateGraphicsPipelines(driver->getPipelineCache(), 1u, this->pipelineInfo, nullptr, &this->pipeline));
     };
 
-    void Resampling::setCommand(vkt::uni_arg<VkCommandBuffer> resampleCommand, const glm::uvec4& meta){
+    void Resampling::setCommand(vkt::uni_arg<VkCommandBuffer> resampleCommand, vkt::uni_arg<glm::uvec4> meta){
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
 
@@ -53,7 +53,7 @@ namespace vlr {
         device->CmdSetViewport(resampleCommand, 0u, 1u, viewport);
         device->CmdSetScissor(resampleCommand, 0u, 1u, renderArea);
         device->CmdSetPrimitiveTopologyEXT(resampleCommand, VK_PRIMITIVE_TOPOLOGY_POINT_LIST);
-        device->CmdPushConstants(resampleCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(meta), &meta);
+        device->CmdPushConstants(resampleCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
         device->CmdBeginRenderPass(resampleCommand, vkh::VkRenderPassBeginInfo{ .renderPass = framebuffer->resampleFBO.renderPass, .framebuffer = framebuffer->resampleFBO.framebuffer, .renderArea = renderArea, .clearValueCount = static_cast<uint32_t>(framebuffer->resampleFBO.clearValues.size()), .pClearValues = framebuffer->resampleFBO.clearValues.data() }, VK_SUBPASS_CONTENTS_INLINE);
         device->CmdDraw(resampleCommand, framebuffer->width, framebuffer->height, 0u, 0u); // TODO: Instanced Support
         device->CmdEndRenderPass(resampleCommand);

@@ -506,8 +506,8 @@ public class ValerABase implements InfoMapper {
         //
         public native void setAccelerationTop(@UniPtr @ByRef ValerACore.Acceleration acceleration);
         public native void setDescriptorSets(@UniPtr @ByRef ValerACore.PipelineLayout pipelineLayout);
-        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
-        public native void setCommandTop(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @Cast("glm::uvec4*") IntPointer meta);
+        public native void setCommandTop(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @Cast("glm::uvec4*") IntPointer meta);
     };
 
     // 
@@ -535,8 +535,8 @@ public class ValerABase implements InfoMapper {
         public native @SharedPtr ValerACore.RayTracing sharedPtr();
 
         // 
-        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
-        public native void setCommandFinal(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @Cast("glm::uvec4*") IntPointer meta);
+        public native void setCommandFinal(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @Cast("glm::uvec4*") IntPointer meta);
 
         // 
         public native void setDescriptorSets(@UniPtr @ByRef ValerACore.PipelineLayout pipelineLayout);
@@ -573,8 +573,8 @@ public class ValerABase implements InfoMapper {
         public native @SharedPtr ValerACore.Rasterization sharedPtr();
 
         // 
-        public native void drawCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
-        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer);
+        public native void drawCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @Cast("glm::uvec4*") IntPointer meta);
+        public native void setCommand(@ByRef @Cast("VkCommandBuffer") long commandBuffer, @Cast("glm::uvec4*") IntPointer meta);
         public native void setDescriptorSets(@UniPtr @ByRef ValerACore.PipelineLayout pipelineLayout);
         public native void setInstanceSet(@UniPtr @ByRef ValerACore.InstanceSet acceleration);
         public native void setConstants(@UniPtr @ByRef ValerACore.Constants constants);

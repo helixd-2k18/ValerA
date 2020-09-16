@@ -79,9 +79,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\glbinding\include;C:\Program Files\Java\jdk-14.0.1\include\win32;C:\Program Files\Java\jdk-14.0.1\include;$(IncludePath);$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/../include;$(ProjectDir)/../src;$(ProjectDir)/../../include;$(ProjectDir)/../../src</IncludePath>
-    <ExecutablePath>C:\Program Files\glbinding;C:\Program Files\Java\jdk-14.0.1\bin;$(VC_ExecutablePath_x64);$(CommonExecutablePath)</ExecutablePath>
-    <LibraryPath>$(ProjectDir)\..\lib;$(ProjectDir)\..\..\lib;$(ProjectDir)\lib;C:\Program Files\glbinding\lib;C:\Program Files\Java\jdk-14.0.1\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>C:\Program Files\glbinding\include;C:\Program Files\Java\jdk-14.0.2\include\win32;C:\Program Files\Java\jdk-14.0.2\include;$(IncludePath);$(ProjectDir);$(ProjectDir)/include;$(ProjectDir)/../include;$(ProjectDir)/../src;$(ProjectDir)/../../include;$(ProjectDir)/../../src</IncludePath>
+    <ExecutablePath>C:\Program Files\glbinding;C:\Program Files\Java\jdk-14.0.2\bin;$(VC_ExecutablePath_x64);$(CommonExecutablePath)</ExecutablePath>
+    <LibraryPath>$(ProjectDir)\..\lib;$(ProjectDir)\..\..\lib;$(ProjectDir)\lib;C:\Program Files\glbinding\lib;C:\Program Files\Java\jdk-14.0.2\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

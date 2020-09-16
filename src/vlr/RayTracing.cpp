@@ -100,7 +100,7 @@ namespace vlr {
         this->layout->bound[14u] = this->colorChainData->set;
     };
 
-    void RayTracing::setCommandFinal(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0)
+    void RayTracing::setCommandFinal(vkt::uni_arg<VkCommandBuffer> currentCmd, vkt::uni_arg<glm::uvec4> vect0)
     {   // Composite Image
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
@@ -116,7 +116,7 @@ namespace vlr {
     };
 
     // The architecture is built in such a way that multi - command rendering can be turned into single - command rendering with ease... (i.e. JiviX-style)
-    void RayTracing::setCommand(vkt::uni_arg<VkCommandBuffer> currentCmd, const glm::uvec4& vect0) 
+    void RayTracing::setCommand(vkt::uni_arg<VkCommandBuffer> currentCmd, vkt::uni_arg<glm::uvec4> vect0) 
     {
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);

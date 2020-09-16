@@ -31,8 +31,8 @@ namespace vlr {
 
         //
         virtual void setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout = {});
-        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
-        virtual void setCommandTop(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta = glm::uvec4(0u));
+        virtual void setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, vkt::uni_arg<glm::uvec4> meta = glm::uvec4(0u));
+        virtual void setCommandTop(vkt::uni_arg<VkCommandBuffer> rasterCommand, vkt::uni_arg<glm::uvec4> meta = glm::uvec4(0u));
     };
 
 };

@@ -92,18 +92,18 @@ namespace vlr {
     };
 
     // 
-    void Rasterization::drawCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta) {
+    void Rasterization::drawCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, vkt::uni_arg<glm::uvec4> meta) {
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
         auto device = this->driver->getDeviceDispatch();
 
         // 
-        auto& instanceDesc = this->instanceSet->get(meta.x);
+        auto& instanceDesc = this->instanceSet->get(meta->x);
         auto& geometrySet = this->instanceSet->accelerations[instanceDesc.customId]->geometrySet;
-        auto& geometry = geometrySet->geometries[meta.y];
+        auto& geometry = geometrySet->geometries[meta->y];
 
         // 
-        device->CmdPushConstants(rasterCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(meta), &meta);
+        device->CmdPushConstants(rasterCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
         device->CmdDraw(rasterCommand, geometry->desc.primitiveCount, 1u, geometry->desc.firstVertex, 0u); // TODO: Instanced Support
     };
 
@@ -114,7 +114,7 @@ namespace vlr {
     };
 
     // 
-    void Rasterization::setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, const glm::uvec4& meta) {
+    void Rasterization::setCommand(vkt::uni_arg<VkCommandBuffer> rasterCommand, vkt::uni_arg<glm::uvec4> meta) {
         const auto& viewport = reinterpret_cast<vkh::VkViewport&>(framebuffer->viewport);
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
         auto device = this->driver->getDeviceDispatch();

@@ -1,7 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <ProjectOutputs>H:\Data\Projects\ValerA\src\x64\Debug\jniValerACore.dll</ProjectOutputs>
-  <ContentFiles></ContentFiles>
-  <SatelliteDlls></SatelliteDlls>
-  <NonRecipeFileRefs></NonRecipeFileRefs>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>H:\Data\Projects\ValerA\src\x64\Debug\jniValerACore.dll</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles />
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
 </Project>

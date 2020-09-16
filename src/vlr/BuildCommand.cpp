@@ -21,7 +21,7 @@ namespace vlr {
         // TODO: Port from RayTracing Interpolations and Geometry Set bindings
     };
 
-    void BuildCommand::setCommand(vkt::uni_arg<VkCommandBuffer> buildCommand, const glm::uvec4& meta) {
+    void BuildCommand::setCommand(vkt::uni_arg<VkCommandBuffer> buildCommand, vkt::uni_arg<glm::uvec4> meta) {
         auto accelerations = this->accelerationTop->instanceSet->accelerations;
         if (accelerations.size() > 0) {
             for (uint32_t i = 0; i < accelerations.size(); i++) {
@@ -40,7 +40,7 @@ namespace vlr {
         vkt::commandBarrier(this->driver->getDeviceDispatch(), buildCommand);
     };
 
-    void BuildCommand::setCommandTop(vkt::uni_arg<VkCommandBuffer> buildCommand, const glm::uvec4& meta) {
+    void BuildCommand::setCommandTop(vkt::uni_arg<VkCommandBuffer> buildCommand, vkt::uni_arg<glm::uvec4> meta) {
         // 
         if (this->accelerationTop.has()) { // 
             //vkt::commandBarrier(this->driver->getDeviceDispatch(), buildCommand);
