@@ -1,1 +1,0 @@
-../javacpp/jniValerACore.h

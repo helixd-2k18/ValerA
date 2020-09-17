@@ -24,6 +24,7 @@ import com.helixd2s.valera.VKt;
 import com.helixd2s.valera.ValerABase;
 import com.helixd2s.valera.ValerACore;
 
+import static org.lwjgl.glfw.GLFW.Functions.GetProcAddress;
 
 public class TestApp {
 
@@ -76,7 +77,16 @@ public class TestApp {
 		// Configure GLFW
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will be resizable
+
+		// Configure GLFW
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+		//glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+		glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+		///glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
 
 		// Create the window
 		window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
@@ -112,6 +122,8 @@ public class TestApp {
 
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
+		GL.createCapabilities();
+		VKt.initializeGL(GetProcAddress);
 		// Enable v-sync
 		glfwSwapInterval(1);
 

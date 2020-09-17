@@ -24,7 +24,7 @@
     <ProjectGuid>{317edb58-451c-4ad7-a2a8-8adac80fbd13}</ProjectGuid>
     <RootNamespace>VKt</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>VKt</ProjectName>
+    <ProjectName>jniVKt</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

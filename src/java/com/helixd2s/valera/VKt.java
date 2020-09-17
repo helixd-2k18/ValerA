@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Platform(include = {
         "./include/vkt3/fw.hpp",
         "./include/stdafx.h",
-}, link = {"vulkan-1", "glfw"}, define = {"ENABLE_OPENGL_INTEROP", "WIN32", "OS_WIN", "VK_ENABLE_BETA_EXTENSIONS", "VK_USE_PLATFORM_WIN32_KHR", "SHARED_PTR_NAMESPACE std", "UNIQUE_PTR_NAMESPACE std", "VKT_ENABLE_GLFW_SUPPORT"})
+}, link = {"jniVKt"}, define = {"ENABLE_OPENGL_INTEROP", "WIN32", "OS_WIN", "VK_ENABLE_BETA_EXTENSIONS", "VK_USE_PLATFORM_WIN32_KHR", "SHARED_PTR_NAMESPACE std", "UNIQUE_PTR_NAMESPACE std", "VKT_ENABLE_GLFW_SUPPORT"})
 @Name("") //
 public class VKt implements InfoMapper {
     static { Loader.load(); };
@@ -209,7 +209,7 @@ public class VKt implements InfoMapper {
         private native void allocate(@Cast("VmaAllocator*") long vmaAllocator, @Cast("vkh::VkBufferCreateInfo*") long createInfo, VmaMemoryInfo memInfo);
         //private native @UniPtr BufferAllocation uniPtr();
     };
-    
+
     //
     public static native @Name("vkt::initializeGL")
     void initializeGL(@Cast("GLFWglproc(*)(const char*)") long GetProcAddress);
@@ -295,7 +295,7 @@ public class VKt implements InfoMapper {
         public native @Cast("uintptr_t") long address(); // For Pointer Passes
         public native @Cast("uintptr_t") long mapv(long ptr);
         public native @Name("operator=") @ByRef Vector put(@ByRef Vector x);
-        
+
         //
         public native long size();
         public native long range();
@@ -540,7 +540,6 @@ public class VKt implements InfoMapper {
 
         private native void allocate();
     };
-    
-    
-};
 
+
+};

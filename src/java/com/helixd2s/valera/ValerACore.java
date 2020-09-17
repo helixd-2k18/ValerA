@@ -12,12 +12,11 @@ import java.lang.annotation.*;
 @Platform(include = {
         "./include/vkt3/fw.hpp",
         "./include/stdafx.h",
-        "jniVKt.h",
-}, link = {"vulkan-1", "glfw"}, define = {"ENABLE_OPENGL_INTEROP", "WIN32", "OS_WIN", "VK_ENABLE_BETA_EXTENSIONS", "VK_USE_PLATFORM_WIN32_KHR", "SHARED_PTR_NAMESPACE std", "UNIQUE_PTR_NAMESPACE std", "VKT_ENABLE_GLFW_SUPPORT"})
+}, link = {"jniValerACore"}, define = {"ENABLE_OPENGL_INTEROP", "WIN32", "OS_WIN", "VK_ENABLE_BETA_EXTENSIONS", "VK_USE_PLATFORM_WIN32_KHR", "SHARED_PTR_NAMESPACE std", "UNIQUE_PTR_NAMESPACE std", "VKT_ENABLE_GLFW_SUPPORT"})
 @Name("") //
 public class ValerACore implements InfoMapper {
     static { Loader.load(); };
-    
+
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.PARAMETER})
@@ -98,14 +97,14 @@ public class ValerACore implements InfoMapper {
         // 
         public native @UniPtr VKt.Driver uniPtr();
         public native @SharedPtr VKt.Driver sharedPtr();
-        
+
         // 
         public native VKt.Driver submitUtilize(@StdVector long commandBuffers[], @Cast("vkh::VkSubmitInfo*") long smbi);
         public native VKt.Driver submitCmd(@StdVector long commandBuffers[], @Cast("vkh::VkSubmitInfo*") long smbi);
         public native VKt.Driver submitUtilize(@Cast("VkCommandBuffer") long commandBuffer, @Cast("vkh::VkSubmitInfo*") long smbi);
         public native VKt.Driver submitCmd(@Cast("VkCommandBuffer") long commandBuffer, @Cast("vkh::VkSubmitInfo*") long smbi);
     };
-    
+
     // 
     @Name("vlr::MaterialUnit")
     public static class MaterialUnit extends Pointer {
@@ -127,7 +126,7 @@ public class ValerACore implements InfoMapper {
         public native @ByRef @MemberGetter @Cast("int*") IntPointer pbrAGMTexture();
         public native @ByRef @MemberGetter @Cast("int*") IntPointer normalTexture();
         public native @ByRef @MemberGetter @Cast("int*") IntPointer emissionTexture();
-        
+
         // 
         public native @ByRef @MemberGetter @Cast("int*") IntPointer udata();
     };
@@ -556,7 +555,7 @@ public class ValerACore implements InfoMapper {
         private native void allocate();
         private native void allocate(@UniPtr VKt.Driver driver);
     };
-    
+
 
 
 
