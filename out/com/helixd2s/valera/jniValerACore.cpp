@@ -1,0 +1,1 @@
+../../../../src/javacpp/jniValerACore.cpp
