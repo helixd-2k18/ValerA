@@ -132,8 +132,8 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     //
     packed = packUint2x16(uvec2(FragCoord.xy + 0.001f)), seed = uint2(packed, constants.rdata.x);
 
-    // 
-    float2 texc = FragCoord.xy, size = float2(textureSize(rasteredImagesRaw[0], 0)); //+ pRandom2(seed);
+    // pixel scattering
+    float2 texc = floor(FragCoord.xy + 0.001f) + pRandom2(seed), size = float2(textureSize(rasteredImagesRaw[0], 0)); //+ pRandom2(seed);
     float3 origin = screen2world(float3((texc/size)*2.f-1.f,0.001f));
     float3 target = screen2world(float3((texc/size)*2.f-1.f,0.999f));
     float3 raydir = normalize(target - origin);

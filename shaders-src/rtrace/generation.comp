@@ -117,6 +117,9 @@ void main()
                 
                 if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
                     outRay.direct = randomHemisphereCosine(seed, TBN); kind(outRay, DIFFUSE_RAY);
+#ifdef TAA
+                    outRay.color = f16vec4(float4(MAT.diffuseColor.xyz, 1.f));
+#endif
                 } else { // BROKEN...
                     outRay.direct = reflectGlossy(seed, raydir.xyz, TBN, MAT.specularColor.y); kind(outRay, REFLECT_RAY);
                 };
@@ -160,7 +163,11 @@ void main()
         {
             RayData outRay = tempRay;
             if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
+#ifdef TAA
+                float4 enegry = float4(MAT.diffuseColor.xyz, 1.f);
+#else
                 float4 enegry = 1.f.xxxx;
+#endif
                 float4 signal = 0.f.xxxx;
                 directLight(mapNormal, geoNormal, outRay.origin.xyz, seed, signal, enegry);
 

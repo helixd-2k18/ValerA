@@ -131,8 +131,12 @@ void main()
             refleclr = mix(refleclr, refleclp, 0.5f + MAT.specularColor.y * 0.5f);
             transpp  = mix(transpr , transpp , 0.5f);
 
-            // 
+            //
+#ifdef TAA
+            float4 diffuse = float4(indirect.xyz, 1.f);
+#else
             float4 diffuse = float4(MAT.diffuseColor.xyz * indirect.xyz, 1.f);
+#endif
             diffuse.xyz = mix(diffuse.xyz, refleclr.xyz, reflectionPower);
             diffuse.xyz = mix(diffuse.xyz, transpr.xyz, 1.f-MAT.diffuseColor.w);
             diffuse.xyz += MAT.emissionColor.xyz;
