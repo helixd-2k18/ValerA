@@ -62,28 +62,33 @@ struct PS_OUTPUT {
 #endif
 
 // 
-float3 barycentric(in float3 P, in float3 A, in float3 B, in float3 C) {
+float3 barycentric(in float3 orig, in float3 dir, in mat3x3 vertices)
+{
+    float3 u = vertices[1] - vertices[0];
+    float3 v = vertices[2] - vertices[0];
+    float3 n = cross(u, v);
 
-    // Compute vectors        
-    float3 v0 = C - A;
-    float3 v1 = B - A;
-    float3 v2 = P - A;
+    float3 w0 = orig - vertices[0];
+    float a = -dot(n, w0);
+    float b = dot(n, dir);
+    float r = a / b;
 
-    // Compute dot products
-    float dot00 = dot(v0, v0);
-    float dot01 = dot(v0, v1);
-    float dot02 = dot(v0, v2);
-    float dot11 = dot(v1, v1);
-    float dot12 = dot(v1, v2);
+    float3 I = orig + r * dir;
+    float uu, uv, vv, wu, wv, D;
+    uu = dot(u, u);
+    uv = dot(u, v);
+    vv = dot(v, v);
+    float3 w = I - vertices[0];
+    wu = dot(w, u);
+    wv = dot(w, v);
+    D = uv * uv - uu * vv;
 
-    // Compute barycentric coordinates
-    float invDenom = 1.f / (dot00 * dot11 - dot01 * dot01);
-    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-    // 
-    return float3(1.f - u - v, v, u);
+    float s, t;
+    s = (uv * wv - vv * wu) / D;
+    t = (uv * wu - uu * wv) / D;
+    return float3(1.f - s - t, s, t);
 };
+
 
 
 // Так как НЕ прозрачные объекты не имеют толком прозрачностей, или не должны иметь, предпочитаем ранее тестирование...
@@ -128,8 +133,13 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     packed = packUint2x16(uvec2(FragCoord.xy + 0.001f)), seed = uint2(packed, constants.rdata.x);
 
     // 
-    float2 texc = FragCoord.xy; //+ pRandom2(seed);
-    float3 bary = fBary.xyz;//barycentric(FragCoord.xyz, inp.fpt[0].xyz, inp.fpt[1].xyz, inp.fpt[2].xyz);
+    float2 texc = FragCoord.xy, size = float2(textureSize(rasteredImagesRaw[0], 0)); //+ pRandom2(seed);
+    float3 origin = screen2world(float3((texc/size)*2.f-1.f,0.001f));
+    float3 target = screen2world(float3((texc/size)*2.f-1.f,0.999f));
+    float3 raydir = normalize(target - origin);
+
+    // 
+    float3 bary = barycentric(origin.xyz, raydir.xyz, mat3x3(inp.fpt[0].xyz, inp.fpt[1].xyz, inp.fpt[2].xyz));
 
     // Replacement for rasterization
     XHIT RPM; // currImages is Current Frame, prevImages is Previous Frame

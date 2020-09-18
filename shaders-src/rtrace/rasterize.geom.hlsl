@@ -69,10 +69,11 @@ PS_INPUT main(in triangle GS_INPUT inp[3], inout TriangleStream<TS_OUTPUT> Outpu
     XTRI tri = geometrical(hit);
 
     for (uint i=0;i<3;i++) {
-        fpt[i] = mul(getMT4x4(constants.projection), float4(mul(getMT3x4(constants.modelview), float4(tri.gPosition[i].xyz, 1.f)), 1.f));
-        fpt[i] /= fpt[i].w;
-        fpt[i].xyz = fpt[i].xyz * 0.5f + 0.5f;
-        fpt[i].xy *= float2(textureSize(rasteredImagesRaw[0], 0));
+        fpt[i] = float4(tri.gPosition[i].xyz, 1.f);
+        //fpt[i] = mul(getMT4x4(constants.projection), float4(mul(getMT3x4(constants.modelview), float4(tri.gPosition[i].xyz, 1.f)), 1.f));
+        //fpt[i] /= fpt[i].w;
+        //fpt[i].xyz = fpt[i].xyz * 0.5f + 0.5f;
+        //fpt[i].xy *= float2(textureSize(rasteredImagesRaw[0], 0));
     };
 
     for (uint i=0;i<3;i++) {
