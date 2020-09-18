@@ -89,7 +89,9 @@ float3 barycentric(in float3 orig, in float3 dir, in mat3x3 vertices)
     return float3(1.f - s - t, s, t);
 };
 
-
+// 
+#define PIXEL_SCATTER
+#define BARY_TEST
 
 // Так как НЕ прозрачные объекты не имеют толком прозрачностей, или не должны иметь, предпочитаем ранее тестирование...
 #ifdef OPAQUE
@@ -133,9 +135,13 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     packed = packUint2x16(uvec2(FragCoord.xy + 0.001f)), seed = uint2(packed, constants.rdata.x);
 
     // pixel scattering
+#ifdef PIXEL_SCATTER
     float2 texc = floor(FragCoord.xy + 0.001f) + pRandom2(seed), size = float2(textureSize(rasteredImagesRaw[0], 0)); //+ pRandom2(seed);
-    float3 origin = screen2world(float3((texc/size)*2.f-1.f,0.001f));
-    float3 target = screen2world(float3((texc/size)*2.f-1.f,0.999f));
+#else
+    float2 texc = FragCoord.xy, size = float2(textureSize(rasteredImagesRaw[0], 0));
+#endif
+    float3 origin = screen2camera(float3((texc/size)*2.f-1.f,0.001f));
+    float3 target = screen2camera(float3((texc/size)*2.f-1.f,0.999f));
     float3 raydir = normalize(target - origin);
 
     // 
@@ -160,7 +166,12 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     outp.FragDepth  = 1.1f;
 
     // 
-    if (diffuseColor.w > 0.0001f && all(greaterThanEqual(bary, 0.f.xxx))) { // Only When Opaque!
+#ifdef BARY_TEST
+    if (diffuseColor.w > 0.0001f && all(greaterThanEqual(bary, -0.001f.xxx))) 
+#else
+    if (diffuseColor.w > 0.0001f) 
+#endif
+    { // Only When Opaque!
         outp.gPosition = GEO.gPosition; // Save texcoord for Parallax Mapping with alpha channel
         outp.oMaterial = uintBitsToFloat(uint4(0u, 0u, 0u, floatBitsToUint(1.f)));
         outp.oGeoIndice = float4(inp.uData.xyz, 1.f);

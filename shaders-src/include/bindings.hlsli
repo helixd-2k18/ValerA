@@ -287,6 +287,10 @@ float3 screen2world(in float3 origin){
     return mul(constants.modelviewInv, float4(divW(mul(constants.projectionInv, float4(origin,1.f))), 1.f));
 };
 
+float3 screen2camera(in float3 origin){
+    return divW(mul(constants.projectionInv, float4(origin,1.f)));
+};
+
 float3 world2screen(in float4 origin){
     return divW(mul(constants.projection, float4(mul(constants.modelview, origin), 1.f)));
 };
