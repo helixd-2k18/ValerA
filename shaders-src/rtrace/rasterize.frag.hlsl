@@ -12,11 +12,10 @@
 struct PS_INPUT
 {
     float4 FragCoord;
-    float4 fPosition;
-    float4 fTexcoord;     
-    float4 fBarycent;
+    float4 fBary;
     float4 uData;
     float PointSize;
+    float4 fpt[3];
 };
 
 // 
@@ -29,10 +28,9 @@ struct PS_OUTPUT {
 };
 
 // 
-layout (location = 0) in float4 fPosition;
-layout (location = 1) in float4 fTexcoord;
-layout (location = 2) in float4 fBarycent;
-layout (location = 3) flat in float4 uData;
+layout (location = 0) flat in float4 uData;
+layout (location = 1) flat in float4 fpt[3];
+layout (location = 4) in float4 fBary;
 
 // 
 layout (location = RS_MATERIAL) out float4 oMaterial;
@@ -46,11 +44,10 @@ layout (location = RS_BARYCENT) out float4 oBarycent;
 struct PS_INPUT
 {
     float4 FragCoord             : SV_POSITION;
-    float4 fPosition             : POSITION0;
-    float4 fTexcoord             : TEXCOORD0;     
-    float4 fBarycent             : TEXCOORD1;
+    float4 fBary                 : POSITION2;
     nointerpolation float4 uData : COLOR0;
     float PointSize              : PSIZE0;
+    float4 fpt[3]                : POSITION1;
 };
 
 // 
@@ -64,21 +61,36 @@ struct PS_OUTPUT {
 
 #endif
 
+// 
+float3 barycentric(in float3 P, in float3 A, in float3 B, in float3 C) {
+
+    // Compute vectors        
+    float3 v0 = C - A;
+    float3 v1 = B - A;
+    float3 v2 = P - A;
+
+    // Compute dot products
+    float dot00 = dot(v0, v0);
+    float dot01 = dot(v0, v1);
+    float dot02 = dot(v0, v2);
+    float dot11 = dot(v1, v1);
+    float dot12 = dot(v1, v2);
+
+    // Compute barycentric coordinates
+    float invDenom = 1.f / (dot00 * dot11 - dot01 * dot01);
+    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+    // 
+    return float3(1.f - u - v, v, u);
+};
+
+
 // Так как НЕ прозрачные объекты не имеют толком прозрачностей, или не должны иметь, предпочитаем ранее тестирование...
 #ifdef OPAQUE
-layout ( early_fragment_tests ) in;
+//layout ( early_fragment_tests ) in;
 #endif
 
-// 
-//layout ( early_fragment_tests ) in; // Reduce Lag Rate! (but transparency may broken!)
-// Прозрачность с новой прошивкой починим! @RED21
-
-//layout (location = RS_DIFFUSED) out float4 oDiffused;
-//layout (location = RS_BARYCENT) out float4 oBarycent;
-
-// TODO: FIX Conservative Rasterization! (i.e. add layer or virtualization)
-// TODO: Triangle Edge Testing!
-// TODO: Anti-Aliasing Support!
 #ifdef GLSL 
 void main() 
 #else
@@ -88,7 +100,7 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
 #ifdef GLSL
     const float4 FragCoord = gl_FragCoord;
 
-    PS_INPUT inp = { gl_FragCoord, fPosition, fTexcoord, fBarycent, uData, 0.f };
+    PS_INPUT inp = { gl_FragCoord, fBary, uData, 0.f, fpt };
 #endif
 
     const uint PrimitiveID = floatBitsToUint(inp.uData.z);
@@ -108,12 +120,27 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     float3x4 matra4 = instances[nonuniformEXT(globalInstanceID)].transform;
     if (hasTransform(node)) { matras = node.transform; };
 
-#ifndef MatID
-#define MatID node.material
-#endif
+//#ifndef MatID
+//#define MatID node.material
+//#endif
 
+    //
+    packed = packUint2x16(uvec2(FragCoord.xy + 0.001f)), seed = uint2(packed, constants.rdata.x);
+
+    // 
+    float2 texc = FragCoord.xy; //+ pRandom2(seed);
+    float3 bary = fBary.xyz;//barycentric(FragCoord.xyz, inp.fpt[0].xyz, inp.fpt[1].xyz, inp.fpt[2].xyz);
+
+    // Replacement for rasterization
+    XHIT RPM; // currImages is Current Frame, prevImages is Previous Frame
+    RPM.gBarycentric = float4(bary, 0.f);
+    RPM.gIndices = floatBitsToUint(float4(inp.uData.xyz, 1.f));
+    XGEO GEO = interpolate(RPM);
+    XPOL MAT = materialize(RPM, GEO);
+
+    // 
     const MaterialUnit unit = materials[MatID]; // NEW! 20.04.2020
-    const float4 diffuseColor = toLinear(unit. diffuseTexture >= 0 ? textureSample(textures[nonuniformEXT(unit. diffuseTexture)], staticSamplers[2u], inp.fTexcoord.xy) : unit.diffuse);
+    const float4 diffuseColor = toLinear(unit. diffuseTexture >= 0 ? textureSample(textures[nonuniformEXT(unit. diffuseTexture)], staticSamplers[2u], GEO.gTexcoord.xy) : unit.diffuse);
 
     // 
     PS_OUTPUT outp;
@@ -123,11 +150,11 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
     outp.FragDepth  = 1.1f;
 
     // 
-    if (diffuseColor.w > 0.0001f) { // Only When Opaque!
-        outp.gPosition = inp.fPosition; // Save texcoord for Parallax Mapping with alpha channel
+    if (diffuseColor.w > 0.0001f && all(greaterThanEqual(bary, 0.f.xxx))) { // Only When Opaque!
+        outp.gPosition = GEO.gPosition; // Save texcoord for Parallax Mapping with alpha channel
         outp.oMaterial = uintBitsToFloat(uint4(0u, 0u, 0u, floatBitsToUint(1.f)));
         outp.oGeoIndice = float4(inp.uData.xyz, 1.f);
-        outp.oBarycent = float4(max(inp.fBarycent.xyz, 0.0001f.xxx), 1.f);
+        outp.oBarycent = float4(max(bary.xyz, 0.0001f.xxx), 1.f);
         outp.FragDepth = inp.FragCoord.z;
     };
 

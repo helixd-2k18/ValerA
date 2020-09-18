@@ -3,10 +3,9 @@
 #ifdef GLSL
 
 // Right Oriented
-layout (location = 0) out float4 fPosition;
-layout (location = 1) out float4 fTexcoord;
-layout (location = 2) out float4 fBarycent;
-layout (location = 3) flat out float4 uData;
+layout (location = 0) flat out float4 uData;
+layout (location = 1) flat out float4 fpt[3];
+layout (location = 4) out float4 fBary;
 
 // 
 struct VS_INPUT 
@@ -22,11 +21,10 @@ struct VS_INPUT
 struct PS_INPUT
 {
     float4 Position;
-    float4 fPosition;
-    float4 fTexcoord;     
-    float4 fBarycent;
+    float4 fBary;
     float4 uData;
     float PointSize;
+    float4 fpt[3];
 };
 
 #else
@@ -44,12 +42,12 @@ struct VS_INPUT
 // 
 struct PS_INPUT
 {
-    float4 Position              : SV_POSITION;
-               float4 fPosition  : POSITION0;
-               float4 fTexcoord  : TEXCOORD0;     
-               float4 fBarycent  : TEXCOORD1;
-    nointerpolation float4 uData : COLOR0;
-    float PointSize              : PSIZE0;
+    float4 Position      : SV_POSITION;
+    float4 fBary         : POSITION0;
+    nointerpolation float4 uData    : COLOR0;
+    nointerpolation float PointSize : PSIZE0;
+    nointerpolation float4 fpt[3]   : POSITION1;
+
 };
 
 #endif
@@ -69,12 +67,21 @@ PS_INPUT main(in triangle GS_INPUT inp[3], inout TriangleStream<TS_OUTPUT> Outpu
 #ifdef GLSL                        // InstanceID | GeometryID | PrimitiveID
     XHIT hit; hit.gIndices =    uint4(pushed.x,    pushed.y,    gl_PrimitiveIDIn, 0u);
     XTRI tri = geometrical(hit);
+
+    for (uint i=0;i<3;i++) {
+        fpt[i] = mul(getMT4x4(constants.projection), float4(mul(getMT3x4(constants.modelview), float4(tri.gPosition[i].xyz, 1.f)), 1.f));
+        fpt[i] /= fpt[i].w;
+        fpt[i].xyz = fpt[i].xyz * 0.5f + 0.5f;
+        fpt[i].xy *= float2(textureSize(rasteredImagesRaw[0], 0));
+    };
+
     for (uint i=0;i<3;i++) {
         gl_Position = mul(getMT4x4(constants.projection), float4(mul(getMT3x4(constants.modelview), float4(tri.gPosition[i].xyz, 1.f)), 1.f));
         gl_Position.y *= -1.f;
-        fPosition = tri.gPosition[i];
-        fTexcoord = tri.gTexcoord[i];
-        fBarycent = float4(bary[i], 0.f);
+        fBary = float4(bary[i], 0.f);
+        //fPosition = tri.gPosition[i];
+        //fTexcoord = tri.gTexcoord[i];
+        //fBarycent = float4(bary[i], 0.f);
         uData = uintBitsToFloat(hit.gIndices);
         EmitVertex();
     };

@@ -69,6 +69,10 @@ float2 random2(               ) {         return halfConstruct(hash(QLOCK2)); }
 float2 random2( inout uint2 s ) { s += 1; return halfConstruct(hash(uint4(QLOCK2,s))); }
 float2 random2( inout uint  s ) { s += 1; return halfConstruct(hash(uint3(QLOCK2,s))); }
 
+// pseudo random
+float2 pRandom2( inout uint2 s ) { s += 1; return halfConstruct(hash(s)); }
+float2 pRandom2( inout uint  s ) { s += 1; return halfConstruct(hash(s)); }
+
 
 // geometric random generators
 //float3 randomSphere() { return dcts(random2()); };

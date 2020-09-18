@@ -27,7 +27,11 @@ namespace vlr {
         const auto& renderArea = reinterpret_cast<vkh::VkRect2D&>(framebuffer->scissor);
 
         // Enable Conservative Rasterization For Fix Some Antialiasing Issues
+        this->conserv.pNext = nullptr;
+        this->conserv.flags = 0u;
+        this->conserv.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT;
         this->conserv.conservativeRasterizationMode = VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT;
+        this->conserv.extraPrimitiveOverestimationSize = 0.f;
         this->pipelineInfo = vkh::VsGraphicsPipelineCreateInfoConstruction();
         this->pipelineInfo.stages = this->stages;
         this->pipelineInfo.depthStencilState = vkh::VkPipelineDepthStencilStateCreateInfo{ .depthTestEnable = true, .depthWriteEnable = true };
