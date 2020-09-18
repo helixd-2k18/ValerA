@@ -103,7 +103,7 @@ namespace vlr {
         auto& geometry = geometrySet->geometries[meta->y];
 
         // 
-        device->CmdPushConstants(rasterCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), &meta);
+        device->CmdPushConstants(rasterCommand, layout->pipelineLayout, layout->stages, 0u, sizeof(glm::uvec4), meta);
         device->CmdDraw(rasterCommand, geometry->desc.primitiveCount, 1u, geometry->desc.firstVertex, 0u); // TODO: Instanced Support
     };
 
