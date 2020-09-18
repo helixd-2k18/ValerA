@@ -806,7 +806,7 @@ int main() {
                 timelineInfo.pSignalSemaphoreValues = &fenceValue;
 
                 // 
-                fw->submitUtilize({ rtCommand }, vkh::VkSubmitInfo{
+                fw->submitUtilize(rtCommand, vkh::VkSubmitInfo{
                     .pNext = &timelineInfo,
                     .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
                     .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
@@ -863,7 +863,7 @@ int main() {
                 timelineInfo.pWaitSemaphoreValues = &fenceValue;
 
                 // Submit command once
-                fw->submitUtilize({ fnCommand }, vkh::VkSubmitInfo{
+                fw->submitUtilize(fnCommand, vkh::VkSubmitInfo{
                     .pNext = &timelineInfo,
                     .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
                     .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()

@@ -777,7 +777,7 @@ int main() {
             };
 
             // Submit command once
-            fw->submitUtilize({ rtCommand }, vkh::VkSubmitInfo{
+            fw->submitUtilize(rtCommand, vkh::VkSubmitInfo{
                 .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()), .pWaitSemaphores = waitSemaphores.data(), .pWaitDstStageMask = waitStages.data(),
                 .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
             });
