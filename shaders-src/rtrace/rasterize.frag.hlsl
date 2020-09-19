@@ -62,40 +62,38 @@ struct PS_OUTPUT {
 #endif
 
 // 
-float3 barycentric(in float3 orig, in float3 dir, in mat3x3 vertices)
+float3 barycentric(in float3 p, in float3 d, in mat3x3 vc)
 {
-    float3 u = vertices[1] - vertices[0];
-    float3 v = vertices[2] - vertices[0];
-    float3 n = cross(u, v);
+    const mat3x4 vcp = mat3x4(
+        mul(getMT4x4(constants.projection), float4(vc[0], 1.f)),
+        mul(getMT4x4(constants.projection), float4(vc[1], 1.f)),
+        mul(getMT4x4(constants.projection), float4(vc[2], 1.f))
+    );
+    const float4 pp = mul(getMT4x4(constants.projection), float4(p, 1.f));
 
-    float3 w0 = orig - vertices[0];
-    float a = -dot(n, w0);
-    float b = dot(n, dir);
-    float r = a / b;
+    float2 v0 = (vcp[2].xy/vcp[2].w) - (vcp[0].xy/vcp[0].w), v1 = (vcp[1].xy/vcp[1].w) - (vcp[0].xy/vcp[0].w), v2 = (pp.xy/pp.w) - (vcp[0].xy/vcp[0].w);
+    float d00 = dot(v0, v0);
+    float d01 = dot(v0, v1);
+    float d11 = dot(v1, v1);
+    float d20 = dot(v2, v0);
+    float d21 = dot(v2, v1);
+    float denom = d00 * d11 - d01 * d01;
+    
+    float v = (d11 * d20 - d01 * d21) / denom;
+    float w = (d00 * d21 - d01 * d20) / denom;
+    float u = 1.0f - v - w;
 
-    float3 I = orig + r * dir;
-    float uu, uv, vv, wu, wv, D;
-    uu = dot(u, u);
-    uv = dot(u, v);
-    vv = dot(v, v);
-    float3 w = I - vertices[0];
-    wu = dot(w, u);
-    wv = dot(w, v);
-    D = uv * uv - uu * vv;
-
-    float s, t;
-    s = (uv * wv - vv * wu) / D;
-    t = (uv * wu - uu * wv) / D;
-    return float3(1.f - s - t, s, t);
+    // TODO: Perspective Correct
+    return float3(u, w, v);
 };
 
 // 
-#define PIXEL_SCATTER
-#define BARY_TEST
+//#define PIXEL_SCATTER
+//#define BARY_TEST
 
 // Так как НЕ прозрачные объекты не имеют толком прозрачностей, или не должны иметь, предпочитаем ранее тестирование...
 #ifdef OPAQUE
-//layout ( early_fragment_tests ) in;
+layout ( early_fragment_tests ) in;
 #endif
 
 #ifdef GLSL 
@@ -149,7 +147,7 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
 
     // Replacement for rasterization
     XHIT RPM; // currImages is Current Frame, prevImages is Previous Frame
-    RPM.gBarycentric = float4(bary, 0.f);
+    RPM.gBarycentric = inp.fBary;//float4(bary, 0.f);
     RPM.gIndices = floatBitsToUint(float4(inp.uData.xyz, 1.f));
     XGEO GEO = interpolate(RPM);
     XPOL MAT = materialize(RPM, GEO);
@@ -175,7 +173,7 @@ PS_OUTPUT main(in PS_INPUT inp, in uint PrimitiveID : SV_PrimitiveID, float3 Bar
         outp.gPosition = GEO.gPosition; // Save texcoord for Parallax Mapping with alpha channel
         outp.oMaterial = uintBitsToFloat(uint4(0u, 0u, 0u, floatBitsToUint(1.f)));
         outp.oGeoIndice = float4(inp.uData.xyz, 1.f);
-        outp.oBarycent = float4(max(bary.xyz, 0.0001f.xxx), 1.f);
+        outp.oBarycent = float4(max(RPM.gBarycentric.xyz, 0.0001f.xxx), 1.f);
         outp.FragDepth = inp.FragCoord.z;
     };
 
