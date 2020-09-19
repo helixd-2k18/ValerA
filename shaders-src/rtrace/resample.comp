@@ -101,9 +101,9 @@ void main()
     // 
     const float2 fpix = (screenpos.xy * 0.5f + 0.5f) * float2(sizPixel) + 0.0001f;
     const int2 topix = int2(fpix);
-    if (indirect.w > 0.f && (checkPixel(RPM, int2(fpix), true) ||  
-        checkPixel(RPM, int2(fpix)+int2(-1,0), false) || checkPixel(RPM, int2(fpix)+int2(1,0), false) || 
-        checkPixel(RPM, int2(fpix)+int2(0,-1), false) || checkPixel(RPM, int2(fpix)+int2(0,1), false)
+    if (indirect.w > 0.f && (checkPixel(RPM, int2(fpix), true) //||  
+        //checkPixel(RPM, int2(fpix)+int2(-1,0), false) || checkPixel(RPM, int2(fpix)+int2(1,0), false) || 
+        //checkPixel(RPM, int2(fpix)+int2(0,-1), false) || checkPixel(RPM, int2(fpix)+int2(0,1), false)
     )) 
     {
         atomicSuperImageAdd(resampleImages[IW_INDIRECT], topix, indirect); // Atomically Adding Samples
