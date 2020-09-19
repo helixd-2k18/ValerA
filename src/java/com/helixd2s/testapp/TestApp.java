@@ -28,24 +28,9 @@ import static org.lwjgl.glfw.GLFW.Functions.GetProcAddress;
 
 public class TestApp {
 
-    public static VkInstance vInstance;
-    public static VkPhysicalDevice vPhysicalDevice;
-    public static VkDevice vDevice;
-    public static ValerACore.Driver vDriver;
-    public static LongPointer vInstanceHandle;
-    public static LongPointer vDeviceHandle;
-    public static LongPointer vPhysicalDeviceHandle;
-
-    //
-    public static ValerABase.Framebuffer framebuffer;
-    public static ValerABase.PipelineLayout pipelineLayout;
-    public static ValerABase.TextureSet textureSet;
-    public static ValerABase.SamplerSet samplerSet;
-    public static ValerABase.Background background;
-    public static ValerABase.MaterialSet materialSet;
-
 	// The window handle
 	private long window;
+	public static VRenderer renderer;
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -129,30 +114,9 @@ public class TestApp {
 
 		// Make the window visible
         glfwShowWindow(window);
-        
-        //
-        vDriver = new ValerACore.Driver();
-        vInstanceHandle = vDriver.createInstance();
-        vInstance = new VkInstance(vInstanceHandle.get(), VkInstanceCreateInfo.create(vDriver.getInstanceCreateInfoAddress()));
-        vPhysicalDeviceHandle = vDriver.getPhysicalDevice();
-        vPhysicalDevice = new VkPhysicalDevice(vPhysicalDeviceHandle.get(), vInstance);
-        vDeviceHandle = vDriver.createDevice();
-        vDevice = new VkDevice(vDeviceHandle.get(), vPhysicalDevice, VkDeviceCreateInfo.create(vDriver.getDeviceCreateInfoAddress()));
 
-        //
-        ValerACore.DataSetCreateInfo info = new ValerACore.DataSetCreateInfo();
-        info.count().address();
-
-        //
-        framebuffer = new ValerABase.Framebuffer(vDriver.uniPtr());
-        pipelineLayout = new ValerABase.PipelineLayout(vDriver.uniPtr());
-        textureSet = new ValerABase.TextureSet(vDriver.uniPtr());
-        samplerSet = new ValerABase.SamplerSet(vDriver.uniPtr());
-        background = new ValerABase.Background(vDriver.uniPtr());
-        materialSet = new ValerABase.MaterialSet(vDriver.uniPtr(), info);
-
-        //
-        framebuffer.createFramebuffer(width, height);
+		renderer = new VRenderer();
+		renderer.init(width, height);
 	}
 
 	private void loop() {
