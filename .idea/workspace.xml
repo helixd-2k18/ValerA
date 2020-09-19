@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1d0a54bd-f6c9-4cab-b4f0-15f061a32bb5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ValerA.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lwjgl_glfw_javadoc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ValerA.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ValerA.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/testapp/TestApp.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/testapp/VRenderer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$BufferAllocation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$ByteVector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$Device.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$Driver.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$FloatVector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$ImageAllocation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$ImageRegion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$Instance.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$IntVector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$MemoryAllocationInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$ShortVector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$UByteVector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$UIntVector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$UShortVector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$UniPtr.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$Vector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$VmaBufferAllocation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$VmaImageAllocation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt$VmaMemoryInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/VKt.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$Acceleration.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$AttributeSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$Background.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$BindingSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$BufferViewSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$BuildCommand.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$Constants.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$Framebuffer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$Geometry.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$GeometrySet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$InstanceSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$MaterialSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$PipelineLayout.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$Rasterization.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$RayTracing.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$RenderCommand.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$SamplerSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$SetBase.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$TextureSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$UniPtr.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase$VertexSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerABase.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$Acceleration.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$AccelerationCreateInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$AttributeSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$Background.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$BindingSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$BufferViewSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$BuildCommand.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$BuildCommandCreateInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$ConstantDesc.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$Constants.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$DataSetCreateInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$Driver.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$Framebuffer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$Geometry.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$GeometryDesc.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$GeometrySet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$InstanceSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$MaterialSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$MaterialUnit.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$PipelineCreateInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$PipelineLayout.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$PipelineStages.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$Rasterization.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$RayTracing.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$RayTracingCreateInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$RenderCommand.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$RenderCommandCreateInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$SamplerSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$SetBase.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$TextureSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$UniPtr.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$VertexSet.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$VertexSetCreateInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore$VsGeometryInstance.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/ValerACore.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/include/vkh/core.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/include/vkt3/core.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/include/vkt3/image.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/include/vkt3/vector.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/include/vlr/BufferViewSet.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/include/vlr/Rasterization.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/include/vlr/SamplerSet.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/include/vlr/TextureSet.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/jniVKt.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/jniValerABase.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/helixd2s/valera/jniValerACore.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/jnijavacpp.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/.vscode/settings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/include/vkh/core.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/include/vkt3/core.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/include/vkt3/image.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/include/vkt3/vector.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/include/vlr/BufferViewSet.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/include/vlr/Rasterization.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/include/vlr/SamplerSet.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/include/vlr/TextureSet.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/jniVKt.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/jniValerABase.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/com/helixd2s/valera/jniValerACore.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/include/macro.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/include/pch.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/include/pch.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/jnijavacpp.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/jnijavacpp.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/javacpp/jniVKt.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/javacpp/jniVKt.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/javacpp/jniValerABase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/javacpp/jniValerABase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/javacpp/jniValerACore.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/javacpp/jniValerACore.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1hieY4BiERUUsWjpBmpvABwFmY0" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RunManager">
+    <configuration name="TestApp" type="Application" factoryName="Application" singleton="false" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.helixd2s.testapp.TestApp" />
+      <module name="ValerA" />
+      <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;$PROJECT_DIR$/src/x64/Debug&quot;" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application" singleton="false">
+      <option name="MAIN_CLASS_NAME" value="com.helixd2s.testapp.TestApp" />
+      <module name="ValerA" />
+      <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;$PROJECT_DIR$/src/x64/Debug&quot;" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1d0a54bd-f6c9-4cab-b4f0-15f061a32bb5" name="Default Changelist" comment="" />
+      <created>1600498384489</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1600498384489</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="417" y="180" width="1086" height="712" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1600498778396">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="417" y="180" width="1086" height="712" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600498778396" />
+    <state x="691" y="311" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1600498400434">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="691" y="311" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600498400434" />
+    <state width="1878" height="348" key="GridCell.Tab.0.bottom" timestamp="1600499324287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600499324287" />
+    <state width="1878" height="348" key="GridCell.Tab.0.center" timestamp="1600499324287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600499324287" />
+    <state width="1878" height="348" key="GridCell.Tab.0.left" timestamp="1600499324287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600499324287" />
+    <state width="1878" height="348" key="GridCell.Tab.0.right" timestamp="1600499324287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600499324287" />
+    <state width="1878" height="348" key="GridCell.Tab.1.bottom" timestamp="1600499324287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1600499324287" />
+    <state width="1878" height="348" key="GridCell.Tab.1.center" timestamp="1600499324287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1600499324287" />
+    <state width="1878" height="348" key="GridCell.Tab.1.left" timestamp="1600499324287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1600499324287" />
+    <state width="1878" height="348" key="GridCell.Tab.1.right" timestamp="1600499324287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1600499324287" />
+    <state x="441" y="95" key="SettingsEditor" timestamp="1600498792132">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="441" y="95" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1600498792132" />
+  </component>
+</project>

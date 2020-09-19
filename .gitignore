@@ -202,3 +202,23 @@ out/production/
 /out/production/*/
 /out/production/*
 /out/production/
+
+# Nesting Bug NOT Resolvable
+out/out/*/*/*
+out/out/*/*/
+out/out/*/*
+out/out/*/
+out/out/*
+out/out/
+*/out/out/*/*/*
+*/out/out/*/*/
+*/out/out/*/*
+*/out/out/*/
+*/out/out/*
+*/out/out/
+/out/out/*/*/*
+/out/out/*/*/
+/out/out/*/*
+/out/out/*/
+/out/out/*
+/out/out/
