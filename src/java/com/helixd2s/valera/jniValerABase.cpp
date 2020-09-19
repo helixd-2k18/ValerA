@@ -1,1 +1,0 @@
-../../../../javacpp/jniValerABase.cpp

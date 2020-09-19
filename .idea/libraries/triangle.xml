@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="triangle">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/examples/template/triangle.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
