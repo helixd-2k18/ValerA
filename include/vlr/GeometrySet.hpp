@@ -58,6 +58,8 @@ namespace vlj {
         CALLIFY(createDescriptorSet);
         CALLIFY(setCommand);
         CALLIFY(getVector);
+        CALLIFY(pushGeometry);
+        CALLIFY(resetGeometries);
 
         // 
         virtual vlr::GeometryDesc* get(const uint32_t& I = 0u) { return &object->get(I); };

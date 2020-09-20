@@ -318,6 +318,10 @@ public class ValerABase implements InfoMapper {
         //
         public native void createDescriptorSet(@ByRef ValerACore.PipelineLayout pipelineLayout);
         public native ValerACore.GeometryDesc get(int I);
+
+        //
+        public native void pushGeometry(@UniPtr ValerACore.Geometry geometry);
+        public native void resetGeometries();
     };
 
 

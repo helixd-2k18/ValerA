@@ -296,6 +296,14 @@ public class VKt implements InfoMapper {
         public native @Cast("uintptr_t") long mapv(long ptr);
         public native @Name("operator=") @ByRef Vector put(@ByRef Vector x);
 
+        // by pointer
+        public native @Cast("int8_t*") ByteVector mapv();
+        public native @Cast("int8_t*") ByteVector mappedv();
+
+        // by address
+        public native @Name("mapv") @Cast("long") long mapa();
+        public native @Name("mappedv") @Cast("long") long mappeda();
+
         //
         public native long size();
         public native long range();
@@ -338,6 +346,10 @@ public class VKt implements InfoMapper {
         public native BytePointer map(long ptr);
         public native BytePointer data();
         public native BytePointer data(long ptr);
+
+        // by address
+        public native @Name("map") @Cast("long") long mapa();
+        public native @Name("mapped") @Cast("long") long mappeda();
     };
 
     // FOR KOTLIN AND NATIVE!
@@ -369,6 +381,10 @@ public class VKt implements InfoMapper {
         public native @Cast("uint8_t*")BytePointer map(long ptr);
         public native @Cast("uint8_t*")BytePointer data();
         public native @Cast("uint8_t*")BytePointer data(long ptr);
+
+        // by address
+        public native @Name("map") @Cast("long") long mapa();
+        public native @Name("mapped") @Cast("long") long mappeda();
     };
 
     // For JAVA only
@@ -400,6 +416,10 @@ public class VKt implements InfoMapper {
         public native ShortPointer map(long ptr);
         public native ShortPointer data();
         public native ShortPointer data(long ptr);
+
+        // by address
+        public native @Name("map") @Cast("long") long mapa();
+        public native @Name("mapped") @Cast("long") long mappeda();
     };
 
     // FOR KOTLIN AND NATIVE!
@@ -431,6 +451,10 @@ public class VKt implements InfoMapper {
         public native @Cast("uint16_t*") ShortPointer map(long ptr);
         public native @Cast("uint16_t*") ShortPointer data();
         public native @Cast("uint16_t*") ShortPointer data(long ptr);
+
+        // by address
+        public native @Name("map") @Cast("long") long mapa();
+        public native @Name("mapped") @Cast("long") long mappeda();
     };
 
     // For JAVA only
@@ -462,6 +486,10 @@ public class VKt implements InfoMapper {
         public native IntPointer map(long ptr);
         public native IntPointer data();
         public native IntPointer data(long ptr);
+
+        // by address
+        public native @Name("map") @Cast("long") long mapa();
+        public native @Name("mapped") @Cast("long") long mappeda();
     };
 
     // FOR KOTLIN AND NATIVE!
@@ -493,6 +521,10 @@ public class VKt implements InfoMapper {
         public native @Cast("uint32_t*") IntPointer map(long ptr);
         public native @Cast("uint32_t*") IntPointer data();
         public native @Cast("uint32_t*") IntPointer data(long ptr);
+
+        // by address
+        public native @Name("map") @Cast("long") long mapa();
+        public native @Name("mapped") @Cast("long") long mappeda();
     };
 
     // Universal
@@ -524,6 +556,10 @@ public class VKt implements InfoMapper {
         public native FloatPointer map(long ptr);
         public native FloatPointer data();
         public native FloatPointer data(long ptr);
+
+        // by address
+        public native @Name("map") @Cast("long") long mapa();
+        public native @Name("mapped") @Cast("long") long mappeda();
     };
 
     // 

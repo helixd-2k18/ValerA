@@ -7,6 +7,8 @@ import com.helixd2s.valera.ValerACore;
 import org.bytedeco.javacpp.LongPointer;
 import org.lwjgl.vulkan.*;
 
+import static org.lwjgl.vulkan.VK10.*;
+
 //
 public class VRenderer {
 
@@ -27,21 +29,29 @@ public class VRenderer {
     public ValerABase.PipelineLayout pipelineLayout;
     public ValerABase.TextureSet textureSet;
     public ValerABase.SamplerSet samplerSet;
-    public ValerABase.Background background;
     public ValerABase.MaterialSet materialSet;
+    public ValerABase.Background background;
 
     public ValerABase.BindingSet bindingSet;
     public ValerABase.AttributeSet attributeSet;
     public ValerABase.BufferViewSet bufferViewSet;
-    public ValerABase.InstanceSet instanceSet;
     public ValerABase.VertexSet vertexSet;
 
     //
-    public ValerABase.GeometrySet geometries[];
+    public int geometrySetCount = 0;
+    public ValerABase.GeometrySet geometrySets[];
     public ValerABase.Acceleration accelerations[];
 
     //
     public ValerABase.Acceleration accelerationInstanced;
+    public ValerABase.InstanceSet instanceSet;
+
+    //
+    public ValerABase.Geometry geometries[];
+
+    //
+    public ValerABase.SetBase vertexData[];
+    public ValerABase.SetBase indexData[];
 
     //
     public int materialList[];
@@ -57,6 +67,9 @@ public class VRenderer {
     public int maxMaterialCount = 256;
     public int maxGeometryCount = 256;
     public int maxTextureCount = 256;
+
+    //
+    public int VERTEX_STRIDE = 48; // 4x vertex, 4x normal, 4x texcoord
 
     //
     void removeGeometry(int idx) {
@@ -83,19 +96,47 @@ public class VRenderer {
     }
 
     //
-    int addGeometry(ValerACore.GeometryDesc desc) {
+    GeometryManager manageGeometry(int gidx) {
+        return (new GeometryManager(this, gidx));
+    }
+
+    //
+    //int createGeometrySet(ValerABase.Geometry geometries[]) {
+    int createGeometrySet(int gim[]) {
+        ValerACore.DataSetCreateInfo info = new ValerACore.DataSetCreateInfo();
+        info.count().put(gim.length);
+
+        //
+        var geometrySet = new ValerABase.GeometrySet(vertexSet.uniPtr(), info);
+        for (int i=0;i<gim.length;i++) {
+            geometrySet.pushGeometry(geometries[gim[i]].uniPtr());
+        }
+
+        //
+        int gdx = geometrySetCount++;
+        geometrySets[gdx] = geometrySet;
+        return gdx;
+    }
+
+    // but for you needs manager
+    int addGeometry(ValerACore.GeometryDesc desc, int vertexCount, int indexCount) {
         if (geometryCount < maxGeometryCount) {
-            int lidx = geometryCount++;
-            int gidx = geometryList[lidx];
-            geometryList[lidx] = -1;
+            int lidx = geometryCount++, gidx = geometryList[lidx]; geometryList[lidx] = -1;
+            geometries[gidx] = new ValerABase.Geometry(vertexSet.uniPtr(), desc);
 
-            var bufferView = bufferViewSet.get(lidx);
-            var binding = VkVertexInputBindingDescription.create(bindingSet.get(gidx));
-            var vattrib = VkVertexInputAttributeDescription.create(attributeSet.get(gidx*3+0));
-            var nattrib = VkVertexInputAttributeDescription.create(attributeSet.get(gidx*3+1));
-            var tattrib = VkVertexInputAttributeDescription.create(attributeSet.get(gidx*3+2));
+            //
+            ValerACore.DataSetCreateInfo info = new ValerACore.DataSetCreateInfo();
+            info.count().put(VERTEX_STRIDE * vertexCount);
+            bufferViewSet.get(gidx*2+0).put(vertexData[gidx] = new ValerABase.SetBase(vDriver.uniPtr(), info));
 
-            // TODO:
+            //
+            if (desc.indexType().get() != 1000165000 && indexCount > 0) {
+                int INDEX_STRIDE = 4; // TODO: index format stride
+                int indexID = gidx * 2 + 1;
+                desc.indexBufferView().put(indexID);
+                info.count().put(INDEX_STRIDE * indexCount);
+                bufferViewSet.get(indexID).put(indexData[gidx] = new ValerABase.SetBase(vDriver.uniPtr(), info));
+            }
 
             return gidx;
         }
@@ -105,12 +146,8 @@ public class VRenderer {
     //
     int addMaterial(ValerACore.MaterialUnit unit) {
         if (materialCount < maxMaterialCount) {
-            int lidx = materialCount++;
-            int midx = materialList[lidx];
-            materialList[lidx] = -1;
-
+            int lidx = materialCount++, midx = materialList[lidx]; materialList[lidx] = -1;
             materialSet.get(midx).put(unit);
-
             return midx;
         }
         return -1;
@@ -119,12 +156,8 @@ public class VRenderer {
     //
     int addTexture(VKt.ImageRegion image) {
         if (textureCount < maxTextureCount) {
-            int lidx = textureCount++;
-            int tidx = textureList[lidx];
-            textureList[lidx] = -1;
-
+            int lidx = textureCount++, tidx = textureList[lidx]; textureList[lidx] = -1;
             textureSet.get(tidx).put(image);
-
             return tidx;
         }
         return -1;
@@ -157,17 +190,48 @@ public class VRenderer {
         textureSet = new ValerABase.TextureSet(vDriver.uniPtr());
 
         //
+        info.count().put(maxGeometryCount);
+        bindingSet = new ValerABase.BindingSet(vDriver.uniPtr(), info);
+
+        //
+        info.count().put(maxGeometryCount * 3);
+        attributeSet = new ValerABase.AttributeSet(vDriver.uniPtr(), info);
+
+        //
+        bufferViewSet = new ValerABase.BufferViewSet(vDriver.uniPtr());
+
+        //
+        var vis = new ValerACore.VertexSetCreateInfo();
+        vis.bindings().put(bindingSet);
+        vis.attributes().put(attributeSet);
+        vis.bufferViews().put(bufferViewSet);
+        vertexSet = new ValerABase.VertexSet(vDriver.uniPtr(), vis);
+
+        //
         framebuffer.createFramebuffer(this.width = width, this.height = height);
 
         //
         geometryList = new int[maxGeometryCount];
         materialList = new int[maxMaterialCount];
         textureList = new int[maxTextureCount];
+        vertexData = new ValerABase.SetBase[maxGeometryCount];
+        indexData = new ValerABase.SetBase[maxGeometryCount];
 
         //
         for (int i=0;i<maxMaterialCount;i++) { materialList[i] = i; };
         for (int i=0;i<maxGeometryCount;i++) { geometryList[i] = i; };
         for (int i=0;i<maxTextureCount;i++) { textureList[i] = i; };
+
+
+        // Test Sampler
+        var smpc = VkSamplerCreateInfo.calloc();
+        smpc.sType(VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO);
+        smpc.pNext(0);
+        smpc.magFilter(VK_FILTER_LINEAR);
+        smpc.minFilter(VK_FILTER_LINEAR);
+        smpc.addressModeU(VK_SAMPLER_ADDRESS_MODE_REPEAT);
+        smpc.addressModeV(VK_SAMPLER_ADDRESS_MODE_REPEAT);
+
 
     }
 
