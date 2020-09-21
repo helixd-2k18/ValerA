@@ -135,12 +135,15 @@
       <EnableModules>true</EnableModules>
       <ForcedIncludeFiles>macro.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <UndefinePreprocessorDefinitions>UNICODE</UndefinePreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/MP /debug:fastlink %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>glbinding.lib;glfw3.lib;jawt.lib;jvm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/MP /debug:fastlink %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,6 +157,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UndefinePreprocessorDefinitions>UNICODE</UndefinePreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,6 +166,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>glbinding.lib;glfw3.lib;jawt.lib;jvm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -216,31 +221,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\examples\include\stdafx.cpp" />
     <ClCompile Include="..\javacpp\jniValerABase.cpp" />
-    <ClCompile Include="..\vlr\Acceleration.cpp" />
-    <ClCompile Include="..\vlr\Accumulation.cpp" />
-    <ClCompile Include="..\vlr\AttributeSet.cpp" />
-    <ClCompile Include="..\vlr\Background.cpp" />
-    <ClCompile Include="..\vlr\BindingSet.cpp" />
-    <ClCompile Include="..\vlr\BufferViewSet.cpp" />
-    <ClCompile Include="..\vlr\BuildCommand.cpp" />
-    <ClCompile Include="..\vlr\Config.cpp" />
-    <ClCompile Include="..\vlr\Driver.cpp" />
-    <ClCompile Include="..\vlr\Framebuffer.cpp" />
-    <ClCompile Include="..\vlr\Geometry.cpp" />
-    <ClCompile Include="..\vlr\GeometrySet.cpp" />
-    <ClCompile Include="..\vlr\InstanceSet.cpp" />
-    <ClCompile Include="..\vlr\MaterialSet.cpp" />
-    <ClCompile Include="..\vlr\OptiXDenoise.cpp" />
-    <ClCompile Include="..\vlr\OthersCommand.cpp" />
-    <ClCompile Include="..\vlr\PipelineLayout.cpp" />
-    <ClCompile Include="..\vlr\Rasterization.cpp" />
-    <ClCompile Include="..\vlr\RayTracing.cpp" />
-    <ClCompile Include="..\vlr\RenderCommand.cpp" />
-    <ClCompile Include="..\vlr\Resampling.cpp" />
-    <ClCompile Include="..\vlr\SamplerSet.cpp" />
-    <ClCompile Include="..\vlr\SetBase.cpp" />
-    <ClCompile Include="..\vlr\TextureSet.cpp" />
-    <ClCompile Include="..\vlr\VertexSet.cpp" />
+    <ClCompile Include="..\vlr\Bundle.cpp" />
     <ClCompile Include="..\vlr\VMA.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="jnijavacpp.cpp" />

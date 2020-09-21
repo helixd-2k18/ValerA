@@ -185,81 +185,6 @@
     <ClCompile Include="..\..\examples\include\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\vlr\Acceleration.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\Accumulation.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\AttributeSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\Background.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\BindingSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\BufferViewSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\BuildCommand.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\Config.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\Driver.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\Framebuffer.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\Geometry.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\GeometrySet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\InstanceSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\MaterialSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\OptiXDenoise.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\OthersCommand.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\PipelineLayout.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\Rasterization.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\RayTracing.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\RenderCommand.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\Resampling.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\SamplerSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\SetBase.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\TextureSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vlr\VertexSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
     <ClCompile Include="..\vlr\VMA.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
@@ -268,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="..\javacpp\jniValerACore.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vlr\Bundle.cpp">
+      <Filter>Source Files\vlr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
