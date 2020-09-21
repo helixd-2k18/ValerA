@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/SamplerSet.hpp"
 #include "./vlr/PipelineLayout.hpp"
 #include "./vlr/Driver.hpp"
@@ -5,9 +6,10 @@
 namespace vlr {
 
     void SamplerSet::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
+        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         if (samplers.size() > 0) {
-            this->descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getSamplerSetLayout(), pipelineLayout->getDescriptorPool());
-            auto& handle = this->descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
+            descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getSamplerSetLayout(), pipelineLayout->getDescriptorPool());
+            auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
                 .dstBinding = 0u,
                 .dstArrayElement = 0u,
                 .descriptorCount = uint32_t(samplers.size()),
@@ -16,7 +18,7 @@ namespace vlr {
             for (uintptr_t i = 0; i < samplers.size(); i++) {
                 handle.offset<VkDescriptorImageInfo>(i)->sampler = this->samplers[i];
             };
-            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));
+            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
         };
     };
 

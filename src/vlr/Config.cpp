@@ -13,6 +13,7 @@
 #define TINYEXR_IMPLEMENTATION
 
 #include "./vlr/Config.hpp"
+#include "./vlr/Implementation.hpp"
 
 namespace vlr {
 

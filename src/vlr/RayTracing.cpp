@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/RayTracing.hpp"
 #include "./vlr/Framebuffer.hpp"
 #include "./vlr/SetBase.hpp"
@@ -62,6 +63,8 @@ namespace vlr {
     };
 
     void RayTracing::setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout) { // 
+        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
+
         if (layout.has()) { this->layout = ilayout; };
 
         this->rayDataSetFlip0->createDescriptorSet(layout);

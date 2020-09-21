@@ -6,7 +6,6 @@ namespace vlr {
 
     class BufferViewSet : public std::enable_shared_from_this<BufferViewSet> { protected: friend RayTracing; friend Rasterization; friend Resampling; friend PipelineLayout;
         VkDescriptorSet set = {}; bool updated = false, texelBuffer = false;
-        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         std::vector<vkt::VectorBase> buffers = {};
         vkt::uni_ptr<Driver> driver = {};
 

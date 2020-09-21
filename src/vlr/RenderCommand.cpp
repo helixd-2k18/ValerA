@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/RenderCommand.hpp"
 #include "./vlr/Rasterization.hpp"
 #include "./vlr/RayTracing.hpp"

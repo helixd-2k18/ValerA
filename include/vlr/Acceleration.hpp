@@ -39,7 +39,6 @@ namespace vlr {
 
         //
         VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
-        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         VkAccelerationStructureKHR structure = VK_NULL_HANDLE;
         vkt::VectorBase gpuScratchBuffer = {};
         vkt::VectorBase TempBuffer = {};

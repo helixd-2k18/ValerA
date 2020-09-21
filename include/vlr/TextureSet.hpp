@@ -6,7 +6,6 @@ namespace vlr {
     
     class TextureSet : public std::enable_shared_from_this<TextureSet> { protected: friend RayTracing; friend PipelineLayout;
         VkDescriptorSet set = {}; bool updated = false;
-        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         std::vector<vkt::ImageRegion> images = {};
         vkt::uni_ptr<Driver> driver = {};
 

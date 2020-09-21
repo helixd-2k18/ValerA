@@ -272,6 +272,9 @@
     <ClInclude Include="..\include\stdafx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Implementation.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\vkt\include\vkt3\readme.md">

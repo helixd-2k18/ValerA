@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/Resampling.hpp"
 #include "./vlr/PipelineLayout.hpp"
 #include "./vlr/Framebuffer.hpp"

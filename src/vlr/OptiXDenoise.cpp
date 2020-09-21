@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/OptiXDenoise.hpp"
 #include "./vlr/Framebuffer.hpp"
 

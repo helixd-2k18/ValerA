@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/GeometrySet.hpp"
 #include "./vlr/Geometry.hpp"
 #include "./vlr/VertexSet.hpp"
@@ -16,6 +17,7 @@ namespace vlr {
     };
 
     void GeometrySet::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
+        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         SetBase_T<GeometryDesc>::createDescriptorSet(pipelineLayout);
         vertexSet->createDescriptorSet(pipelineLayout);
 

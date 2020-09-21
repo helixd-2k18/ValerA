@@ -1,12 +1,14 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/BufferViewSet.hpp"
 #include "./vlr/PipelineLayout.hpp"
 
 namespace vlr {
 
     void BufferViewSet::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
+        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         if (buffers.size() > 0) {
-            this->descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(this->texelBuffer ? pipelineLayout->getByteBufferViewSetLayout() : pipelineLayout->getBufferViewSetLayout(), pipelineLayout->getDescriptorPool());
-            auto& handle = this->descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
+            descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(this->texelBuffer ? pipelineLayout->getByteBufferViewSetLayout() : pipelineLayout->getBufferViewSetLayout(), pipelineLayout->getDescriptorPool());
+            auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
                 .dstBinding = 0u,
                 .dstArrayElement = 0u,
                 .descriptorCount = uint32_t(buffers.size()),
@@ -22,7 +24,7 @@ namespace vlr {
                 };
             };
             
-            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));
+            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
         };
     };
 

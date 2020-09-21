@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/Acceleration.hpp"
 #include "./vlr/PipelineLayout.hpp"
 #include "./vlr/GeometrySet.hpp"
@@ -8,15 +9,16 @@ namespace vlr {
 
     // 
     void Acceleration::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
-        this->descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getAccelerationSetLayout(), pipelineLayout->getDescriptorPool());
-        auto& handle = this->descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
+        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
+        descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(pipelineLayout->getAccelerationSetLayout(), pipelineLayout->getDescriptorPool());
+        auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
             .dstBinding = 0u,
             .dstArrayElement = 0u,
             .descriptorCount = 1u,
             .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR
         });
         handle.offset<VkAccelerationStructureKHR>(0) = this->structure;
-        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));
+        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
     };
 
     // Made implicit due some not-valid GLTF (disable overlap formats)

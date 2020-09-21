@@ -53,11 +53,8 @@
 #include <string>
 
 // 
-#include <vkt3/fw.hpp>
-#include <vkt3/utils.hpp>
 #include <vkt3/vector.hpp>
 #include <vkt3/image.hpp>
-#include <vkh/helpers.hpp>
 
 // 
 #define CALLIFY(NAME)\

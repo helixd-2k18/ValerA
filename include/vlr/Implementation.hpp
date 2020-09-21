@@ -1,12 +1,7 @@
-// #
-#if defined(_WIN32) && !defined(WIN32)
-#define WIN32
-#endif
+#pragma once
 
-//
-#ifdef WIN32
-#define VK_USE_PLATFORM_WIN32_KHR
-#endif
+// 
+#define VK_NO_PROTOTYPES
 
 //#ifdef OS_WIN
 #if (defined(_WIN32) || defined(__MINGW32__) || defined(_MSC_VER_) || defined(__MINGW64__)) 
@@ -51,14 +46,10 @@
 #define VKT_CORE_ENABLE_XVK
 #define VKT_CORE_ENABLE_VMA
 
+
 //
-#define VMA_IMPLEMENTATION
+#include "./Config.hpp"
 
 // 
-#define VK_NO_PROTOTYPES
-#define VMA_STATIC_VULKAN_FUNCTIONS 0
-#define VMA_DYNAMIC_VULKAN_FUNCTIONS 0
-//#define TINYEXR_IMPLEMENTATION
-
-#include "./vlr/Config.hpp"
-#include "vma/vk_mem_alloc.h"
+#include <vkt3/utils.hpp>
+#include <vkh/helpers.hpp>

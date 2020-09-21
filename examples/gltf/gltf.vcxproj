@@ -239,6 +239,7 @@
     <ClInclude Include="..\..\include\vlr\Framebuffer.hpp" />
     <ClInclude Include="..\..\include\vlr\Geometry.hpp" />
     <ClInclude Include="..\..\include\vlr\GeometrySet.hpp" />
+    <ClInclude Include="..\..\include\vlr\Implementation.hpp" />
     <ClInclude Include="..\..\include\vlr\InstanceSet.hpp" />
     <ClInclude Include="..\..\include\vlr\MaterialSet.hpp" />
     <ClInclude Include="..\..\include\vlr\OthersCommand.hpp" />

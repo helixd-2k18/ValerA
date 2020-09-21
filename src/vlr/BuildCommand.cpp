@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/BuildCommand.hpp"
 #include "./vlr/Framebuffer.hpp"
 #include "./vlr/Acceleration.hpp"

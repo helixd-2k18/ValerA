@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/VertexSet.hpp"
 
 namespace vlr {

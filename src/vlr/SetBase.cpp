@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/PipelineLayout.hpp"
 
 namespace vlr {
@@ -33,15 +34,16 @@ namespace vlr {
     };
 
     void SetBase::createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout) {
-        this->descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(uniform ? pipelineLayout->getUniformSetLayout() : pipelineLayout->getSetLayout(), pipelineLayout->getDescriptorPool());
-        auto& handle = this->descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
+        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
+        descriptorSetInfo = vkh::VsDescriptorSetCreateInfoHelper(uniform ? pipelineLayout->getUniformSetLayout() : pipelineLayout->getSetLayout(), pipelineLayout->getDescriptorPool());
+        auto& handle = descriptorSetInfo.pushDescription(vkh::VkDescriptorUpdateTemplateEntry{
             .dstBinding = 0u,
             .dstArrayElement = 0u,
             .descriptorCount = 1u,
             .descriptorType = uniform ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER : VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
         });
         handle.offset<VkDescriptorBufferInfo>(0) = this->getGpuBuffer();
-        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), this->descriptorSetInfo, this->set, this->updated));
+        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
     };
 
     void SetBase::setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier) {

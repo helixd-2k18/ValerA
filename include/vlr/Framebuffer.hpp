@@ -56,7 +56,6 @@ namespace vlr {
         // 
         std::vector<vkh::VkPipelineColorBlendAttachmentState> blendStates = {};
         std::vector<vkh::VkClearValue> clearValues = {};
-        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
 
         // 
         RenderPass* setBlendStates(vkh::VkPipelineColorBlendAttachmentState* ptr, int32_t size = 1u) {

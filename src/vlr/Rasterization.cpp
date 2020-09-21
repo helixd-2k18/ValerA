@@ -1,3 +1,4 @@
+#include "./vlr/Implementation.hpp"
 #include "./vlr/Rasterization.hpp"
 #include "./vlr/PipelineLayout.hpp"
 #include "./vlr/Framebuffer.hpp"
@@ -68,6 +69,8 @@ namespace vlr {
 
     // 
     void Rasterization::setDescriptorSets(vkt::uni_ptr<PipelineLayout> ilayout) { // 
+        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
+
         if (layout.has()) { this->layout = ilayout; };
         
         if (this->constants.has()) {

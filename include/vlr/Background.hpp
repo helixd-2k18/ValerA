@@ -10,7 +10,6 @@ namespace vlr {
         vkt::ImageRegion background = {};
         vkt::uni_ptr<Driver> driver = {};
         VkDescriptorSet set = {}; bool updated = false;
-        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
 
     public: 
         Background() { this->constructor(); };

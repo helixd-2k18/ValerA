@@ -7,7 +7,6 @@ namespace vlr {
     class SetBase : public std::enable_shared_from_this<SetBase> { friend RayTracing; friend Rasterization; friend PipelineLayout;
     protected: //using T = uint8_t;
         VkDescriptorSet set = VK_NULL_HANDLE; bool updated = false;
-        vkh::VsDescriptorSetCreateInfoHelper descriptorSetInfo = {};
         vkt::uni_ptr<Driver> driver = {};
         bool uniform = false, enableCPU = true, enableGL = false;
         
