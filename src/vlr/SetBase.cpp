@@ -43,7 +43,7 @@ namespace vlr {
             .descriptorType = uniform ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER : VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
         });
         handle.offset<VkDescriptorBufferInfo>(0) = this->getGpuBuffer();
-        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
+        vkh::handleVk(vkh::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
     };
 
     void SetBase::setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier) {

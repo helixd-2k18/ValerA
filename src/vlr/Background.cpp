@@ -83,7 +83,7 @@ namespace vlr {
                 .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
             });
             handle.offset<VkDescriptorImageInfo>(0u) = background;
-            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
+            vkh::handleVk(vkh::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
         };
     };
 

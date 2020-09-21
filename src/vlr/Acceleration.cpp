@@ -18,7 +18,7 @@ namespace vlr {
             .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR
         });
         handle.offset<VkAccelerationStructureKHR>(0) = this->structure;
-        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
+        vkh::handleVk(vkh::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
     };
 
     // Made implicit due some not-valid GLTF (disable overlap formats)

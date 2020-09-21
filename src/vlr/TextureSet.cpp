@@ -17,7 +17,7 @@ namespace vlr {
             for (uintptr_t i = 0; i < images.size(); i++) {
                 handle.offset<VkDescriptorImageInfo>(i) = this->images[i];
             };
-            vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
+            vkh::handleVk(vkh::AllocateDescriptorSetWithUpdate(driver->getDeviceDispatch(), descriptorSetInfo, this->set, this->updated));
         };
     };
 

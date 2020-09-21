@@ -324,7 +324,7 @@ namespace vlr {
         createDescriptorSetImages(rasterImages, 6u, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
 
         // 
-        vkh::handleVk(vkt::AllocateDescriptorSetWithUpdate(device, descriptorSetInfo, this->set, this->updated));
+        vkh::handleVk(vkh::AllocateDescriptorSetWithUpdate(device, descriptorSetInfo, this->set, this->updated));
     };
 
     void Framebuffer::imageToLinearCopyCommand(vkt::uni_arg<VkCommandBuffer> cmd, const uint32_t& whatToDenoise) {

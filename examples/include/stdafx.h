@@ -64,5 +64,6 @@
 // 
 #include <misc/tiny_gltf.h>
 #include <misc/tinyexr.h>
+#include <vkh/helpers.hpp>
 
 #endif

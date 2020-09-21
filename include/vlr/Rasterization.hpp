@@ -32,7 +32,6 @@ namespace vlr {
 
         // 
         std::vector<vkh::VkPipelineShaderStageCreateInfo> stages = {};
-        vkh::VsGraphicsPipelineCreateInfoConstruction pipelineInfo = {};
         VkPipelineRasterizationConservativeStateCreateInfoEXT conserv = {};
 
     public: 
