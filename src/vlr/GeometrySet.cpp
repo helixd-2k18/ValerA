@@ -1,3 +1,5 @@
+#pragma once
+
 #include "./vlr/Implementation.hpp"
 #include "./vlr/GeometrySet.hpp"
 #include "./vlr/Geometry.hpp"

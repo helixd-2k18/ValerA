@@ -1,3 +1,5 @@
+#pragma once
+
 #include "./vlr/Implementation.hpp"
 #include "./vlr/Acceleration.hpp"
 #include "./vlr/PipelineLayout.hpp"

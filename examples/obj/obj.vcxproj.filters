@@ -42,91 +42,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\vlr\Acceleration.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Accumulation.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\AttributeSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Background.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\BindingSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\BufferViewSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\BuildCommand.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Config.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Driver.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Framebuffer.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Geometry.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\GeometrySet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\InstanceSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\MaterialSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\OthersCommand.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\PipelineLayout.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Rasterization.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\Resampling.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\SamplerSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\SetBase.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\TextureSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\VertexSet.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\additional\GeometryAdd.cpp">
-      <Filter>Source Files\vlr\additional</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vlr\VMA.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\vlr\RayTracing.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vlr\RenderCommand.cpp">
-      <Filter>Source Files\vlr</Filter>
-    </ClCompile>
     <ClCompile Include="..\include\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\vlr\OptiXDenoise.cpp">
+    <ClCompile Include="..\..\src\vlr\Bundle.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
   </ItemGroup>

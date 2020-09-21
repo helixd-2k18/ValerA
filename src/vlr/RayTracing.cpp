@@ -1,3 +1,5 @@
+#pragma once
+
 #include "./vlr/Implementation.hpp"
 #include "./vlr/RayTracing.hpp"
 #include "./vlr/Framebuffer.hpp"

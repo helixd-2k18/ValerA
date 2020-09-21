@@ -175,32 +175,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\vlr\Acceleration.cpp" />
-    <ClCompile Include="..\..\src\vlr\Accumulation.cpp" />
-    <ClCompile Include="..\..\src\vlr\additional\GeometryAdd.cpp" />
-    <ClCompile Include="..\..\src\vlr\AttributeSet.cpp" />
-    <ClCompile Include="..\..\src\vlr\Background.cpp" />
-    <ClCompile Include="..\..\src\vlr\BindingSet.cpp" />
-    <ClCompile Include="..\..\src\vlr\BufferViewSet.cpp" />
-    <ClCompile Include="..\..\src\vlr\BuildCommand.cpp" />
-    <ClCompile Include="..\..\src\vlr\Config.cpp" />
-    <ClCompile Include="..\..\src\vlr\Driver.cpp" />
-    <ClCompile Include="..\..\src\vlr\Framebuffer.cpp" />
-    <ClCompile Include="..\..\src\vlr\Geometry.cpp" />
-    <ClCompile Include="..\..\src\vlr\GeometrySet.cpp" />
-    <ClCompile Include="..\..\src\vlr\InstanceSet.cpp" />
-    <ClCompile Include="..\..\src\vlr\MaterialSet.cpp" />
-    <ClCompile Include="..\..\src\vlr\OptiXDenoise.cpp" />
-    <ClCompile Include="..\..\src\vlr\OthersCommand.cpp" />
-    <ClCompile Include="..\..\src\vlr\PipelineLayout.cpp" />
-    <ClCompile Include="..\..\src\vlr\Rasterization.cpp" />
-    <ClCompile Include="..\..\src\vlr\RayTracing.cpp" />
-    <ClCompile Include="..\..\src\vlr\RenderCommand.cpp" />
-    <ClCompile Include="..\..\src\vlr\Resampling.cpp" />
-    <ClCompile Include="..\..\src\vlr\SamplerSet.cpp" />
-    <ClCompile Include="..\..\src\vlr\SetBase.cpp" />
-    <ClCompile Include="..\..\src\vlr\TextureSet.cpp" />
-    <ClCompile Include="..\..\src\vlr\VertexSet.cpp" />
+    <ClCompile Include="..\..\src\vlr\Bundle.cpp" />
     <ClCompile Include="..\..\src\vlr\VMA.cpp" />
     <ClCompile Include="..\include\stdafx.cpp" />
     <ClCompile Include="main.cpp" />
