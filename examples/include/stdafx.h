@@ -66,4 +66,7 @@
 #include <misc/tinyexr.h>
 #include <vkh/helpers.hpp>
 
+// still required for main.cpp 
+#include <vkt3/essential.hpp>
+
 #endif

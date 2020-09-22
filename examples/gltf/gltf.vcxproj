@@ -191,10 +191,12 @@
     <ClInclude Include="..\..\..\vkt\include\vkh\spirv-mod.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkh\structures.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\core.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\definition.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\essential.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\image.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\inline.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\structs.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\utils.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\vector.hpp" />

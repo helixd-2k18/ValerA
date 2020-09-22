@@ -203,6 +203,12 @@
     <ClInclude Include="..\..\include\vlr\Implementation.hpp">
       <Filter>Header Files\vlr</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\definition.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\inline.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\vkt\include\vkt3\readme.md">
