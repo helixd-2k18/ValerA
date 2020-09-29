@@ -27,18 +27,18 @@
 #define GLFW_INCLUDE_VULKAN
 
 //
-#ifndef VKT_CORE_ENABLE_XVK
-#define VKT_CORE_ENABLE_XVK
+#ifndef VKT_CORE_USE_XVK
+#define VKT_CORE_USE_XVK
 #endif
 
 //
-#ifndef VKT_CORE_ENABLE_VMA
-#define VKT_CORE_ENABLE_VMA
+#ifndef VKT_CORE_USE_VMA
+#define VKT_CORE_USE_VMA
 #endif
 
 //
-#ifndef ENABLE_VULKAN_HPP
-#define ENABLE_VULKAN_HPP
+#ifndef VKT_USE_VULKAN_HPP
+#define VKT_USE_VULKAN_HPP
 #endif
 
 // 
@@ -47,11 +47,6 @@
 #endif
 
 // 
-#define VKT_CORE_ENABLE_VMA
-#define VKT_CORE_ENABLE_XVK
-#define VKT_CORE_ENABLE_VMA
-
-//
 #define VMA_IMPLEMENTATION
 
 // 
@@ -60,5 +55,7 @@
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 0
 //#define TINYEXR_IMPLEMENTATION
 
+// 
+#include <vkt3/core.hpp>
 #include "./vlr/Config.hpp"
 #include "vma/vk_mem_alloc.h"

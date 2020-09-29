@@ -8,7 +8,6 @@
 //#include <misc/stb_image.h>
 #include <filesystem>
 
-
 int main() {
     glfwSetErrorCallback(error);
     glfwInit();

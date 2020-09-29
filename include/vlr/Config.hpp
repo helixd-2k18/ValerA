@@ -22,30 +22,24 @@
 #define GLFW_INCLUDE_VULKAN
 
 //
-#ifndef VKT_CORE_ENABLE_XVK
-#define VKT_CORE_ENABLE_XVK
+#ifndef VKT_CORE_USE_XVK
+#define VKT_CORE_USE_XVK
 #endif
 
 //
-#ifndef VKT_CORE_ENABLE_VMA
-#define VKT_CORE_ENABLE_VMA
+#ifndef VKT_CORE_USE_VMA
+#define VKT_CORE_USE_VMA
 #endif
 
 //
-#ifndef ENABLE_VULKAN_HPP
-#define ENABLE_VULKAN_HPP
+#ifndef VKT_USE_VULKAN_HPP
+#define VKT_USE_VULKAN_HPP
 #endif
 
 // 
 #ifndef VK_ENABLE_BETA_EXTENSIONS
 #define VK_ENABLE_BETA_EXTENSIONS
 #endif
-
-// 
-#define VKT_CORE_ENABLE_VMA
-#define VKT_CORE_ENABLE_XVK
-#define VKT_CORE_ENABLE_VMA
-
 
 //
 #include <memory>
