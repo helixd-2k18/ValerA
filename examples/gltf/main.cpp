@@ -761,8 +761,8 @@ int main() {
             // 
             auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, true);
             {
-                buildCommand->setCommand(rtCommand);
-                instanceSet->setCommand(rtCommand, true);
+                buildCommand->setCommand(rtCommand); // FOR NEVERBALL WILL UN-USED!! FOR MINECRAFT PERIODICALLY!
+                //instanceSet->setCommand(rtCommand, true); // USED EVERY INSTANCE AS DRAW-CALL!!
                 buildCommand->setCommandTop(rtCommand); // NEW! 05.08.2020
 
                 // 
