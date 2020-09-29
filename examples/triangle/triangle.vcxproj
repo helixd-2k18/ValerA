@@ -179,6 +179,7 @@
     <ClCompile Include="..\..\src\vlr\VMA.cpp" />
     <ClCompile Include="..\include\stdafx.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp" />
@@ -231,6 +232,8 @@
     <ClInclude Include="..\include\main.hpp" />
     <ClInclude Include="..\include\stdafx.h" />
     <ClInclude Include="macro.h" />
+    <ClInclude Include="renderer.h" />
+    <ClInclude Include="renderer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\vkt\include\vkt3\readme.md" />
