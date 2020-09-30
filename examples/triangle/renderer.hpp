@@ -11,6 +11,13 @@
 // 
 namespace vrp {
 
+    // 
+    struct VertexData {
+        glm::vec4 vertex = glm::vec4(0.f, 0.f, 0.f, 1.f);
+        glm::vec4 normal = glm::vec4(0.f, 1.f, 0.f, 0.f);
+        glm::vec4 texcoord = glm::vec4(0.f, 0.f, 0.f, 0.f);
+    };
+
     // usable by C++20
 #pragma pack(push, 1)
     struct MaterialUnit {
@@ -30,17 +37,34 @@ namespace vrp {
 
 // type-safe identifiers
 #define TYPED(NAME) \
-struct NAME {\
+class NAME {public: \
 uint32_t ID = 0u;\
-NAME(uint32_t id = 0u) { ID = id; };\
+NAME(const uint32_t& id = 0u) { ID = id; };\
 inline operator uint32_t& () {return ID;};\
 inline operator const uint32_t& () const {return ID;};\
 inline NAME& operator =(const uint32_t& id) {this->ID = id; return *this;};\
 };
 
-    TYPED(CMaterialSet);
-    TYPED(CTextureSet);
-    TYPED(CSamplerSet);
+    // 
+    TYPED(Base);
+
+    // 
+    class MaterialSet : public Base {
+        MaterialSet(const uint32_t& id = 0u) : Base(id) {}
+
+    };
+
+    // 
+    class TextureSet : public Base {
+        TextureSet(const uint32_t& id = 0u) : Base(id) {}
+
+    };
+
+    // 
+    class SamplerSet : public Base {
+        SamplerSet(const uint32_t& id = 0u) : Base(id) {}
+
+    };
 
 };
 

@@ -1,8 +1,18 @@
 #pragma once
 
+// 
+#include "stdint.h"
+
 // WIP "C" version for faster Neverball compilation, and more "C" compatibility (but can be used much slower C++)
 #ifndef VLR_C_RENDERER
 #define VLR_C_RENDERER
+
+// 
+struct CVertexData {
+    float vertex[4];
+    float normal[4];
+    float texcoord[4];
+};
 
 // You NOT able to use default parameters
 // Even NOT able to use GLM
@@ -34,6 +44,7 @@ struct CSamplerSet {
 };
 
 // Dirty hack for default initializer
-void initMaterialUnit(CMaterialUnit* unit);
+void initMaterialUnit(CMaterialUnit* cunit);
+void initVertexData(CVertexData* cunit);
 
 #endif
