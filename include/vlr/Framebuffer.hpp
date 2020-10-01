@@ -52,7 +52,7 @@ namespace vlr {
     struct RenderPass {
         VkFramebuffer framebuffer = {};
         VkRenderPass renderPass = {};
-        
+
         // 
         std::vector<vkh::VkPipelineColorBlendAttachmentState> blendStates = {};
         std::vector<vkh::VkClearValue> clearValues = {};
@@ -93,7 +93,10 @@ namespace vlr {
     public: 
         Framebuffer() { this->constructor(); };
         Framebuffer(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
-        ~Framebuffer() {};
+        ~Framebuffer() {
+            const auto device = driver->getDeviceDispatch();
+            if (set) { vkh::handleVk(device->vkFreeDescriptorSets(device->handle, driver->getDescriptorPool(), 1u, &set)); set = {}; };
+        };
 
         // 
         virtual void constructor() {};

@@ -13,7 +13,10 @@ namespace vlr {
         BufferViewSet() { this->constructor(); };
         
         BufferViewSet(vkt::uni_ptr<Driver> driver, const bool& texelBuffer = false) { this->constructor(driver, texelBuffer); };
-        ~BufferViewSet() {};
+        ~BufferViewSet() {
+            const auto device = driver->getDeviceDispatch();
+            if (set) { vkh::handleVk(device->vkFreeDescriptorSets(device->handle, driver->getDescriptorPool(), 1u, &set)); set = {}; };
+        };
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, const bool& texelBuffer = false) {

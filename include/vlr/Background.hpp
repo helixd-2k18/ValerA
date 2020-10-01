@@ -14,7 +14,10 @@ namespace vlr {
     public: 
         Background() { this->constructor(); };
         Background(vkt::uni_ptr<Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = vkt::ImageRegion{}) { this->constructor(driver, image); };
-        ~Background() {};
+        ~Background() {
+            const auto device = driver->getDeviceDispatch();
+            if (set) { vkh::handleVk(device->vkFreeDescriptorSets(device->handle, driver->getDescriptorPool(), 1u, &set)); set = {}; };
+        };
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver, vkt::uni_arg<vkt::ImageRegion> image = vkt::ImageRegion{});

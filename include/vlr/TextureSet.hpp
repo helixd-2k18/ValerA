@@ -12,7 +12,10 @@ namespace vlr {
     public: 
         TextureSet() { this->constructor(); };
         TextureSet(vkt::uni_ptr<Driver> driver) { this->constructor(driver); };
-        ~TextureSet() {};
+        ~TextureSet() {
+            const auto device = driver->getDeviceDispatch();
+            if (set) { vkh::handleVk(device->vkFreeDescriptorSets(device->handle, driver->getDescriptorPool(), 1u, &set)); set = {}; };
+        };
 
         virtual void constructor() {};
         virtual void constructor(vkt::uni_ptr<Driver> driver) {

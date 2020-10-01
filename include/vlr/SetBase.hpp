@@ -19,7 +19,10 @@ namespace vlr {
     public:
         SetBase() { this->constructor(); };
         SetBase(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = DataSetCreateInfo{}, const uint32_t& stride = 1u) { this->constructor(driver, info, stride); };
-        ~SetBase() {};
+        ~SetBase() {
+            const auto device = driver->getDeviceDispatch();
+            if (set) { vkh::handleVk(device->vkFreeDescriptorSets(device->handle, driver->getDescriptorPool(), 1u, &set)); set = {}; };
+        };
 
         // 
         virtual const vkt::VectorBase& getCpuBuffer() const { return cpuBuffer; };
@@ -34,14 +37,17 @@ namespace vlr {
 
     template<class T>
     class SetBase_T : public SetBase { protected: friend Acceleration;
-        
+
     private: 
         vkt::Vector<T> cpuBuffer = {}, gpuBuffer = {};
 
     public: 
         SetBase_T() : SetBase() { this->constructor(); };
         SetBase_T(vkt::uni_ptr<Driver> driver, vkt::uni_arg<DataSetCreateInfo> info = DataSetCreateInfo{}) { this->constructor(driver, info, sizeof(T)); };
-        ~SetBase_T() {};
+        ~SetBase_T() {
+            const auto device = driver->getDeviceDispatch();
+            if (set) { vkh::handleVk(device->vkFreeDescriptorSets(device->handle, driver->getDescriptorPool(), 1u, &set)); set = {}; };
+        };
 
         // 
         virtual const vkt::VectorBase& getCpuBuffer() const override { return reinterpret_cast<const vkt::VectorBase&>(cpuBuffer); };
