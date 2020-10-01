@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/VertexSet.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/VertexSet.hpp>
 
 namespace vlr {
 

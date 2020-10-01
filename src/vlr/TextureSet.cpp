@@ -1,8 +1,8 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/TextureSet.hpp"
-#include "./vlr/PipelineLayout.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/TextureSet.hpp>
+#include <vlr/PipelineLayout.hpp>
 
 namespace vlr {
 

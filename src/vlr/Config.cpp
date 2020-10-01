@@ -14,8 +14,8 @@
 //#define VMA_IMPLEMENTATION
 #define TINYEXR_IMPLEMENTATION
 
-#include "./vlr/Config.hpp"
-#include "./vlr/Implementation.hpp"
+#include <vlr/Config.hpp>
+#include <vlr/Implementation.hpp>
 
 namespace vlr {
 

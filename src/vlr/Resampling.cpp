@@ -1,10 +1,10 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/Resampling.hpp"
-#include "./vlr/PipelineLayout.hpp"
-#include "./vlr/Framebuffer.hpp"
-#include "./vlr/Geometry.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/Resampling.hpp>
+#include <vlr/PipelineLayout.hpp>
+#include <vlr/Framebuffer.hpp>
+#include <vlr/Geometry.hpp>
 
 namespace vlr {
 

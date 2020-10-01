@@ -1,9 +1,9 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/GeometrySet.hpp"
-#include "./vlr/Geometry.hpp"
-#include "./vlr/VertexSet.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/GeometrySet.hpp>
+#include <vlr/Geometry.hpp>
+#include <vlr/VertexSet.hpp>
 
 namespace vlr {
 

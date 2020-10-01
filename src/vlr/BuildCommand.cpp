@@ -1,12 +1,12 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/BuildCommand.hpp"
-#include "./vlr/Framebuffer.hpp"
-#include "./vlr/Acceleration.hpp"
-#include "./vlr/BufferViewSet.hpp"
-#include "./vlr/Constants.hpp"
-#include "./vlr/InstanceSet.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/BuildCommand.hpp>
+#include <vlr/Framebuffer.hpp>
+#include <vlr/Acceleration.hpp>
+#include <vlr/BufferViewSet.hpp>
+#include <vlr/Constants.hpp>
+#include <vlr/InstanceSet.hpp>
 
 namespace vlr {
 

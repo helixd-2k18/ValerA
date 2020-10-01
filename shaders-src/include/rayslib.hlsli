@@ -45,7 +45,7 @@ const uint TRANSPC_RAY = 3u;
 RayData finishRay(inout RayData ray) {
 #ifdef GLSL
     finished(ray, true);
-    if (dot(ray.emission.xyz, 1.hf.xxx) > 0.001hf || ray.emission.w > 0.001hf) {
+    if (dot(ray.emission.xyz, 1.hf.xxx) >= 0.01hf || ray.emission.w >= 0.01hf) {
         uint kindof = kind(ray); ray.emission /= max(ray.emission.w, 1.hf);
         if (kindof == REFLECT_RAY) { atomicSuperImageAdd(currImages[nonuniformEXT(IW_REFLECLR)], int2(ray.pixelID), float4(min(ray.emission, half4(8.f.xxx, 1.f)))); };
         if (kindof == DIFFUSE_RAY) { atomicSuperImageAdd(currImages[nonuniformEXT(IW_INDIRECT)], int2(ray.pixelID), float4(min(ray.emission, half4(8.f.xxx, 1.f)))); };
@@ -60,7 +60,7 @@ RayData finishRay(inout RayData ray) {
 // 
 RayData finishBy(inout RayData ray) {
 #ifdef GLSL
-    if (dot(ray.color.xyz, 1.hf.xxx) <= 0.001f || lifetime(ray) <= 0) { finishRay(ray); };
+    if (dot(ray.color.xyz, 1.hf.xxx) < 0.01f || lifetime(ray) <= 0) { finishRay(ray); };
 #endif
     return ray;
 };

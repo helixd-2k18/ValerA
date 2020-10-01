@@ -1,9 +1,9 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/Framebuffer.hpp"
-#include "./vlr/PipelineLayout.hpp"
-#include "./vlr/OptiXDenoise.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/Framebuffer.hpp>
+#include <vlr/PipelineLayout.hpp>
+#include <vlr/OptiXDenoise.hpp>
 
 namespace vlr {
 

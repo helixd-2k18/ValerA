@@ -1,13 +1,13 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/Rasterization.hpp"
-#include "./vlr/PipelineLayout.hpp"
-#include "./vlr/Framebuffer.hpp"
-#include "./vlr/GeometrySet.hpp"
-#include "./vlr/Geometry.hpp"
-#include "./vlr/Constants.hpp"
-#include "./vlr/InstanceSet.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/Rasterization.hpp>
+#include <vlr/PipelineLayout.hpp>
+#include <vlr/Framebuffer.hpp>
+#include <vlr/GeometrySet.hpp>
+#include <vlr/Geometry.hpp>
+#include <vlr/Constants.hpp>
+#include <vlr/InstanceSet.hpp>
 
 namespace vlr {
 

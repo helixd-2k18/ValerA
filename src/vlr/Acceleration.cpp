@@ -1,11 +1,11 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/Acceleration.hpp"
-#include "./vlr/PipelineLayout.hpp"
-#include "./vlr/GeometrySet.hpp"
-#include "./vlr/InstanceSet.hpp"
-#include "./vlr/Geometry.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/Acceleration.hpp>
+#include <vlr/PipelineLayout.hpp>
+#include <vlr/GeometrySet.hpp>
+#include <vlr/InstanceSet.hpp>
+#include <vlr/Geometry.hpp>
 
 namespace vlr {
 

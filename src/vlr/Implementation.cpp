@@ -1,1 +1,3 @@
-#include "./vlr/Implementation.hpp"
+#pragma once
+
+#include <vlr/Implementation.hpp>

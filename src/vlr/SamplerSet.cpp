@@ -1,9 +1,9 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/SamplerSet.hpp"
-#include "./vlr/PipelineLayout.hpp"
-#include "./vlr/Driver.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/SamplerSet.hpp>
+#include <vlr/PipelineLayout.hpp>
+#include <vlr/Driver.hpp>
 
 namespace vlr {
 

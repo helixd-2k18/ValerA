@@ -57,5 +57,5 @@
 
 // 
 #include <vkt3/core.hpp>
-#include "./vlr/Config.hpp"
-#include "vma/vk_mem_alloc.h"
+#include <vlr/Config.hpp>
+#include <vma/vk_mem_alloc.h>

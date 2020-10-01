@@ -1,6 +1,6 @@
-#include "./vlr/Implementation.hpp"
-#include "./vlr/OptiXDenoise.hpp"
-#include "./vlr/Framebuffer.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/OptiXDenoise.hpp>
+#include <vlr/Framebuffer.hpp>
 
 #ifdef ENABLE_OPTIX_DENOISE
 #include <cuda.h>

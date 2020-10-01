@@ -1,9 +1,9 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/RenderCommand.hpp"
-#include "./vlr/Rasterization.hpp"
-#include "./vlr/RayTracing.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/RenderCommand.hpp>
+#include <vlr/Rasterization.hpp>
+#include <vlr/RayTracing.hpp>
 
 namespace vlr {
     

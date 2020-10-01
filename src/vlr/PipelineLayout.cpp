@@ -1,25 +1,25 @@
 #pragma once
 
-#include "./vlr/Implementation.hpp"
-#include "./vlr/PipelineLayout.hpp"
+#include <vlr/Implementation.hpp>
+#include <vlr/PipelineLayout.hpp>
 
 // 
-#include "./vlr/BufferViewSet.hpp"
-#include "./vlr/MaterialSet.hpp"
-#include "./vlr/TextureSet.hpp"
-#include "./vlr/SamplerSet.hpp"
+#include <vlr/BufferViewSet.hpp>
+#include <vlr/MaterialSet.hpp>
+#include <vlr/TextureSet.hpp>
+#include <vlr/SamplerSet.hpp>
 
 //
-#include "./vlr/VertexSet.hpp"
-#include "./vlr/Framebuffer.hpp"
+#include <vlr/VertexSet.hpp>
+#include <vlr/Framebuffer.hpp>
 
 // 
-#include "./vlr/Constants.hpp"
-#include "./vlr/Acceleration.hpp"
-#include "./vlr/RayTracing.hpp"
-#include "./vlr/InstanceSet.hpp"
-#include "./vlr/Rasterization.hpp"
-#include "./vlr/Background.hpp"
+#include <vlr/Constants.hpp>
+#include <vlr/Acceleration.hpp>
+#include <vlr/RayTracing.hpp>
+#include <vlr/InstanceSet.hpp>
+#include <vlr/Rasterization.hpp>
+#include <vlr/Background.hpp>
 
 // 
 namespace vlr {
