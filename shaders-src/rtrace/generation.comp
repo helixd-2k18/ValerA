@@ -106,100 +106,99 @@ void main()
         const float3 geoNormal = faceforward(GEO.gNormal.xyz, raydir, GEO.gNormal.xyz);
         const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
         
-        // 
-        const float inIOR = 1.f, outIOR = 1.6666f;
-        const float reflectionPower = mix(clamp(pow(abs(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz)), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
-        const bool isDiffuse = checker && reflectionPower <= 0.999f || reflectionPower < 0.001f;
-        
         // global illumination
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
         {   // 
-            bool couldReflection = !isDiffuse;
+            const float inIOR = 1.f, outIOR = 1.6666f;
+            const float reflectionPower = mix(clamp(pow(abs(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz)), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
+            const bool isDiffuse = checker && reflectionPower <= 0.999f || reflectionPower < 0.001f;
             const vec3 diffuseColor = max(MAT.diffuseColor.xyz - clamp(MAT.emissionColor.xyz*MAT.emissionColor.w,0.f.xxx,1.f.xxx), 0.f.xxx);
             const vec3 reflectColor = mix(1.f.xxx, diffuseColor.xyz, isDiffuse ? 1.f.xxx : MAT.specularColor.zzz);
 
-            // trace global illumination
-            CurrentRay gpi;
-            gpi.origin = vec4(RPM.origin.xyz, 1.f);
-            gpi.direct = vec4(normalize(raydir.xyz), 1.f);
-            gpi.energy = vec4(isDiffuse ? vec3(1.f.xxx) : reflectColor, 1.f);
-            gpi.emission = vec4(0.f.xxx, 1.f);
+            // 
+            for (uint32_t r=0;r<2;r++) {
+                //const bool isOpaque = random(seed) < MAT.diffuseColor.w; // random russian roulette, usable for single iteration
+                const bool isOpaque = r == 0 || MAT.diffuseColor.w >= 1.f;
 
-            // reflection coefficient
-            for (uint32_t i=0;i<3;i++) {
-                const float3 mapNormal = normalize(faceforward(MAT.mapNormal.xyz, gpi.direct.xyz, GEO.gNormal.xyz));
-                const float3 geoNormal = normalize(faceforward(GEO.gNormal.xyz, gpi.direct.xyz, GEO.gNormal.xyz));
-                const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
-                const bool pReflection = couldReflection;
+                // trace global illumination
+                CurrentRay gpi;
+                gpi.origin = vec4(RPM.origin.xyz, 1.f);
+                gpi.direct = vec4(normalize(raydir.xyz), 1.f);
+                gpi.energy = vec4((isDiffuse || !isOpaque) ? vec3(1.f.xxx) : reflectColor, 1.f);
+                gpi.emission = vec4(0.f.xxx, 1.f);
 
-                // reflect or refract rays
-                gpi.direct = vec4(normalize(pReflection ? reflectGlossy(seed, gpi.direct.xyz, TBN, MAT.specularColor.y) : randomHemisphereCosine(seed, TBN)), 0.f);
-                gpi.origin = vec4(gpi.origin.xyz + geoNormal * 0.0001f, 1.f);
+                // so isn't needs
+                if (r == 1 && isOpaque) { gpi.energy.xyz = 0.f.xxx; break; };
 
-                // trace shadows
-                if (!pReflection) 
-                {   // 
-                    CurrentRay gpi = gpi;
-                    gpi.direct = vec4(0.f.xxx, 1.f);
-                    gpi.emission = vec4(0.f.xxx, 0.f);
-                    directLight(mapNormal, geoNormal, gpi.origin.xyz, seed, gpi.emission, gpi.energy);
+                // reflection coefficient
+                bool pReflection = !isDiffuse;
+                for (uint32_t i=0;i<3;i++) {
+                    if (dot(gpi.energy.xyz, 1.f.xxx) < 0.001f) { break; };
 
                     // 
-                    if (gpi.emission.w > 0.f) {
-                        atomicSuperImageAdd(currImages[nonuniformEXT(isDiffuse ? IW_INDIRECT : IW_REFLECLR)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
+                    float3 mapNormal = normalize(faceforward(MAT.mapNormal.xyz, gpi.direct.xyz, GEO.gNormal.xyz));
+                    float3 geoNormal = normalize(faceforward(GEO.gNormal.xyz, gpi.direct.xyz, GEO.gNormal.xyz));
+                    float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
+
+                    // reflect or refract rays
+                    const bool tPass = i == 0 ? !isOpaque : (random(seed) >= MAT.diffuseColor.w);
+                    if (tPass) {
+                        gpi.direct = vec4(gpi.direct.xyz, 0.f);
+                    } else {
+                        gpi.direct = vec4(normalize(pReflection ? reflectGlossy(seed, gpi.direct.xyz, TBN, MAT.specularColor.y) : randomHemisphereCosine(seed, TBN)), 0.f);
+                    };
+
+                    // re-calculate normals for correct shifting
+                    geoNormal = normalize(faceforward(geoNormal, gpi.direct.xyz, -geoNormal));
+                    mapNormal = normalize(faceforward(geoNormal, gpi.direct.xyz, -mapNormal));
+                    TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
+
+                    // 
+                    gpi.origin = vec4(gpi.origin.xyz + geoNormal * 0.0001f, 1.f);
+
+                    // trace shadows (do not do it for transparency)
+                    if (!pReflection && !tPass) 
+                    {   // 
+                        CurrentRay gpi = gpi;
+                        gpi.direct = vec4(0.f.xxx, 1.f);
+                        gpi.emission = vec4(0.f.xxx, 0.f);
+                        directLight(mapNormal, geoNormal, gpi.origin.xyz, seed, gpi.emission, gpi.energy);
+
+                        // 
+                        if (gpi.emission.w > 0.f) {
+                            atomicSuperImageAdd(currImages[nonuniformEXT(isDiffuse ? IW_INDIRECT : IW_REFLECLR)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
+                        };
+                    };
+
+                    // trace rays
+                    {
+                        XHIT RPM = traceRays(gpi.origin.xyz, normalize(gpi.direct.xyz), 10000.f, true, 0.0001f);
+                        GEO = interpolate(RPM);
+                        MAT = materialize(RPM, GEO);
+
+                        // colorize results
+                        const float reflectionPower = mix(clamp(pow(abs(1.0f + dot(gpi.direct.xyz, MAT.mapNormal.xyz)), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
+                        const vec3 diffuseColor = max(MAT.diffuseColor.xyz - clamp(MAT.emissionColor.xyz*MAT.emissionColor.w,0.f.xxx,1.f.xxx), 0.f.xxx);
+                        const vec3 reflectColor = mix(1.f.xxx, diffuseColor.xyz, (pReflection = random(seed) < reflectionPower) ? MAT.specularColor.zzz : 1.f.xxx);
+
+                        // calculate new position, and new color
+                        gpi.origin = vec4(RPM.origin.xyz, 1.f);
+                        gpi.emission = float4(gpi.energy) * float4(MAT.emissionColor.xyz * MAT.emissionColor.w, 1.f);
+                        gpi.energy.xyz = float3(gpi.energy.xyz) * reflectColor;
+
+                        // 
+                        if (RPM.gBarycentric.w > 9999.f || dot(RPM.gBarycentric.xyz, 1.f.xxx) <= 0.000f) { break; };
                     };
                 };
 
-                // trace rays
-                {
-                    XHIT RPM = traceRays(gpi.origin.xyz, normalize(gpi.direct.xyz), 10000.f, true, 0.0001f);
-                    GEO = interpolate(RPM);
-                    MAT = materialize(RPM, GEO);
-
-                    // colorize results
-                    const float reflectionPower = mix(clamp(pow(abs(1.0f + dot(gpi.direct.xyz, MAT.mapNormal.xyz)), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
-                    const vec3 diffuseColor = max(MAT.diffuseColor.xyz - clamp(MAT.emissionColor.xyz*MAT.emissionColor.w,0.f.xxx,1.f.xxx), 0.f.xxx);
-                    const vec3 reflectColor = mix(1.f.xxx, diffuseColor.xyz, (couldReflection = random(seed) <= reflectionPower) ? MAT.specularColor.zzz : 1.f.xxx);
-
-                    // 
-                    gpi.origin = vec4(RPM.origin.xyz, 1.f);
-                    gpi.emission = float4(gpi.energy) * float4(MAT.emissionColor.xyz * MAT.emissionColor.w, 1.f);
-                    gpi.energy.xyz = float3(gpi.energy.xyz) * reflectColor;
-
-                    // too dim, so break
-                    if (dot(gpi.energy.xyz, 1.f.xxx) < 0.001f || !(RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f)) { break; };
-                };
-
-                
-            };
-
-            // rise-back original material and geometry data
-            GEO = interpolate(RPM);
-            MAT = materialize(RPM, GEO);
-
-            // 
-            //atomicSuperImageAdd(currImages[IW_INDIRECT], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
-            atomicSuperImageAdd(currImages[nonuniformEXT(isDiffuse ? IW_INDIRECT : IW_REFLECLR)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
-
-            // trace transparency
-            /* // Too stupid tracing, needs GI-tracing
-            if (MAT.diffuseColor.w > 0.0001f && MAT.diffuseColor.w < 0.999f) 
-            {   // 
-                CurrentRay gpi;
-                gpi.direct = vec4(raydir, 0.f);
-                gpi.origin = vec4(RPM.origin.xyz + faceforward(GEO.gNormal.xyz, gpi.direct.xyz, -GEO.gNormal.xyz) * 0.0001f, 1.f);
-                gpi.energy = vec4(isReflection ? MAT.diffuseColor.xyz : vec3(1.f.xxx), 1.f);
-                gpi.emission = vec4(0.f.xxx, 1.f);
+                // rise-back original material and geometry data
+                GEO = interpolate(RPM);
+                MAT = materialize(RPM, GEO);
 
                 // 
-                XHIT RPM = traceRays(gpi.origin.xyz, gpi.direct.xyz, 10000.f, true, 0.001f);
-                XGEO GEO = interpolate(RPM);
-                XPOL MAT = materialize(RPM, GEO);
-
-                //
-                atomicSuperImageAdd(currImages[nonuniformEXT(IW_TRANSPAR)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
+                //atomicSuperImageAdd(currImages[IW_INDIRECT], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
+                atomicSuperImageAdd(currImages[nonuniformEXT(isOpaque ? (isDiffuse ? IW_INDIRECT : IW_REFLECLR) : IW_TRANSPAR)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
             };
-            */
             
         } else 
         {   // skybox coloring
