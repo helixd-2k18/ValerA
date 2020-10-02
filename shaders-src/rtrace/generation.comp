@@ -141,11 +141,10 @@ void main()
                 {   // 
                     CurrentRay gpi = gpi;
                     gpi.direct = vec4(0.f.xxx, 1.f);
-                    gpi.origin = vec4(origin, 1.f);
-                    gpi.emission = vec4(0.f.xxx, 1.f);
+                    gpi.emission = vec4(0.f.xxx, 0.f);
                     directLight(mapNormal, geoNormal, gpi.origin.xyz, seed, gpi.emission, gpi.energy);
 
-                    //
+                    // 
                     if (gpi.emission.w > 0.f) {
                         atomicSuperImageAdd(currImages[nonuniformEXT(isDiffuse ? IW_INDIRECT : IW_REFLECLR)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
                     };
