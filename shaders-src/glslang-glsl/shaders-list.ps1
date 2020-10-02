@@ -64,8 +64,8 @@ function BuildAllShaders($Pfx = "") {
     BuildCompute "rasterize.vert"       "$INDIR$RNDX" "$HRDDIR$RTPU"
     
     BuildCompute "generation.comp"        "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "intersection.comp"      "$INDIR$RNDX" "$HRDDIR$RTPU"
-    BuildCompute "interpolation.comp"     "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "intersection.comp"      "$INDIR$RNDX" "$HRDDIR$RTPU"
+    #BuildCompute "interpolation.comp"     "$INDIR$RNDX" "$HRDDIR$RTPU"
     BuildCompute "finalize.comp"          "$INDIR$RNDX" "$HRDDIR$RTPU"
     BuildCompute "cbfix.comp"               "$INDIR$RNDX" "$HRDDIR$RTPU"
     BuildCompute "resample.comp"            "$INDIR$RNDX" "$HRDDIR$RTPU"

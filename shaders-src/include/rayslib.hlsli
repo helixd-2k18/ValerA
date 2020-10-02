@@ -29,7 +29,7 @@ T fname(in uint WHERE) {\
 initAtomicSubgroupIncFunction(counters[WHERE], incrementCnt, 1u, uint);
 
 // 
-const uint LIMITS = 4096u * 4096u;
+const uint LIMITS = 1u; //4096u * 4096u;
 const uint RAY_COUNTER = 0u;
 const uint RAY_COUNTER_READ = 1u;
 const uint HIT_COUNTER = 2u;

@@ -44,10 +44,12 @@ namespace vlr {
 
 
         // 
-        this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
-        this->rayDataFlip1 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
-        this->hitData  = std::make_shared<SetBase_T<HitData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
-        this->colorChainData = std::make_shared<SetBase_T<ColorData>>(driver, DataSetCreateInfo{ .count = 4096 * 2304, .enableCPU = false });
+        //const uint32_t RAY_COUNT = 4096 * 2304; // BAN!
+        const uint32_t RAY_COUNT = 1u;
+        this->rayDataFlip0 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = RAY_COUNT, .enableCPU = false });
+        this->rayDataFlip1 = std::make_shared<SetBase_T<RayData>>(driver, DataSetCreateInfo{ .count = RAY_COUNT, .enableCPU = false });
+        this->hitData  = std::make_shared<SetBase_T<HitData>>(driver, DataSetCreateInfo{ .count = RAY_COUNT, .enableCPU = false });
+        this->colorChainData = std::make_shared<SetBase_T<ColorData>>(driver, DataSetCreateInfo{ .count = RAY_COUNT, .enableCPU = false });
         this->counters = std::make_shared<SetBase_T<uint32_t>>(driver, DataSetCreateInfo{ .count = 5 }); // Ray Write, Ray Read, Hit Write, Hit Read, Color Chain counters
 
         // 
@@ -155,8 +157,8 @@ namespace vlr {
         device->CmdCopyBuffer(currentCmd, this->counters->getGpuBuffer(), this->counters->getGpuBuffer(), 1u, reinterpret_cast<const VkBufferCopy*>(&regions[1u]));
         vkt::commandBarrier(this->driver->getDeviceDispatch(), currentCmd);
 
-        // 
-        for (uint32_t i=0;i<3;i++) {
+        // BAN!
+        /*for (uint32_t i=0;i<3;i++) {
             {   // Intersect All
                 device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->intersection);
                 device->CmdBindDescriptorSets(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, layout->pipelineLayout, 0u, layout->bound.size(), layout->bound.data(), 0u, nullptr);
@@ -183,7 +185,7 @@ namespace vlr {
                 device->CmdDispatch(currentCmd, 256u, 1u, 1u); // Planned Indirect
                 vkt::commandBarrier(device, currentCmd);
             };
-        };
+        };*/
 
         {   // Resample Previous Frame
             device->CmdBindPipeline(currentCmd, VK_PIPELINE_BIND_POINT_COMPUTE, this->resample);

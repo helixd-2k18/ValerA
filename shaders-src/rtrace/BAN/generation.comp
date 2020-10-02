@@ -1,0 +1,186 @@
+#version 460 core
+#extension GL_GOOGLE_include_directive : require
+#define GLSL
+#define ENABLE_AS
+
+#include "../include/driver.hlsli"
+#include "../include/bindings.hlsli"
+
+#define LAUNCH_ID GlobalInvocationID
+#include "../include/raytracing.hlsli"
+
+// TODO: HLSL
+#ifdef GLSL
+layout ( local_size_x = 32u, local_size_y = 24u ) in; 
+void main() 
+#else
+
+#endif
+{
+#ifdef GLSL
+    const uint3 GlobalInvocationID = gl_GlobalInvocationID;
+    const uint3 LocalInvocationID = gl_LocalInvocationID;
+    const uint LocalInvocationIndex = gl_LocalInvocationIndex;
+#endif
+
+    const Box box = { -1.f.xxx, 1.f.xxx }; // TODO: Change Coordinate
+    const float3 lightc = 32.f*4096.f.xxx/(sphere.w*sphere.w);
+
+    //const uint2 
+    //uint2 lanQ = LAUNCH_ID.xy;//gl_LaunchIDEXT.xy;//gl_GlobalInvocationID.xy;
+
+    // 
+    bool checker = bool(LocalInvocationIndex / (gl_WorkGroupSize.x * gl_WorkGroupSize.y / 2));
+    uint localY = (LocalInvocationIndex / gl_WorkGroupSize.x) % (gl_WorkGroupSize.y / 2);
+    uint localX = LocalInvocationIndex % gl_WorkGroupSize.x;
+    uint2 localXY = uint2(localX, (localY*2)+((localX&1)^uint(checker)));//LocalInvocationID.xy;
+    
+    // 
+    uint2 lanQ = gl_WorkGroupID.xy * gl_WorkGroupSize.xy + localXY;
+    uint2 launchSize = imageSize(currImages[IW_POSITION]); launchSize.x >>= 2;
+
+    // 
+    const int2 curPixel = int2(lanQ), invPixel = int2(curPixel.x,curPixel.y);
+    const int2 sizPixel = int2(launchSize);
+
+    // WARNING! Quality may critically drop when move! 
+    //const bool checker = bool(((curPixel.x ^ curPixel.y) ^ (constants.rdata.x^1u))&1u);
+
+    {
+        //
+        packed = packUint2x16(curPixel),       seed = uint2(packed, constants.rdata.x);
+        const float2 shift = random2(seed),   pixel = float2(invPixel)+(shift*2.f-1.f)*0.25f+0.5f;
+        //const float2 shift = 0.5f.xx,       pixel = float2(invPixel)+(shift*2.f-1.f)*0.25f+0.5f;
+
+        // 
+        float3 origin = screen2world(float3((float2(pixel)/float2(sizPixel))*2.f-1.f,0.001f));
+        float3 target = screen2world(float3((float2(pixel)/float2(sizPixel))*2.f-1.f,0.999f));
+        float3 raydir = normalize(target - origin);
+        float3 normal = float3(0.f.xxx);
+        float3 geonrm = float3(0.f.xxx);
+
+        // Replacement for rasterization
+        //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
+          XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
+
+        // TODO: Optimize Fetching and Interpolation 
+        XGEO GEO = interpolate(RPM);
+        XPOL MAT = materialize(RPM, GEO);
+        
+        {   // 
+            imageStore(rasteredImages[RS_POSITION], curPixel, GEO.gPosition); // For Interpolation
+            superImageStore(currImages[IW_ORIGINAL], curPixel, GEO.oPosition);
+            superImageStore(currImages[IW_POSITION], curPixel, RPM.origin);
+            superImageStore(currImages[IW_MAPNORML], curPixel, MAT.mapNormal);
+            superImageStore(currImages[IW_INDICIES], curPixel, uintBitsToFloat(RPM.gIndices));
+            superImageStore(currImages[IW_GEONORML], curPixel, GEO.gNormal);
+            superImageStore(currImages[IW_BARYCENT], curPixel, RPM.gBarycentric);
+            superImageStore(currImages[IW_INDIRECT], curPixel, float4(0.f.xxxx));
+            superImageStore(currImages[IW_SHADOWCL], curPixel, float4(0.f.xxxx));
+            superImageStore(currImages[IW_REFLECLR], curPixel, float4(0.f.xxxx));
+            superImageStore(currImages[IW_ADAPTIVE], curPixel, float4(0.f.xxxx));
+            superImageStore(currImages[IW_TRANSPAR], curPixel, float4(0.f.xxxx));
+            superImageStore(currImages[IW_RENDERED], curPixel, float4(0.f.xxxx));
+            superImageStore(resampleImages[IW_REFLECLR], curPixel, float4(0.f.xxxx));
+
+            // Nullify Resampling
+            
+            //atomicSuperImageAdd3(currImages[IW_RENDERED], curPixel, toLinear(float4(0.f, 0.9f, 1.f, 1.f)));
+        };
+
+        for (uint i=0;i<12;i++) {
+            superImageStore(resampleImages[i], curPixel, float4(0.f.xxxx));
+        };
+
+        // 
+        const float3 mapNormal = faceforward(MAT.mapNormal.xyz, raydir, GEO.gNormal.xyz);
+        const float3 geoNormal = faceforward(GEO.gNormal.xyz, raydir, GEO.gNormal.xyz);
+        const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
+        
+        // Emit Diffuse Indirect Ray
+        RayData tempRay;
+        tempRay.pixelID = u16vec2(lanQ);
+        tempRay.meta = u8vec4(0u);
+        tempRay.emission = f16vec4(0.f.xxx, 1.f);
+        tempRay.color = f16vec4(1.f.xxx, 1.f);
+        tempRay.origin = RPM.origin.xyz;
+
+        // 
+        const float inIOR = 1.f, outIOR = 1.6666f;
+        float reflectionPower = mix(clamp(pow(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
+        bool couldReflection = random(seed) <= reflectionPower;
+
+        //
+        {
+            RayData outRay = tempRay;
+            if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) {
+                
+                if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
+                    outRay.direct = randomHemisphereCosine(seed, TBN); kind(outRay, DIFFUSE_RAY);
+#ifdef TAA
+                    outRay.color = f16vec4(float4(MAT.diffuseColor.xyz, 1.f));
+#endif
+                } else { // BROKEN...
+                    outRay.direct = reflectGlossy(seed, raydir.xyz, TBN, MAT.specularColor.y); kind(outRay, REFLECT_RAY);
+                };
+                outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
+
+                lifetime(outRay, 2);
+                finished(outRay, false);
+            } else { // SkyBox
+                outRay.origin = RPM.origin.xyz;
+                outRay.direct = raydir;
+                outRay.color = half4(1.f.xxxx);
+                outRay.emission = half4(float4(outRay.color.xyz, 1.f) * gSkyShader(raydir.xyz, origin.xyz));
+                outRay.color = half4(0.f.xxxx);
+                
+                kind(outRay, DIFFUSE_RAY);
+                lifetime(outRay, 0);
+                finished(outRay, true);
+            };
+
+            emitRay(outRay);
+        };
+
+        // Trace Transparency Where Needed!
+        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f && MAT.diffuseColor.w > 0.0001f && MAT.diffuseColor.w < 0.999f) 
+        {
+            RayData outRay = tempRay;
+            outRay.direct = raydir;
+            outRay.origin.xyz += faceforward(geoNormal, outRay.direct, -geoNormal) * 0.001f;
+            kind(outRay, TRANSPC_RAY);
+            
+            lifetime(outRay, 2);
+            finished(outRay, false);
+
+            emitRay(outRay);
+        };
+
+        // void directLight(in float3 normal, in float3 origin, inout uint2 seed, inout float4 gSignal, inout float4 gEnergy)
+
+        // Shadow...
+        if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
+        {
+            RayData outRay = tempRay;
+            if (checker && reflectionPower <= 0.999f || reflectionPower < 0.001f) {
+#ifdef TAA
+                float4 enegry = float4(MAT.diffuseColor.xyz, 1.f);
+#else
+                float4 enegry = 1.f.xxxx;
+#endif
+                float4 signal = 0.f.xxxx;
+                directLight(mapNormal, geoNormal, outRay.origin.xyz, seed, signal, enegry);
+
+                outRay.color = half4(enegry);
+                outRay.emission = half4(signal);
+
+                //kind(outRay, SHADOWS_RAY);
+                kind(outRay, DIFFUSE_RAY);
+                lifetime(outRay, 0);
+                finished(outRay, true);
+                emitRay(outRay);
+            };
+        };
+    };
+
+};
