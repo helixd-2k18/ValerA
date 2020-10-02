@@ -109,32 +109,32 @@ void main()
         // 
         const float inIOR = 1.f, outIOR = 1.6666f;
         const float reflectionPower = mix(clamp(pow(abs(1.0f + dot(raydir.xyz, MAT.mapNormal.xyz)), outIOR/inIOR), 0.f, 1.f) * 0.3333f, 1.f, MAT.specularColor.z);
-        const bool isReflection = checker && reflectionPower <= 0.999f || reflectionPower < 0.001f;
+        const bool isDiffuse = checker && reflectionPower <= 0.999f || reflectionPower < 0.001f;
         
         // global illumination
         if (RPM.gBarycentric.w <= 9999.f && dot(RPM.gBarycentric.xyz, 1.f.xxx) > 0.000f) 
         {   // 
-            bool couldReflection = false;
+            bool couldReflection = !isDiffuse;
             const vec3 diffuseColor = max(MAT.diffuseColor.xyz - clamp(MAT.emissionColor.xyz*MAT.emissionColor.w,0.f.xxx,1.f.xxx), 0.f.xxx);
-            const vec3 reflectColor = mix(1.f.xxx, diffuseColor.xyz, (couldReflection = random(seed) <= reflectionPower) ? MAT.specularColor.zzz : 1.f.xxx);
+            const vec3 reflectColor = mix(1.f.xxx, diffuseColor.xyz, isDiffuse ? 1.f.xxx : MAT.specularColor.zzz);
 
             // trace global illumination
             CurrentRay gpi;
             gpi.origin = vec4(RPM.origin.xyz, 1.f);
-            gpi.direct = vec4(raydir.xyz, 1.f);
-            gpi.energy = vec4(isReflection ? reflectColor : vec3(1.f.xxx), 1.f);
+            gpi.direct = vec4(normalize(raydir.xyz), 1.f);
+            gpi.energy = vec4(isDiffuse ? vec3(1.f.xxx) : reflectColor, 1.f);
             gpi.emission = vec4(0.f.xxx, 1.f);
 
             // reflection coefficient
             for (uint32_t i=0;i<3;i++) {
-                const float3 mapNormal = faceforward(MAT.mapNormal.xyz, gpi.direct.xyz, GEO.gNormal.xyz);
-                const float3 geoNormal = faceforward(GEO.gNormal.xyz, gpi.direct.xyz, GEO.gNormal.xyz);
+                const float3 mapNormal = normalize(faceforward(MAT.mapNormal.xyz, gpi.direct.xyz, GEO.gNormal.xyz));
+                const float3 geoNormal = normalize(faceforward(GEO.gNormal.xyz, gpi.direct.xyz, GEO.gNormal.xyz));
                 const float3x3 TBN = float3x3(GEO.gTangent.xyz,GEO.gBinormal.xyz,mapNormal);
-                const bool pReflection = i > 0 ? couldReflection : isReflection;
+                const bool pReflection = couldReflection;
 
                 // reflect or refract rays
-                gpi.direct = vec4(pReflection ? reflectGlossy(seed, gpi.direct.xyz, TBN, MAT.specularColor.y) : randomHemisphereCosine(seed, TBN), 0.f);
-                gpi.origin = vec4(gpi.origin.xyz + faceforward(geoNormal.xyz, gpi.direct.xyz, -geoNormal.xyz) * 0.001f, 1.f);
+                gpi.direct = vec4(normalize(pReflection ? reflectGlossy(seed, gpi.direct.xyz, TBN, MAT.specularColor.y) : randomHemisphereCosine(seed, TBN)), 0.f);
+                gpi.origin = vec4(gpi.origin.xyz + geoNormal * 0.001f, 1.f);
 
                 // trace shadows
                 if (!pReflection) 
@@ -146,12 +146,14 @@ void main()
                     directLight(mapNormal, geoNormal, gpi.origin.xyz, seed, gpi.emission, gpi.energy);
 
                     //
-                    atomicSuperImageAdd(currImages[nonuniformEXT(IW_INDIRECT)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
+                    if (gpi.emission.w > 0.f) {
+                        atomicSuperImageAdd(currImages[nonuniformEXT(isDiffuse ? IW_INDIRECT : IW_REFLECLR)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
+                    };
                 };
 
                 // trace rays
                 {
-                    XHIT RPM = traceRays(gpi.origin.xyz, gpi.direct.xyz, 10000.f, true, 0.001f);
+                    XHIT RPM = traceRays(gpi.origin.xyz, normalize(gpi.direct.xyz), 10000.f, true, 0.001f);
                     GEO = interpolate(RPM);
                     MAT = materialize(RPM, GEO);
 
@@ -177,7 +179,8 @@ void main()
             MAT = materialize(RPM, GEO);
 
             // 
-            atomicSuperImageAdd(currImages[nonuniformEXT(isReflection ? IW_REFLECLR : IW_INDIRECT)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
+            //atomicSuperImageAdd(currImages[IW_INDIRECT], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
+            atomicSuperImageAdd(currImages[nonuniformEXT(isDiffuse ? IW_INDIRECT : IW_REFLECLR)], int2(lanQ), float4(min(gpi.emission, float4(8.f.xxx, 1.f))));
 
             // trace transparency
             /* // Too stupid tracing, needs GI-tracing
