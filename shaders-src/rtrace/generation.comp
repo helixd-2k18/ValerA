@@ -69,8 +69,8 @@ void main()
         float3 geonrm = float3(0.f.xxx);
 
         // Replacement for rasterization
-        //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
-          XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.001f);
+        //XHIT RPM = traceRays(    origin.xyz,           (raydir), 10000.f, true, 0.0001f);
+          XHIT RPM = rasterize(    origin.xyz,           (raydir), 10000.f, true, 0.0001f);
 
         // TODO: Optimize Fetching and Interpolation 
         XGEO GEO = interpolate(RPM);
@@ -134,7 +134,7 @@ void main()
 
                 // reflect or refract rays
                 gpi.direct = vec4(normalize(pReflection ? reflectGlossy(seed, gpi.direct.xyz, TBN, MAT.specularColor.y) : randomHemisphereCosine(seed, TBN)), 0.f);
-                gpi.origin = vec4(gpi.origin.xyz + geoNormal * 0.001f, 1.f);
+                gpi.origin = vec4(gpi.origin.xyz + geoNormal * 0.0001f, 1.f);
 
                 // trace shadows
                 if (!pReflection) 
@@ -152,7 +152,7 @@ void main()
 
                 // trace rays
                 {
-                    XHIT RPM = traceRays(gpi.origin.xyz, normalize(gpi.direct.xyz), 10000.f, true, 0.001f);
+                    XHIT RPM = traceRays(gpi.origin.xyz, normalize(gpi.direct.xyz), 10000.f, true, 0.0001f);
                     GEO = interpolate(RPM);
                     MAT = materialize(RPM, GEO);
 

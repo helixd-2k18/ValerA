@@ -44,7 +44,7 @@ void rayQueryInitializeEXT(in rayQueryEXT rayQuery, in uint flags, in lowp uint 
 
 // Ray Query Broken In Latest Driver... 
 XHIT traceRays(in float3 origin, in float3 raydir, float maxT, bool scatterTransparency, float threshold) {
-    uint I = 0, R = 0; float lastMax = maxT, lastMin = 0.001f, fullLength = 0.f; float3 forigin = origin + raydir.xyz * lastMin, sorigin = forigin;
+    uint I = 0, R = 0; float lastMax = maxT, lastMin = 0.0001f, fullLength = 0.f; float3 forigin = origin + raydir.xyz * lastMin, sorigin = forigin;
 
     // 
     XHIT processing, confirmed;
