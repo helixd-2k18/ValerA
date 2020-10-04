@@ -13,6 +13,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/transform.hpp>
 
+// TODO: Adding RT support for LibLava (unofficial and official)
 // C++ sideway (static data only)
 // C++ and C code can be mixed!
 namespace vrc {
@@ -90,13 +91,6 @@ namespace vrc {
     inline static Slots availableGeometries = {};
     inline static Slots availableGeometrySets = {};
 
-    // for offsetof only, NOT external usage
-    struct VertexData {
-        glm::vec4 vertex = glm::vec4(0.f, 0.f, 0.f, 1.f);
-        glm::vec4 normal = glm::vec4(0.f, 1.f, 0.f, 0.f);
-        glm::vec4 texcoord = glm::vec4(0.f, 0.f, 0.f, 0.f);
-    };
-
     // per every geometry
     const uint32_t accessorCount = 3, bindingsCount = 1;
 
@@ -115,11 +109,6 @@ extern "C" {
     void initMaterialUnit(CMaterialUnit* cunit) {
         const auto unit = vlr::MaterialUnit{};
         *cunit = reinterpret_cast<const CMaterialUnit&>(unit);
-    };
-
-    void initVertexData(CVertexData* cunit) {
-        const auto unit = vrc::VertexData{};
-        *cunit = reinterpret_cast<const CVertexData&>(unit);
     };
 #endif
 };

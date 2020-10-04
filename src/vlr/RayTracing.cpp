@@ -35,8 +35,8 @@ namespace vlr {
 
         // 
         this->generation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[0]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->intersection = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[1]), layout->pipelineLayout, this->driver->getPipelineCache());
-        this->interpolation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[2]), layout->pipelineLayout, this->driver->getPipelineCache());
+        //this->intersection = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[1]), layout->pipelineLayout, this->driver->getPipelineCache());
+        //this->interpolation = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[2]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->resample = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[3]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->finalize = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[4]), layout->pipelineLayout, this->driver->getPipelineCache());
         this->cbfix = vkt::createCompute(this->driver->getDeviceDispatch(), vkt::FixConstruction(this->stages[5]), layout->pipelineLayout, this->driver->getPipelineCache());
