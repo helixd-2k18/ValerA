@@ -47,8 +47,9 @@
 #include <string>
 
 // 
-#include <vkt3/vector.hpp>
-#include <vkt3/image.hpp>
+#include <vkt3/core.hpp>
+//#include <vkt3/vector.hpp>
+//#include <vkt3/image.hpp>
 
 // 
 #define CALLIFY(NAME)\
@@ -97,6 +98,29 @@ namespace vlr {
         bool uniform = false;
         bool enableCPU = true;
         bool enableGL = false;
+    };
+
+#pragma pack(push, 1)
+    struct MeshIDFlags {
+        uint32_t ID : 24, hasTransform : 1, hasNormal : 1, hasTexcoord : 1, hasTangent : 1, translucent : 1, reserved : 3;
+    };
+#pragma pack(pop)
+
+    struct GeometryDesc {
+        glm::mat3x4 transform = glm::mat3x4(1.f);
+        uint32_t firstVertex = 0u;
+        uint32_t primitiveCount = 0u;
+        uint32_t material = 0u;
+
+        // 
+        union {
+            MeshIDFlags mesh_flags;
+            uint32_t mesh_flags_u32 = 0u;
+        };
+
+        // We solved to re-port into... 
+        uint32_t vertexAttribute = 0u, indexBufferView = ~0u, indexType = VK_INDEX_TYPE_NONE_KHR, reserved = 0u;
+        uint32_t attributes[8u] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u };
     };
 
     struct AccelerationCreateInfo;

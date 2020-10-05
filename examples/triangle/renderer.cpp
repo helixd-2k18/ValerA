@@ -91,6 +91,9 @@ namespace vrc {
         };
     };
 
+    //
+    inline static Slots availableBuffers = {};
+    inline static Slots availableImages = {};
 
     // data slots
     inline static Slots availableTextures = {};
@@ -205,19 +208,19 @@ namespace vrc {
         };
 
         if (ptr >= 0) {
-            // 
+            // Bindings
             bufferViews.get(ptr * 2 + 0) = vertexData.getGpuBuffer();
             bufferViews.get(ptr * 2 + 1) = indexData.getGpuBuffer();
-
-            // Bindings
             *bindingSet.get(ptr) = vkh::VkVertexInputBindingDescription{ .binding = ptr * 2 + 0, .stride = State::stride };
+
+            // mapping indices
             if (State::indexType != Index::NONE) { desc.indexBufferView = ptr * 2 + 1; };
             if (State::indexType == Index::NONE) { desc.indexType = VK_INDEX_TYPE_NONE_KHR; };
             if (State::indexType == Index::UINT8) { desc.indexType = VK_INDEX_TYPE_UINT8_EXT; };
             if (State::indexType == Index::UINT16) { desc.indexType = VK_INDEX_TYPE_UINT16; };
             if (State::indexType == Index::UINT32) { desc.indexType = VK_INDEX_TYPE_UINT32; };
 
-            // 
+            // mapping attributes
             {   // Vertex 
                 const uint32_t vidx = ptr * 4 + 0;
                 *attributeSet.get(vidx) = vkh::VkVertexInputAttributeDescription{ .location = 0, .binding = ptr, .offset = State::preset.vertex.offset, };
@@ -248,6 +251,57 @@ namespace vrc {
         return ptr;
     };
 
+    //
+    int32_t createGeometry(int32_t vertexData, int32_t indexData, vlr::GeometryDesc desc) {
+        return createGeometry(buffers[vertexData], buffers[indexData], desc);
+    };
+
+    // 
+    int32_t createBuffer(VkDeviceSize count = 1u, bool uniform = false) {
+        int32_t ptr = availableBuffers.consume();
+        if (ptr >= buffers.size()) {
+            buffers.resize(ptr + 1);
+        };
+        if (ptr >= 0) {
+            buffers[ptr] = vlj::SetBase(driver, vlr::DataSetCreateInfo{
+                .count = count,
+                .uniform = uniform,
+                .enableGL = true
+            });
+        };
+        return ptr;
+    };
+
+    // 
+    int32_t createTexture(const uint32_t& width = 2u, const uint32_t& height = 2, const VkFormat& format = VK_FORMAT_R8G8B8A8_UNORM) {
+        int32_t ptr = availableImages.consume();
+        if (ptr >= images.size()) {
+            images.resize(ptr + 1);
+        };
+
+        // 
+        if (ptr >= 0) {
+            const auto aspect = vkh::VkImageAspectFlags{ .eColor = 1 };
+            const auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
+            const auto imageUsage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
+
+            // 
+            vkt::VmaMemoryInfo memInfo = {};
+            memInfo.memUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+            images[ptr] = vkt::ImageRegion(std::make_shared<vkt::VmaImageAllocation>(driver->getAllocator(), vkh::VkImageCreateInfo{}.also([=](vkh::VkImageCreateInfo* it) {
+                it->format = format,
+                it->extent = vkh::VkExtent3D{ uint32_t(width),uint32_t(height),1u },
+                it->usage = imageUsage;
+                return it;
+            }), memInfo), vkh::VkImageViewCreateInfo{}.also([=](vkh::VkImageViewCreateInfo* it) {
+                it->format = format,
+                it->subresourceRange = apres;
+                return it;
+            }));
+        };
+        return ptr;
+    };
+
     // 
     void initFramebuffer(const uint32_t& width, const uint32_t& height) {
         framebuffer.createFramebuffer(width, height);
@@ -272,6 +326,10 @@ namespace vrc {
         // geometry slots
         availableGeometries = Slots(maxGeometries);
         availableGeometrySets = Slots(256);
+
+        // 
+        availableBuffers = Slots(1024);
+        availableImages = Slots(1024);
 
         // 
         constants = std::make_shared<vlr::Constants>(driver, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
