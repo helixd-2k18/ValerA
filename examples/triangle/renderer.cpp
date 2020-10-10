@@ -98,7 +98,7 @@ namespace vrc {
     };
 
     //
-    inline static Slots availableBuffers = {};
+    inline static Slots availableBufferSets = {};
     inline static Slots availableImages = {};
 
     // data slots
@@ -265,7 +265,7 @@ namespace vrc {
 
     // 
     int32_t createBuffer(VkDeviceSize count = 1u, bool uniform = false) {
-        int32_t ptr = availableBuffers.consume();
+        int32_t ptr = availableBufferSets.consume();
         if (ptr >= bufferSets.size()) {
             bufferSets.resize(ptr + 1);
         };
@@ -364,7 +364,7 @@ namespace vrc {
         availableGeometrySets = Slots(256);
 
         // 
-        availableBuffers = Slots(1024);
+        availableBufferSets = Slots(1024);
         availableImages = Slots(1024);
 
         // 
