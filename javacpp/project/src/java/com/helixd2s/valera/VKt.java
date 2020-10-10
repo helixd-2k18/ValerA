@@ -575,6 +575,61 @@ public class VKt implements InfoMapper {
         }
 
         private native void allocate();
+
+        // LWJGL-3 Compatible
+        public native void loadXVK();
+        public native long getInstanceCreateInfoAddress();
+        public native long getDeviceCreateInfoAddress();
+
+        // Get Handle Value
+        public native @ByRef @Cast("uintptr_t*") LongPointer getSurface();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getSwapchain();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getPhysicalDevice();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getPhysicalDevice(int ID);
+        public native @ByRef @Cast("uintptr_t*") LongPointer getDevice();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getQueue();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getFence();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getInstance();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getCommandPool();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getPipelineCache();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getDescriptorPool();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getDepthImageView();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getDepthImage();
+        public native @ByRef @Cast("uintptr_t*") LongPointer getRenderPass();
+        public native @ByRef @Cast("uintptr_t*") LongPointer createInstance();
+        public native @ByRef @Cast("uintptr_t*") LongPointer createDevice();
+        public native @ByRef @Cast("uintptr_t*") LongPointer createDevice(@Cast("VkPhysicalDevice") long physicalDeviceHandle);
+
+        // Get Address of Reference... (but needs wrapped as Pointer?)
+        public native @Name("getMemoryProperties") @ByRef @Cast("int8_t*") BytePointer _getMemoryProperties();
+        public native @Name("getAllocator") @ByRef @Cast("int8_t*") BytePointer _getAllocator();
+        //public native @Name("getDispatch")          @ByRef @Cast("int8_t*") BytePointer _getDispatch();
+
+        // Get Address from allocator or properties
+        //public long getDispatch()         { return this._getDispatch().address(); };
+        public long getAllocator() {
+            return this._getAllocator().address();
+        }
+        public long getMemoryProperties() {
+            return this._getMemoryProperties().address();
+        }
+
+        //
+        public native @UniPtr VKt.Device getDeviceDispatch();
+        public native @UniPtr VKt.Instance getInstanceDispatch();
+
+        //
+        public native long memoryAllocationInfoPtr();
+
+        // 
+        public native @UniPtr VKt.Driver uniPtr();
+        public native @SharedPtr VKt.Driver sharedPtr();
+
+        // 
+        public native VKt.Driver submitUtilize(@StdVector long commandBuffers[], @Cast("vkh::VkSubmitInfo*") long smbi);
+        public native VKt.Driver submitCmd(@StdVector long commandBuffers[], @Cast("vkh::VkSubmitInfo*") long smbi);
+        public native VKt.Driver submitUtilize(@Cast("VkCommandBuffer") long commandBuffer, @Cast("vkh::VkSubmitInfo*") long smbi);
+        public native VKt.Driver submitCmd(@Cast("VkCommandBuffer") long commandBuffer, @Cast("vkh::VkSubmitInfo*") long smbi);
     };
 
 

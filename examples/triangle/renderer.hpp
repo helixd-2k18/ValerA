@@ -120,6 +120,7 @@ inline NAME& operator =(const int32_t& id) {this->ID = id; return *this;};\
     void initVertexLayout(const uint32_t& stride, const Index& indexType, const LayoutPreset& preset);
     void initFramebuffer(const uint32_t& width = 2u, const uint32_t& height = 2u);
     void initialize(const uint32_t& deviceID = 0u);
+    void* getDriver();
 };
 
 #endif

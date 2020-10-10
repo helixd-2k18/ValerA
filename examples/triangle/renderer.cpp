@@ -554,5 +554,10 @@ namespace vrp {
         vrc::attributeSet->setCommand(cmd);
         //vrc::buildCommand->setCommand(cmd); // don't build all geometries, only needed
     };
+
+    // getter of driver handle
+    void* getDriver() {
+        return (void*)((vlr::Driver*)vrc::driver);
+    };
 #endif
 };
