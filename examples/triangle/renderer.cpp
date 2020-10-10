@@ -280,7 +280,7 @@ namespace vrc {
     };
 
     // MAY REQUIRE ADVANCED API
-    int32_t createTexture(const uint32_t& width = 2u, const uint32_t& height = 2, const VkFormat& format = VK_FORMAT_R8G8B8A8_UNORM, const uint32_t& levels = 1u) {
+    int32_t createImage2D(const uint32_t& width = 2u, const uint32_t& height = 2, const VkFormat& format = VK_FORMAT_R8G8B8A8_UNORM, const uint32_t& levels = 1u) {
         int32_t ptr = availableImages.consume();
         if (ptr >= images.size()) {
             images.resize(ptr + 1);
@@ -342,14 +342,6 @@ namespace vrc {
                 .imageOffset = {0u,0u,0u},
                 .imageExtent = {uint32_t(width),uint32_t(height),1u},
             });
-        });
-    };
-
-    //
-    void synchronizeGeometry() {
-        driver->submitOnce([&](VkCommandBuffer cmd) {
-            bindingSet->setCommand(cmd);
-            attributeSet->setCommand(cmd);
         });
     };
 
@@ -447,8 +439,6 @@ namespace vrc {
         rayTracing->setDescriptorSets(layout);
         renderCommand->setDescriptorSets(layout);
         buildCommand->setDescriptorSets(layout);
-
-        
     };
 };
 
@@ -456,15 +446,15 @@ namespace vrc {
 #include "./renderer.hpp"
 namespace vrp {
 #ifdef VLR_CPP_RENDERER
-    void initialize(uint32_t deviceID) {
+    void initialize(const uint32_t& deviceID) {
         vrc::initialize(deviceID);
     };
 
-    void initFramebuffer(uint32_t width, uint32_t height) {
+    void initFramebuffer(const uint32_t& width, const uint32_t& height) {
         vrc::initFramebuffer(width, height);
     };
 
-    int32_t registerTexture(Image image) {
+    int32_t registerTexture(const Image2D& image) {
         int32_t ptr = vrc::availableTextures.consume();
         if (ptr >= 0) {
             vrc::textureSet.get() = vrc::images[image];
@@ -472,7 +462,7 @@ namespace vrp {
         return ptr;
     };
 
-    int32_t registerSampler(VkSampler sampler) {
+    int32_t registerSampler(const VkSampler& sampler) {
         int32_t ptr = vrc::availableSamplers.consume();
         if (ptr >= 0) {
             vrc::samplerSet.get() = sampler;
@@ -480,7 +470,7 @@ namespace vrp {
         return ptr;
     };
 
-    int32_t registerMaterial(vlr::MaterialUnit materialUnit) {
+    int32_t registerMaterial(const vlr::MaterialUnit& materialUnit) {
         int32_t ptr = vrc::availableMaterials.consume();
         if (ptr >= 0) {
             *vrc::materialSet.get(ptr) = materialUnit;
@@ -492,30 +482,35 @@ namespace vrp {
         return vrc::constants.get(0);
     };
 
-    vlr::MaterialUnit* editMaterial(int32_t ptr) {
+    vlr::MaterialUnit* editMaterial(const int32_t& ptr) {
         if (ptr >= 0) { return vrc::materialSet.get(ptr); };
         return nullptr;
     };
 
-    Image::Image(const uint32_t& width, const uint32_t& height, const VkFormat& format, const uint32_t& levels) {
-        *this = vrc::createTexture(width, height, format, levels);
+    Image2D::Image2D(const uint32_t& width, const uint32_t& height, const VkFormat& format, const uint32_t& levels) {
+        *this = vrc::createImage2D(width, height, format, levels);
     };
 
-    BufferSet::BufferSet(VkDeviceSize count, bool uniform) {
+    BufferSet::BufferSet(const VkDeviceSize& count, const bool& uniform) {
         *this = vrc::createBuffer(count, uniform);
     };
 
-    Geometry::Geometry(BufferSet vertexData, BufferSet indexData, vlr::GeometryDesc desc) {
+    Geometry::Geometry(const BufferSet& vertexData, const BufferSet& indexData, const vlr::GeometryDesc& desc) {
         *this = vrc::createGeometry(vertexData, indexData, desc);
     };
 
-    GeometrySet::GeometrySet(std::vector<Geometry> geoms = {}) {
+    GeometrySet::GeometrySet(const std::vector<Geometry>& geoms = {}) {
         std::vector<int32_t> geomIds = {};
         for (auto& geom : geoms) { geomIds.push_back(geom); };
         *this = vrc::createGeometrySet(geomIds);
     };
 
-    void BufferSet::copyToImage(const Image& image) {
+    void GeometrySet::setCommand(const VkCommandBuffer& cmd) {
+        vrc::geometrySets[this->ID]->setCommand(cmd);
+        vrc::accelerations[this->ID]->setCommand(cmd);
+    };
+
+    void BufferSet::copyToImage(const Image2D& image) {
         vrc::copyBufferToImage(*this, image);
     };
 
@@ -529,6 +524,40 @@ namespace vrp {
 
     const void* BufferSet::map() const {
         return vrc::mapBuffer(*this);
+    };
+
+    //
+    void drawObject(const GeometrySet& set) {
+        vrc::instanceSet->get(vrc::instanceCount++) = vkh::VsGeometryInstance{
+            .customId = uint32_t(set.ID),
+            .accelerationStructureHandle = vrc::accelerations[set.ID]->getHandle() // Broken Feature, Set Manually
+        };
+    };
+
+    // 
+    const uint32_t FBufID = 4u;
+
+    //
+    void instanceCommand(const VkCommandBuffer& cmd) {
+        vrc::instanceSet->setCommand(cmd, true);
+        vrc::buildCommand->setCommandTop(cmd);
+        vrc::instanceCount = 0u;
+    };
+
+    //
+    void rayTraceCommand(const VkCommandBuffer& cmd) {
+        vrc::materialSet->setCommand(cmd);
+        vrc::constants->setCommand(cmd, true);
+        vrc::renderCommand->setCommand(cmd);
+        vrc::framebuffer->imageToLinearCopyCommand(cmd, FBufID);
+        vrc::rayTracing->setCommandFinal(cmd);
+    };
+
+    //
+    void geometryCommand(const VkCommandBuffer& cmd) {
+        vrc::bindingSet->setCommand(cmd);
+        vrc::attributeSet->setCommand(cmd);
+        //vrc::buildCommand->setCommand(cmd); // don't build all geometries, only needed
     };
 #endif
 };

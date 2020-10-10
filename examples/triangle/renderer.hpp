@@ -28,19 +28,19 @@ inline NAME& operator =(const int32_t& id) {this->ID = id; return *this;};\
     TYPED(Base);
 
     //
-    class Image : public Base {
-        Image(const int32_t& id) : Base(id) {};
-        Image(const uint32_t& width = 2u, const uint32_t& height = 2, const VkFormat& format = VK_FORMAT_R8G8B8A8_UNORM, const uint32_t& levels = 1u);
+    class Image2D : public Base {
+        Image2D(const int32_t& id) : Base(id) {};
+        Image2D(const uint32_t& width = 2u, const uint32_t& height = 2, const VkFormat& format = VK_FORMAT_R8G8B8A8_UNORM, const uint32_t& levels = 1u);
     };
 
     //
     class BufferSet : public Base {
         BufferSet(const int32_t& id) : Base(id) {};
-        BufferSet(VkDeviceSize count = 1u, bool uniform = false);
+        BufferSet(const VkDeviceSize& count = 1u, const bool& uniform = false);
 
         // 
         void copyFromCpu();
-        void copyToImage(const Image& image);
+        void copyToImage(const Image2D& image);
         void* map();
         const void* map() const;
     };
@@ -48,21 +48,27 @@ inline NAME& operator =(const int32_t& id) {this->ID = id; return *this;};\
     //
     class Geometry : public Base {
         Geometry(const int32_t& id) : Base(id) {};
-        Geometry(BufferSet vertexData, BufferSet indexData, vlr::GeometryDesc desc);
+        Geometry(const BufferSet& vertexData, const BufferSet& indexData, const vlr::GeometryDesc& desc);
 
         // 
-
+        
     };
 
     //
     class GeometrySet : public Base {
         GeometrySet(const int32_t& id) : Base(id) {};
-        GeometrySet(std::vector<Geometry> geoms = {});
+        GeometrySet(const std::vector<Geometry>& geoms = {});
 
         // 
-
+        void setCommand(const VkCommandBuffer& cmd);
     };
 
+
+    //
+    void instanceCommand(const VkCommandBuffer& cmd);
+    void rayTraceCommand(const VkCommandBuffer& cmd);
+    void geometryCommand(const VkCommandBuffer& cmd);
+    void drawObject(const GeometrySet& set);
 
     // formats
     enum Format : uint32_t {
@@ -111,9 +117,9 @@ inline NAME& operator =(const int32_t& id) {this->ID = id; return *this;};\
     };
 
     // planned presets, such as LibLava, Neverball, Minecraft Chunks, Custom (for Minecraft again)
-    void initVertexLayout(uint32_t stride, Index indexType, LayoutPreset preset);
-    void initFramebuffer(uint32_t width = 2u, uint32_t height = 2u);
-    void initialize(uint32_t deviceID = 0u);
+    void initVertexLayout(const uint32_t& stride, const Index& indexType, const LayoutPreset& preset);
+    void initFramebuffer(const uint32_t& width = 2u, const uint32_t& height = 2u);
+    void initialize(const uint32_t& deviceID = 0u);
 };
 
 #endif
