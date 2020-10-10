@@ -52,7 +52,7 @@ namespace vrc {
 
     // low-level data
     inline static std::vector<vkt::ImageRegion> images = {};
-    inline static std::vector<vlj::SetBase> buffers = {};
+    inline static std::vector<vlj::SetBase> bufferSets = {};
 
     //
     inline static vlj::RenderCommand renderCommand = {};
@@ -260,17 +260,17 @@ namespace vrc {
     //
     int32_t createGeometry(int32_t vertexData, int32_t indexData, vlr::GeometryDesc desc) {
         if (indexData < 0) { desc.indexType = VK_INDEX_TYPE_NONE_KHR; };
-        return createGeometry(buffers[vertexData], indexData >= 0 ? buffers[indexData] : buffers[0u], desc);
+        return createGeometry(bufferSets[vertexData], indexData >= 0 ? bufferSets[indexData] : bufferSets[0u], desc);
     };
 
     // 
     int32_t createBuffer(VkDeviceSize count = 1u, bool uniform = false) {
         int32_t ptr = availableBuffers.consume();
-        if (ptr >= buffers.size()) {
-            buffers.resize(ptr + 1);
+        if (ptr >= bufferSets.size()) {
+            bufferSets.resize(ptr + 1);
         };
         if (ptr >= 0) {
-            buffers[ptr] = vlj::SetBase(driver, vlr::DataSetCreateInfo{
+            bufferSets[ptr] = vlj::SetBase(driver, vlr::DataSetCreateInfo{
                 .count = count,
                 .uniform = uniform,
                 .enableGL = true
@@ -312,8 +312,7 @@ namespace vrc {
     // 
     void copyBufferFromCpu(const int32_t& buffer) {
         driver->submitOnce([&](VkCommandBuffer& cmd) {
-            auto pset = buffers[buffer];
-            pset.setCommand(cmd);
+            bufferSets[buffer].setCommand(cmd);
         });
     };
 
@@ -328,9 +327,8 @@ namespace vrc {
             images[image].transfer(cmd);
 
             // 
-            auto pset = buffers[buffer];
-            driver->getDeviceDispatch()->CmdCopyBufferToImage(cmd, pset.getCpuBuffer().buffer(), images[image].getImage(), images[image].getImageLayout(), 1u, vkh::VkBufferImageCopy{
-                .bufferOffset = pset.getCpuBuffer().offset(),
+            driver->getDeviceDispatch()->CmdCopyBufferToImage(cmd, bufferSets[buffer].getCpuBuffer().buffer(), images[image].getImage(), images[image].getImageLayout(), 1u, vkh::VkBufferImageCopy{
+                .bufferOffset = bufferSets[buffer].getCpuBuffer().offset(),
                 .bufferRowLength = uint32_t(width),
                 .bufferImageHeight = uint32_t(height),
                 .imageSubresource = images[image].subresourceLayers(),
@@ -514,11 +512,11 @@ namespace vrp {
     };
 
     void* BufferSet::map() {
-        return vrc::buffers[this->ID].getCpuBuffer().mapv();
+        return vrc::bufferSets[this->ID].getCpuBuffer().mapv();
     };
 
     const void* BufferSet::map() const {
-        return vrc::buffers[this->ID].getCpuBuffer().mapv();
+        return vrc::bufferSets[this->ID].getCpuBuffer().mapv();
     };
 
     //
