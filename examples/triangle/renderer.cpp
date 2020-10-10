@@ -13,6 +13,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/transform.hpp>
 
+// This is wrapped library for OpenGL based applications
 // TODO: Adding RT support for LibLava (unofficial and official)
 // C++ sideway (static data only)
 // C++ and C code can be mixed!
@@ -52,6 +53,11 @@ namespace vrc {
     // low-level data
     inline static std::vector<vkt::ImageRegion> images = {};
     inline static std::vector<vlj::SetBase> buffers = {};
+
+    //
+    inline static vlj::RenderCommand renderCommand = {};
+    inline static vlj::BuildCommand buildCommand = {};
+
 
     // 
     class Slots { public: 
@@ -253,7 +259,8 @@ namespace vrc {
 
     //
     int32_t createGeometry(int32_t vertexData, int32_t indexData, vlr::GeometryDesc desc) {
-        return createGeometry(buffers[vertexData], buffers[indexData], desc);
+        if (indexData < 0) { desc.indexType = VK_INDEX_TYPE_NONE_KHR; };
+        return createGeometry(buffers[vertexData], indexData >= 0 ? buffers[indexData] : buffers[0u], desc);
     };
 
     // 
@@ -272,8 +279,8 @@ namespace vrc {
         return ptr;
     };
 
-    // 
-    int32_t createTexture(const uint32_t& width = 2u, const uint32_t& height = 2, const VkFormat& format = VK_FORMAT_R8G8B8A8_UNORM) {
+    // MAY REQUIRE ADVANCED API
+    int32_t createTexture(const uint32_t& width = 2u, const uint32_t& height = 2, const VkFormat& format = VK_FORMAT_R8G8B8A8_UNORM, const uint32_t& levels = 1u) {
         int32_t ptr = availableImages.consume();
         if (ptr >= images.size()) {
             images.resize(ptr + 1);
@@ -300,6 +307,50 @@ namespace vrc {
             }));
         };
         return ptr;
+    };
+
+    //
+    void* mapBuffer(const int32_t& buffer) {
+        return buffers[buffer].getCpuBuffer().mapv();
+    };
+
+    // 
+    void copyBufferFromCpu(const int32_t& buffer) {
+        driver->submitOnce([&](VkCommandBuffer& cmd) {
+            auto pset = buffers[buffer];
+            pset.setCommand(cmd);
+        });
+    };
+
+    //
+    void copyBufferToImage(const int32_t& buffer, const int32_t& image) {
+        const uint32_t& width = images[image].getInfo().extent.width;
+        const uint32_t& height = images[image].getInfo().extent.height;
+        const auto& memInfo = images[image].getAllocation()->getAllocationInfo();
+
+        //
+        driver->submitOnce([&](VkCommandBuffer& cmd) {
+            images[image].transfer(cmd);
+
+            // 
+            auto pset = buffers[buffer];
+            driver->getDeviceDispatch()->CmdCopyBufferToImage(cmd, pset.getCpuBuffer().buffer(), images[image].getImage(), images[image].getImageLayout(), 1u, vkh::VkBufferImageCopy{
+                .bufferOffset = pset.getCpuBuffer().offset(),
+                .bufferRowLength = uint32_t(width),
+                .bufferImageHeight = uint32_t(height),
+                .imageSubresource = images[image].subresourceLayers(),
+                .imageOffset = {0u,0u,0u},
+                .imageExtent = {uint32_t(width),uint32_t(height),1u},
+            });
+        });
+    };
+
+    //
+    void synchronizeGeometry() {
+        driver->submitOnce([&](VkCommandBuffer cmd) {
+            bindingSet->setCommand(cmd);
+            attributeSet->setCommand(cmd);
+        });
     };
 
     // 
@@ -378,29 +429,106 @@ namespace vrc {
         layout->setMaterials(materialSet, textureSet, samplerSet);
         layout->setVertexSet(vertexSet);
 
+        //
+        renderCommand = std::make_shared<vlr::RenderCommand>(driver, vlr::RenderCommandCreateInfo{
+            .layout = layout,
+            .rayTracing = rayTracing,
+            .rasterization = rasterization
+        });
+
+        // 
+        buildCommand = std::make_shared<vlr::BuildCommand>(driver, vlr::BuildCommandCreateInfo{
+            .layout = layout,
+            .accelerationTop = accelerationTop,
+        });
+
         // 
         rasterization->setDescriptorSets(layout);
         rayTracing->setDescriptorSets(layout);
-    };
-};
+        renderCommand->setDescriptorSets(layout);
+        buildCommand->setDescriptorSets(layout);
 
-// implementation for C API (bridge between C++ and C)
-extern "C" {
-    #include "./renderer.h"
-
-    // initialize defaults for C
-#ifdef VLR_C_RENDERER
-    void initMaterialUnit(CMaterialUnit* cunit) {
-        const auto unit = vlr::MaterialUnit{};
-        *cunit = reinterpret_cast<const CMaterialUnit&>(unit);
+        
     };
-#endif
 };
 
 // implementation for C++ wrapper API (bridge between hardcode and softcode)
 #include "./renderer.hpp"
 namespace vrp {
 #ifdef VLR_CPP_RENDERER
+    void initialize(uint32_t deviceID) {
+        vrc::initialize(deviceID);
+    };
 
+    void initFramebuffer(uint32_t width, uint32_t height) {
+        vrc::initFramebuffer(width, height);
+    };
+
+    int32_t registerTexture(Image image) {
+        int32_t ptr = vrc::availableTextures.consume();
+        if (ptr >= 0) {
+            vrc::textureSet.get() = vrc::images[image];
+        };
+        return ptr;
+    };
+
+    int32_t registerSampler(VkSampler sampler) {
+        int32_t ptr = vrc::availableSamplers.consume();
+        if (ptr >= 0) {
+            vrc::samplerSet.get() = sampler;
+        };
+        return ptr;
+    };
+
+    int32_t registerMaterial(vlr::MaterialUnit materialUnit) {
+        int32_t ptr = vrc::availableMaterials.consume();
+        if (ptr >= 0) {
+            *vrc::materialSet.get(ptr) = materialUnit;
+        };
+        return ptr;
+    };
+
+    vlr::ConstantDesc* editConstants() {
+        return vrc::constants.get(0);
+    };
+
+    vlr::MaterialUnit* editMaterial(int32_t ptr) {
+        if (ptr >= 0) { return vrc::materialSet.get(ptr); };
+        return nullptr;
+    };
+
+    Image::Image(const uint32_t& width, const uint32_t& height, const VkFormat& format, const uint32_t& levels) {
+        *this = vrc::createTexture(width, height, format, levels);
+    };
+
+    BufferSet::BufferSet(VkDeviceSize count, bool uniform) {
+        *this = vrc::createBuffer(count, uniform);
+    };
+
+    Geometry::Geometry(BufferSet vertexData, BufferSet indexData, vlr::GeometryDesc desc) {
+        *this = vrc::createGeometry(vertexData, indexData, desc);
+    };
+
+    GeometrySet::GeometrySet(std::vector<Geometry> geoms = {}) {
+        std::vector<int32_t> geomIds = {};
+        for (auto& geom : geoms) { geomIds.push_back(geom); };
+        *this = vrc::createGeometrySet(geomIds);
+    };
+
+    void BufferSet::copyToImage(const Image& image) {
+        vrc::copyBufferToImage(*this, image);
+    };
+
+    void BufferSet::copyFromCpu() {
+        vrc::copyBufferFromCpu(*this);
+    };
+
+    void* BufferSet::map() {
+        return vrc::mapBuffer(*this);
+    };
+
+    const void* BufferSet::map() const {
+        return vrc::mapBuffer(*this);
+    };
 #endif
 };

@@ -48,8 +48,8 @@
 
 // 
 #include <vkt3/core.hpp>
-//#include <vkt3/vector.hpp>
-//#include <vkt3/image.hpp>
+#include <glm/glm.hpp>
+#include <vkh/structures.hpp>
 
 // 
 #define CALLIFY(NAME)\
@@ -106,6 +106,25 @@ namespace vlr {
     };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+    // Stock Material Unit
+    struct MaterialUnit {
+        glm::vec4 diffuse = glm::vec4(1.f);
+        glm::vec4 pbrAGM = glm::vec4(0.f);
+        glm::vec4 normal = glm::vec4(0.5f, 0.5f, 1.f, 1.f);
+        glm::vec4 emission = glm::vec4(0.f);
+
+        int diffuseTexture = -1;
+        int pbrAGMTexture = -1;
+        int normalTexture = -1;
+        int emissionTexture = -1;
+
+        glm::uvec4 udata = glm::uvec4(0u);
+    };
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+    // Stock Geometry Desc
     struct GeometryDesc {
         glm::mat3x4 transform = glm::mat3x4(1.f);
         uint32_t firstVertex = 0u;
@@ -122,6 +141,22 @@ namespace vlr {
         uint32_t vertexAttribute = 0u, indexBufferView = ~0u, indexType = VK_INDEX_TYPE_NONE_KHR, reserved = 0u;
         uint32_t attributes[8u] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u };
     };
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+    struct ConstantDesc {
+        glm::mat4 projection = glm::mat4(1.f);
+        glm::mat4 projectionInv = glm::mat4(1.f);
+        glm::mat3x4 modelview = glm::mat3x4(1.f);
+        glm::mat3x4 modelviewInv = glm::mat3x4(1.f);
+        glm::mat3x4 modelviewPrev = glm::mat3x4(1.f);
+        glm::mat3x4 modelviewPrevInv = glm::mat3x4(1.f);
+        glm::uvec4 mdata = glm::uvec4(0u);                         // mesh mutation or modification data
+        //glm::uvec2 tdata = glm::uvec2(0u), rdata = glm::uvec2(0u); // first for time, second for randoms
+        glm::uvec2 tdata = glm::uvec2(0u);
+        glm::uvec2 rdata = glm::uvec2(0u);
+    };
+#pragma pack(pop)
 
     struct AccelerationCreateInfo;
     struct PipelineCreateInfo;

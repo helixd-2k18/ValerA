@@ -1,61 +1,65 @@
 #pragma once
 
 // 
-#include <vkt3/core.hpp>
-#include <glm/glm.hpp>
+#include <vlr/Config.hpp>
 
 // Planned C++20 version of wrapper (faster C++ compilation time)
 #ifndef VLR_CPP_RENDERER
 #define VLR_CPP_RENDERER
 
+//namespace vrc {
+//
+//};
+
 // 
 namespace vrp {
-
-    // usable by C++20
-#pragma pack(push, 1)
-    struct MaterialUnit {
-        glm::vec4 diffuse = glm::vec4(1.f);
-        glm::vec4 pbrAGM = glm::vec4(0.f);
-        glm::vec4 normal = glm::vec4(0.5f, 0.5f, 1.f, 1.f);
-        glm::vec4 emission = glm::vec4(0.f);
-
-        int diffuseTexture = -1;
-        int pbrAGMTexture = -1;
-        int normalTexture = -1;
-        int emissionTexture = -1;
-
-        glm::uvec4 udata = glm::uvec4(0u);
-    };
-#pragma pack(pop)
 
 // type-safe identifiers
 #define TYPED(NAME) \
 class NAME {public: \
-uint32_t ID = 0u;\
-NAME(const uint32_t& id = 0u) { ID = id; };\
-inline operator uint32_t& () {return ID;};\
-inline operator const uint32_t& () const {return ID;};\
-inline NAME& operator =(const uint32_t& id) {this->ID = id; return *this;};\
+int32_t ID = 0u;\
+NAME(const int32_t& id = 0u) { ID = id; };\
+inline operator int32_t& () {return ID;};\
+inline operator const int32_t& () const {return ID;};\
+inline NAME& operator =(const int32_t& id) {this->ID = id; return *this;};\
 };
 
     // 
     TYPED(Base);
 
-    // 
-    class MaterialSet : public Base {
-        MaterialSet(const uint32_t& id = 0u) : Base(id) {}
+    //
+    class Image : public Base {
+        Image(const int32_t& id) : Base(id) {};
+        Image(const uint32_t& width = 2u, const uint32_t& height = 2, const VkFormat& format = VK_FORMAT_R8G8B8A8_UNORM, const uint32_t& levels = 1u);
+    };
+
+    //
+    class BufferSet : public Base {
+        BufferSet(const int32_t& id) : Base(id) {};
+        BufferSet(VkDeviceSize count = 1u, bool uniform = false);
+
+        // 
+        void copyFromCpu();
+        void copyToImage(const Image& image);
+        void* map();
+        const void* map() const;
+    };
+
+    //
+    class Geometry : public Base {
+        Geometry(const int32_t& id) : Base(id) {};
+        Geometry(BufferSet vertexData, BufferSet indexData, vlr::GeometryDesc desc);
+
+        // 
 
     };
 
-    // 
-    class TextureSet : public Base {
-        TextureSet(const uint32_t& id = 0u) : Base(id) {}
+    //
+    class GeometrySet : public Base {
+        GeometrySet(const int32_t& id) : Base(id) {};
+        GeometrySet(std::vector<Geometry> geoms = {});
 
-    };
-
-    // 
-    class SamplerSet : public Base {
-        SamplerSet(const uint32_t& id = 0u) : Base(id) {}
+        // 
 
     };
 
@@ -108,7 +112,8 @@ inline NAME& operator =(const uint32_t& id) {this->ID = id; return *this;};\
 
     // planned presets, such as LibLava, Neverball, Minecraft Chunks, Custom (for Minecraft again)
     void initVertexLayout(uint32_t stride, Index indexType, LayoutPreset preset);
-
+    void initFramebuffer(uint32_t width = 2u, uint32_t height = 2u);
+    void initialize(uint32_t deviceID = 0u);
 };
 
 #endif
