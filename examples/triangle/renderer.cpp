@@ -309,11 +309,6 @@ namespace vrc {
         return ptr;
     };
 
-    //
-    void* mapBuffer(const int32_t& buffer) {
-        return buffers[buffer].getCpuBuffer().mapv();
-    };
-
     // 
     void copyBufferFromCpu(const int32_t& buffer) {
         driver->submitOnce([&](VkCommandBuffer& cmd) {
@@ -519,11 +514,11 @@ namespace vrp {
     };
 
     void* BufferSet::map() {
-        return vrc::mapBuffer(*this);
+        return vrc::buffers[this->ID].getCpuBuffer().mapv();
     };
 
     const void* BufferSet::map() const {
-        return vrc::mapBuffer(*this);
+        return vrc::buffers[this->ID].getCpuBuffer().mapv();
     };
 
     //
