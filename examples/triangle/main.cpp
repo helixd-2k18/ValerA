@@ -71,29 +71,6 @@ int main() {
     //vkt::initializeGL(); // PentaXIL
 
 
-    RENDERDOC_API_1_1_2* rdoc_api = NULL;
-
-    // At init, on windows
-    if (HMODULE mod = GetModuleHandleA("renderdoc.dll"))
-    {
-        pRENDERDOC_GetAPI RENDERDOC_GetAPI =
-            (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
-        int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&rdoc_api);
-        assert(ret == 1);
-    }
-
-    /* 
-    // At init, on linux/android.
-    // For android replace librenderdoc.so with libVkLayer_GLES_RenderDoc.so
-    if (void* mod = dlopen("librenderdoc.so", RTLD_NOW | RTLD_NOLOAD))
-    {
-        pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)dlsym(mod, "RENDERDOC_GetAPI");
-        int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&rdoc_api);
-        assert(ret == 1);
-    }
-    */
-
-
     // BUT FOR NOW REQUIRED GPU BUFFERS! NOT JUST COPY DATA!
     const auto  imageUsage = vkh::VkImageUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eSampled = 1, .eStorage = 1, .eColorAttachment = 1 };
     const auto  bufferUsage = vkh::VkBufferUsageFlags{ .eTransferSrc = 1, .eTransferDst = 1, .eUniformTexelBuffer = 1, .eStorageTexelBuffer = 1, .eUniformBuffer = 1, .eStorageBuffer = 1, .eIndexBuffer = 1, .eVertexBuffer = 1, .eTransformFeedbackBuffer = 1 };
@@ -114,17 +91,9 @@ int main() {
     auto aspect = vkh::VkImageAspectFlags{ .eColor = 1 };
     auto apres = vkh::VkImageSubresourceRange{ .aspectMask = aspect };
 
-    // 
-    auto constants = std::make_shared<vlr::Constants>(fw, vlr::DataSetCreateInfo{ .count = 1u, .uniform = true });
-    auto bindings = std::make_shared<vlr::BindingSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    auto accessors = std::make_shared<vlr::AttributeSet>(fw, vlr::DataSetCreateInfo{ .count = 4u });
-    auto buffers = std::make_shared<vlr::BufferViewSet>(fw); 
-
-    // 
-    auto vertexSet = std::make_shared<vlr::VertexSet>(fw, vlr::VertexSetCreateInfo{
-        .bindings = bindings,
-        .attributes = accessors,
-        .bufferViews = buffers
+    //
+    auto renderer = std::make_shared<vlr::Renderer>(fw, vlr::RendererCreateInfo{ 
+        
     });
 
     // 
@@ -140,12 +109,12 @@ int main() {
 
     //
     auto vertexData = std::make_shared<vlr::SetBase_T<FDStruct>>(fw, vlr::DataSetCreateInfo{ .count = 3u });
-    buffers->pushBufferView(vertexData->getGpuBuffer());
+    renderer->addBufferView(vertexData->getGpuBuffer());
 
     // 
-    auto geometrySet = std::make_shared<vlr::GeometrySet>(vertexSet, vlr::DataSetCreateInfo{ .count = 1u });
-    auto geometry = std::make_shared<vlr::Geometry>(vertexSet, gdesc);
-    
+    auto geometrySet = renderer->createGeometrySet(1u);
+    auto geometry = renderer->createGeometry(gdesc);
+    auto accelerationBottom = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = {1u} });
 
     // 
     vertexData->get(0u) = FDStruct{ .fPosition = glm::vec4( 1.f, -1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
@@ -153,31 +122,31 @@ int main() {
     vertexData->get(2u) = FDStruct{ .fPosition = glm::vec4( 0.f,  1.f, 0.f, 1.f), .fNormal = glm::vec4(0.f, 0.f, 1.f, 0.f), .fTangent = glm::vec4(0.f, 1.f, 0.f, 0.f) };
 
     // 
-    bindings->get(0u) = vkh::VkVertexInputBindingDescription{
+    renderer->editBinding(0u) = vkh::VkVertexInputBindingDescription{
         .binding = 0u,
         .stride = sizeof(FDStruct)
     };
 
     // 
-    accessors->get(0u) = vkh::VkVertexInputAttributeDescription{
+    renderer->editAttribute(0u) = vkh::VkVertexInputAttributeDescription{
         .location = 0u, .binding = 0u,
         .format = VK_FORMAT_R32G32B32A32_SFLOAT,
         .offset = offsetof(FDStruct, fPosition)
     };
 
-    accessors->get(1u) = vkh::VkVertexInputAttributeDescription{
+    renderer->editAttribute(1u) = vkh::VkVertexInputAttributeDescription{
         .location = 1u, .binding = 0u,
         .format = VK_FORMAT_R32G32B32A32_SFLOAT,
         .offset = offsetof(FDStruct, fTexcoord)
     };
 
-    accessors->get(2u) = vkh::VkVertexInputAttributeDescription{
+    renderer->editAttribute(2u) = vkh::VkVertexInputAttributeDescription{
         .location = 2u, .binding = 0u,
         .format = VK_FORMAT_R32G32B32A32_SFLOAT,
         .offset = offsetof(FDStruct, fNormal)
     };
 
-    accessors->get(3u) = vkh::VkVertexInputAttributeDescription{
+    renderer->editAttribute(3u) = vkh::VkVertexInputAttributeDescription{
         .location = 3u, .binding = 0u,
         .format = VK_FORMAT_R32G32B32A32_SFLOAT,
         .offset = offsetof(FDStruct, fTangent)
@@ -189,71 +158,25 @@ int main() {
     // 
     fw->submitOnce([&](VkCommandBuffer cmd) {
         vertexData->setCommand(cmd);
-        bindings->setCommand(cmd);
-        accessors->setCommand(cmd);
         geometrySet->setCommand(cmd);
+        renderer->geometryCommand(cmd);
     });
 
-    // 
-    auto instanceSet = std::make_shared<vlr::InstanceSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    auto accelerationBottom = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .geometrySet = geometrySet, .initials = {1u} });
-    auto accelerationTop = std::make_shared<vlr::Acceleration>(fw, vlr::AccelerationCreateInfo{ .instanceSet = instanceSet, .initials = {1u} });
-    auto framebuffer = std::make_shared<vlr::Framebuffer>(fw);
-    auto layout = std::make_shared<vlr::PipelineLayout>(fw);
 
     // 
     const auto testInstance = vkh::VsGeometryInstance{
-        .customId = 0u,
+        .customId = uint32_t(renderer->addAcceleration(accelerationBottom)),
         .accelerationStructureHandle = accelerationBottom->getHandle()
     };
-    instanceSet->get(0u) = testInstance;
+    renderer->createInstance(testInstance);
 
     // 
-    auto rasterization = std::make_shared<vlr::Rasterization>(fw, vlr::PipelineCreateInfo{
-        .layout = layout,
-        .framebuffer = framebuffer,
-        .instanceSet = instanceSet,
-        .constants = constants
-    });
-
-    // 
-    auto rayTracing = std::make_shared<vlr::RayTracing>(fw, vlr::RayTracingCreateInfo{
-        .layout = layout,
-        .framebuffer = framebuffer,
-        .accelerationTop = accelerationTop,
-        .constants = constants,
-    });
-
-    //
-    auto renderCommand = std::make_shared<vlr::RenderCommand>(fw, vlr::RenderCommandCreateInfo{
-        .layout = layout,
-        .rayTracing = rayTracing,
-        .rasterization = rasterization
-    });
-
-    // 
-    auto buildCommand = std::make_shared<vlr::BuildCommand>(fw, vlr::BuildCommandCreateInfo{
-        .layout = layout,
-        .accelerationTop = accelerationTop,
-    });
-
-    
-
-    // 
-    auto materialSet = std::make_shared<vlr::MaterialSet>(fw, vlr::DataSetCreateInfo{ .count = 1u });
-    auto textureSet = std::make_shared<vlr::TextureSet>(fw);
-    auto samplerSet = std::make_shared<vlr::SamplerSet>(fw);
-    auto background = std::make_shared<vlr::Background>(fw);
-
-
-    // 
-    auto& testMaterial = materialSet->get(0u);
+    auto& testMaterial = renderer->editMaterial(0u);
     testMaterial = vlr::MaterialUnit{};
     testMaterial.diffuse = glm::vec4(1.f,1.f,1.f,1.f);
-
-
+    
     // 
-    framebuffer->createFramebuffer(canvasWidth, canvasHeight);
+    renderer->initFramebuffer(canvasWidth, canvasHeight);
 
     {   // 
         int width = 0u, height = 0u;
@@ -321,7 +244,7 @@ int main() {
             });
 
             //
-            background->setImage(image);
+            renderer->setBackground(image);
         };
     };
 
@@ -381,7 +304,7 @@ int main() {
             });
 
             // 
-            textureSet->pushImage(image);
+            renderer->pushTexture(image);
         };
     };
 
@@ -395,28 +318,8 @@ int main() {
         }, nullptr, &sampler);
 
         // 
-        samplerSet->pushSampler(sampler);
+        renderer->pushSampler(sampler);
     };
-
-
-    // 
-    layout->setFramebuffer(framebuffer);
-    layout->setBackground(background);
-    layout->setMaterials(materialSet, textureSet, samplerSet);
-    layout->setVertexSet(vertexSet);
-
-    // 
-
-
-    // 
-    rasterization->setDescriptorSets(layout);
-    rayTracing->setDescriptorSets(layout);
-    renderCommand->setDescriptorSets(layout);
-    buildCommand->setDescriptorSets(layout);
-
-
-
-
 
     // 
     //glm::dvec3 eye = glm::dvec3(5.f, 2.f, 2.f);
@@ -439,7 +342,7 @@ int main() {
         vkt::makePipelineStageInfo(fw->getDeviceDispatch(), vkt::readBinary(std::string("./shaders/render.vert.spv")), VK_SHADER_STAGE_VERTEX_BIT),
         vkt::makePipelineStageInfo(fw->getDeviceDispatch(), vkt::readBinary(std::string("./shaders/render.frag.spv")), VK_SHADER_STAGE_FRAGMENT_BIT)
     };
-    pipelineInfo.graphicsPipelineCreateInfo.layout = layout->getPipelineLayout();
+    pipelineInfo.graphicsPipelineCreateInfo.layout = renderer->getPipelineLayout();
     pipelineInfo.graphicsPipelineCreateInfo.renderPass = fw->applicationWindow.renderPass;//context->refRenderPass();
     pipelineInfo.inputAssemblyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
     pipelineInfo.viewportState.pViewports = &reinterpret_cast<vkh::VkViewport&>(viewport);
@@ -470,14 +373,8 @@ int main() {
     Shared::TimeCallback(glfwGetTime() * 1000.0);
 
     // 
-    auto counters = rayTracing->getCounters();
-
-    // 
     while (!glfwWindowShouldClose(manager.window)) { // 
         glfwPollEvents();
-
-        // 
-        if (rdoc_api) rdoc_api->StartFrameCapture(NULL, NULL);
 
         // 
         int64_t n_semaphore = currSemaphore, c_semaphore = (currSemaphore + 1) % framebuffers.size(); // Next Semaphore
@@ -490,9 +387,6 @@ int main() {
         vkh::handleVk(fw->getDeviceDispatch()->AcquireNextImageKHR(swapchain, std::numeric_limits<uint64_t>::max(), framebuffers[c_semaphore].presentSemaphore, nullptr, &currentBuffer));
         //fw->getDeviceDispatch()->SignalSemaphore(vkh::VkSemaphoreSignalInfo{.semaphore = framebuffers[n_semaphore].semaphore, .value = 1u});
 
-        // 
-        std::vector<uint32_t> cdata = { counters->get(0u), counters->get(1u), counters->get(2u), counters->get(3u), counters->get(4u) };
-
         { // submit rendering (and wait presentation in device)
             vkh::VkClearValue clearValues[2] = { {}, {} };
             clearValues[0].color = vkh::VkClearColorValue{}; clearValues[0].color.float32 = glm::vec4(0.f, 0.f, 0.f, 0.f);
@@ -503,35 +397,24 @@ int main() {
             glm::mat4 proj = cameraController->handle().project();
 
             // 
-            constants->get(0u).modelview = glm::transpose(glm::mat4x3(proj));
-            constants->get(0u).projection = glm::transpose(glm::mat4x4(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
-            constants->get(0u).modelviewInv = glm::transpose(glm::mat4x3(glm::inverse(proj)));
-            constants->get(0u).projectionInv = glm::transpose(glm::mat4x4(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
+            auto& constants = renderer->editConstants();
+            constants.modelview = glm::transpose(glm::mat4x3(proj));
+            constants.projection = glm::transpose(glm::mat4x4(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.)));
+            constants.modelviewInv = glm::transpose(glm::mat4x3(glm::inverse(proj)));
+            constants.projectionInv = glm::transpose(glm::mat4x4(glm::inverse(glm::perspective(80.f / 180.f * glm::pi<double>(), double(canvasWidth) / double(canvasHeight), 0.001, 10000.))));
 
             // Create render submission 
             std::vector<VkSemaphore> waitSemaphores = { framebuffers[currentBuffer].presentSemaphore }, signalSemaphores = { framebuffers[currentBuffer].computeSemaphore };
-            std::vector<vkh::VkPipelineStageFlags> waitStages = {
+            std::vector<VkPipelineStageFlags> waitStages = {
                 vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 },
                 vkh::VkPipelineStageFlags{.eFragmentShader = 1, .eComputeShader = 1, .eTransfer = 1, .eRayTracingShader = 1, .eAccelerationStructureBuild = 1 }
             };
 
             // 
             auto rtCommand = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false);
-            instanceSet->setCommand(rtCommand);
-            materialSet->setCommand(rtCommand);
-            constants->setCommand(rtCommand, true);
-            buildCommand->setCommand(rtCommand);
-            renderCommand->setCommand(rtCommand);
+            renderer->instanceCommand(rtCommand);
+            renderer->rayTraceCommand(rtCommand);
             vkt::commandBarrier(fw->getDeviceDispatch(), rtCommand);
-
-            // 
-            fw->getDeviceDispatch()->CmdCopyBuffer(rtCommand, counters->getGpuBuffer(), counters->getCpuBuffer(), 1u, vkh::VkBufferCopy{
-                counters->getGpuBuffer().offset(),
-                counters->getCpuBuffer().offset(),
-                counters->getCpuBuffer().range()
-            });
-
-
             fw->getDeviceDispatch()->EndCommandBuffer(rtCommand);
             //break; // FOR DEBUG!!
 
@@ -552,7 +435,7 @@ int main() {
                 commandBuffer = vkt::createCommandBuffer(fw->getDeviceDispatch(), commandPool, false, false); // do reference of cmd buffer
 
                 //
-                decltype(auto) descriptorSets = layout->getDescriptorSets();
+                decltype(auto) descriptorSets = renderer->getDescriptorSets();
 
                 // Reuse depth as general
                 vkt::imageBarrier(commandBuffer, vkt::ImageBarrierInfo{
@@ -571,7 +454,7 @@ int main() {
                 fw->getDeviceDispatch()->CmdSetViewport(commandBuffer, 0u, 1u, viewport);
                 fw->getDeviceDispatch()->CmdSetScissor(commandBuffer, 0u, 1u, renderArea);
                 fw->getDeviceDispatch()->CmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, finalPipeline);
-                fw->getDeviceDispatch()->CmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout->getPipelineLayout(), 0u, descriptorSets.size(), descriptorSets.data(), 0u, nullptr);
+                fw->getDeviceDispatch()->CmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderer->getPipelineLayout(), 0u, descriptorSets.size(), descriptorSets.data(), 0u, nullptr);
                 fw->getDeviceDispatch()->CmdDraw(commandBuffer, 4, 1, 0, 0);
                 fw->getDeviceDispatch()->CmdEndRenderPass(commandBuffer);
                 vkt::commandBarrier(fw->getDeviceDispatch(), commandBuffer);
@@ -610,9 +493,9 @@ int main() {
                 .commandBufferCount = 1u, .pCommandBuffers = &commandBuffer,
                 .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()), .pSignalSemaphores = signalSemaphores.data()
             }, framebuffers[currentBuffer].waitFence));
-            
+
             // 
-            constants->get(0u).rdata.x = frameCount++;
+            renderer->editConstants().rdata.x = frameCount++;
         };
 
         // 
@@ -623,8 +506,6 @@ int main() {
             .pImageIndices = &currentBuffer, .pResults = nullptr
         }));
 
-        // 
-        if (rdoc_api) rdoc_api->EndFrameCapture(NULL, NULL);
     };
 
     // 

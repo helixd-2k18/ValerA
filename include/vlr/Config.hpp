@@ -166,6 +166,43 @@ namespace vlr {
     //    vkt::uni_ptr<InstanceSet> instanceSet = {};
     //    std::vector<VkDeviceSize> initials = {};
     //};
+
+    class Slots { public: 
+        uint32_t count = 0u;
+        std::vector<int32_t> available = {};
+
+        // 
+        Slots() {};
+        Slots(const Slots& slots) : count(slots.count), available(slots.available) {};
+        Slots(const uint32_t& maxCount) {
+            available.clear();
+            available.resize(0u);
+            for (uint32_t i = 0; i < maxCount; i++) {
+                available.push_back(i);
+            };
+        };
+
+        // 
+        Slots& operator=(const Slots& slots) {
+            this->count = slots.count, this->available = slots.available;
+        };
+
+        // 
+        int32_t consume() {
+            int32_t id = available[count];
+            if (count < available.size()) {
+                int32_t& idr = available[count++]; idr = -1;
+            };
+            return id;
+        };
+
+        // 
+        void rise(const int32_t& used) {
+            if (count > 0 && used != -1 && available[count-1] == -1) {
+                available[--count] = used; 
+            };
+        };
+    };
 };
 
 // For JavaCpp!

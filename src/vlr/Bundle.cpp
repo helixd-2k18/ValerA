@@ -30,6 +30,9 @@
 #include "./VertexSet.cpp"
 #include "./OptiXDenoise.cpp"
 
+//
+#include "./Renderer.cpp"
+
 // 
 namespace vkt {
     

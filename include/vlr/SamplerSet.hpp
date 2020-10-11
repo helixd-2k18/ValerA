@@ -23,7 +23,7 @@ namespace vlr {
         };
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         //virtual void setCommand(vkt::uni_arg<VkCommandBuffer> commandBuffer, bool barrier = false);
-        virtual void pushSampler(const VkSampler& sampler) { this->samplers.push_back(sampler); };
+        virtual intptr_t pushSampler(const VkSampler& sampler) { intptr_t ptr = this->samplers.size(); this->samplers.push_back(sampler); return ptr; };
         virtual void resetSamplers(){ this->samplers.clear(); this->samplers.resize(0ull); };
 
         //

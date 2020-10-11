@@ -59,6 +59,10 @@ namespace vlr {
         virtual void createDescriptorSet(vkt::uni_ptr<PipelineLayout> pipelineLayout);
         virtual void setInstanceCount(const VkDeviceSize& count) { this->instanceCount = count; };
         virtual uint64_t getHandle();
+
+        // 
+        virtual vkt::uni_ptr<GeometrySet> getGeometrySet() const { return this->geometrySet; };
+        virtual vkt::uni_ptr<InstanceSet> getInstanceSet() const { return this->instanceSet; };
     };
 
 };
@@ -77,5 +81,7 @@ namespace vlj {
         CALLIFY(createDescriptorSet);
         CALLIFY(getHandle);
         CALLIFY(setInstanceCount);
+        CALLIFY(getGeometrySet);
+        CALLIFY(getInstanceSet);
     };
 };

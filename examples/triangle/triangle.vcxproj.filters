@@ -51,9 +51,6 @@
     <ClCompile Include="..\..\src\vlr\Bundle.cpp">
       <Filter>Source Files\vlr</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\vlr\Acceleration.hpp">
@@ -205,12 +202,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\vlr\OptiXDenoise.hpp">
       <Filter>Header Files\vlr</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer.hpp">
-      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

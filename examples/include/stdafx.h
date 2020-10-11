@@ -46,22 +46,7 @@
 #include <GLFW/glfw3native.h>
 
 // 
-#include <vlr/Constants.hpp>
-#include <vlr/BufferViewSet.hpp>
-#include <vlr/MaterialSet.hpp>
-#include <vlr/TextureSet.hpp>
-#include <vlr/SamplerSet.hpp>
-#include <vlr/Background.hpp>
-
-// 
-#include <vlr/GeometrySet.hpp>
-#include <vlr/Acceleration.hpp>
-#include <vlr/BuildCommand.hpp>
-
-// 
-#include <vlr/RayTracing.hpp>
-#include <vlr/Rasterization.hpp>
-#include <vlr/RenderCommand.hpp>
+#include <vlr/Renderer.hpp>
 
 // 
 #include <misc/tiny_gltf.h>
