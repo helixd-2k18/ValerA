@@ -25,17 +25,17 @@
     <Filter Include="Header Files\vlr\additional">
       <UniqueIdentifier>{31f0beb1-9076-4d89-a4fa-1c7aa67264d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\vkh">
-      <UniqueIdentifier>{1d2b8ea1-6b19-4980-8bec-11c5380165f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\vma">
-      <UniqueIdentifier>{06b2609f-bd73-4f9d-af7f-7a3678a6e6d2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\vkt3">
-      <UniqueIdentifier>{aba7112a-f90e-4495-bc4d-e8c85d1647e4}</UniqueIdentifier>
+      <UniqueIdentifier>{338b485d-9a77-4638-a27c-abe5c7146410}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vkh">
+      <UniqueIdentifier>{d1c7bd17-6e9f-4d09-8964-b2ba4bb8a1d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\xvk">
-      <UniqueIdentifier>{f2331baa-3404-498a-b900-d003716a42fb}</UniqueIdentifier>
+      <UniqueIdentifier>{d5666e3b-d4a6-4ae5-a5c7-e2fd1df2a450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vma">
+      <UniqueIdentifier>{ea0d790a-9523-4936-95e0-157e77e86416}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -131,7 +131,22 @@
     <ClInclude Include="..\..\include\vlr\additional\GeometryAdd.hpp">
       <Filter>Header Files\vlr\additional</Filter>
     </ClInclude>
+    <ClInclude Include="macro.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\main.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\stdafx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vlr\Implementation.hpp">
+      <Filter>Header Files\vlr</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\vkt3\core.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\definition.hpp">
       <Filter>Header Files\vkt3</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\vkt3\essential.hpp">
@@ -140,7 +155,13 @@
     <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp">
       <Filter>Header Files\vkt3</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\vkt3\image.hpp">
+      <Filter>Header Files\vkt3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\vkt\include\vkt3\inline.hpp">
       <Filter>Header Files\vkt3</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\vkt3\structs.hpp">
@@ -173,41 +194,17 @@
     <ClInclude Include="..\..\..\vkt\include\vkh\structures.hpp">
       <Filter>Header Files\vkh</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vma\vk_mem_alloc.h">
-      <Filter>Header Files\vma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\xvk\xvk.hpp">
       <Filter>Header Files\xvk</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\xvk\xvkBase.hpp">
       <Filter>Header Files\xvk</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.h">
-      <Filter>Header Files\xvk</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.hpp">
       <Filter>Header Files\xvk</Filter>
     </ClInclude>
-    <ClInclude Include="macro.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\main.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\stdafx.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\vlr\Implementation.hpp">
-      <Filter>Header Files\vlr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\definition.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\inline.hpp">
-      <Filter>Header Files\vkt3</Filter>
+    <ClInclude Include="..\..\..\vkt\include\vma\vk_mem_alloc.h">
+      <Filter>Header Files\vma</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

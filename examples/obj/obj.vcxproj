@@ -181,39 +181,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\vkt\include\misc\args.hxx" />
-    <ClInclude Include="..\..\..\vkt\include\misc\catch.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\misc\half.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\misc\json.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\misc\pcg_extras.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\misc\pcg_random.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\misc\pcg_uint128.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\misc\soa_vector.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\misc\stb_image.h" />
-    <ClInclude Include="..\..\..\vkt\include\misc\stb_image_resize.h" />
-    <ClInclude Include="..\..\..\vkt\include\misc\stb_image_write.h" />
-    <ClInclude Include="..\..\..\vkt\include\misc\tinyexr.h" />
-    <ClInclude Include="..\..\..\vkt\include\misc\tiny_gltf.h" />
-    <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkh\enums.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkh\handle.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkh\helpers.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkh\matching.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkh\spirv-mod.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkh\structures.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\core.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\essential.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\image.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\structs.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\utils.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\vector.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vma\vk_mem_alloc.h" />
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvk.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvkBase.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.h" />
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.hpp" />
     <ClInclude Include="..\..\include\vlr\Acceleration.hpp" />
     <ClInclude Include="..\..\include\vlr\Accumulation.hpp" />
     <ClInclude Include="..\..\include\vlr\additional\GeometryAdd.hpp" />
@@ -244,12 +211,6 @@
     <ClInclude Include="..\include\main.hpp" />
     <ClInclude Include="..\include\stdafx.h" />
     <ClInclude Include="macro.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\vkt\include\vkt3\readme.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="..\..\..\vkt\include\vma\vk_mem_alloc.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

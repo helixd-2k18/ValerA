@@ -25,18 +25,6 @@
     <Filter Include="Header Files\vlr\additional">
       <UniqueIdentifier>{31f0beb1-9076-4d89-a4fa-1c7aa67264d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\vkh">
-      <UniqueIdentifier>{1d2b8ea1-6b19-4980-8bec-11c5380165f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\vma">
-      <UniqueIdentifier>{06b2609f-bd73-4f9d-af7f-7a3678a6e6d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\vkt3">
-      <UniqueIdentifier>{aba7112a-f90e-4495-bc4d-e8c85d1647e4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\xvk">
-      <UniqueIdentifier>{f2331baa-3404-498a-b900-d003716a42fb}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,66 +119,6 @@
     <ClInclude Include="..\..\include\vlr\additional\GeometryAdd.hpp">
       <Filter>Header Files\vlr\additional</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\core.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\essential.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\image.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\structs.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\utils.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\vector.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkh\bitfields.hpp">
-      <Filter>Header Files\vkh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkh\enums.hpp">
-      <Filter>Header Files\vkh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkh\handle.hpp">
-      <Filter>Header Files\vkh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkh\helpers.hpp">
-      <Filter>Header Files\vkh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkh\matching.hpp">
-      <Filter>Header Files\vkh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkh\spirv-mod.hpp">
-      <Filter>Header Files\vkh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkh\structures.hpp">
-      <Filter>Header Files\vkh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vma\vk_mem_alloc.h">
-      <Filter>Header Files\vma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp">
-      <Filter>Header Files\vkt3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvk.hpp">
-      <Filter>Header Files\xvk</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvkBase.hpp">
-      <Filter>Header Files\xvk</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.h">
-      <Filter>Header Files\xvk</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.hpp">
-      <Filter>Header Files\xvk</Filter>
-    </ClInclude>
     <ClInclude Include="macro.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -203,15 +131,5 @@
     <ClInclude Include="..\..\include\vlr\OptiXDenoise.hpp">
       <Filter>Header Files\vlr</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\vkt\include\vkt3\readme.md">
-      <Filter>Header Files\vkt3</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="..\..\..\vkt\include\vma\vk_mem_alloc.natvis">
-      <Filter>Header Files\vma</Filter>
-    </Natvis>
   </ItemGroup>
 </Project>

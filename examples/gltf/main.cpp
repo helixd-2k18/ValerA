@@ -55,9 +55,10 @@ int main() {
     // 
     fw = std::make_shared<vlr::Driver>();
     auto instance = fw->createInstance();
-    //auto manager = fw->createWindowSurface(canvasWidth, canvasHeight);
-    auto manager = fw->createWindowSurface(fw->createWindowOnly(renderArea.extent.width, renderArea.extent.height, "VKTest"));
     auto physicalDevice = fw->getPhysicalDevice(0u);
+    auto window = fw->createWindowOnly(renderArea.extent.width, renderArea.extent.height, "VKTest");
+    //auto manager = fw->createWindowSurface(canvasWidth, canvasHeight);
+    auto manager = fw->createWindowSurface(window);
     auto device = fw->createDevice(true, "./", false);
     auto swapchain = fw->createSwapchain();
     auto renderPass = fw->createRenderPass();

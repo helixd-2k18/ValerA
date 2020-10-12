@@ -1,1 +1,0 @@
-../examples/include/stdafx.h

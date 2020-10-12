@@ -80,13 +80,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)/include;$(ProjectDir)/../../include;$(ProjectDir)/../include;C:\Program Files\RenderDoc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)/include;$(ProjectDir)/../include;$(ProjectDir)/../../include;H:\Data\Projects\vkt\include;C:\Program Files\RenderDoc</IncludePath>
     <LibraryPath>C:\Program Files\RenderDoc;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(ProjectDir)/lib;$(ProjectDir)/../../lib;$(ProjectDir)/../lib</LibraryPath>
     <ExecutablePath>C:\Program Files\RenderDoc;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)/include;$(ProjectDir)/../../include;$(ProjectDir)/../include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)/include;$(ProjectDir)/../include;$(ProjectDir)/../../include;H:\Data\Projects\vkt\include</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(ProjectDir)/lib;$(ProjectDir)/../../lib;$(ProjectDir)/../lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -193,8 +193,8 @@
     <ClInclude Include="..\..\..\vkt\include\vkt3\core.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\definition.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\essential.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\fw-impl.hpp" />
+    <ClInclude Include="..\..\..\vkt\include\vkt3\fw.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\image.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\inline.hpp" />
     <ClInclude Include="..\..\..\vkt\include\vkt3\structs.hpp" />
@@ -203,7 +203,6 @@
     <ClInclude Include="..\..\..\vkt\include\vma\vk_mem_alloc.h" />
     <ClInclude Include="..\..\..\vkt\include\xvk\xvk.hpp" />
     <ClInclude Include="..\..\..\vkt\include\xvk\xvkBase.hpp" />
-    <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.h" />
     <ClInclude Include="..\..\..\vkt\include\xvk\xvkInterface.hpp" />
     <ClInclude Include="..\..\include\vlr\Acceleration.hpp" />
     <ClInclude Include="..\..\include\vlr\Accumulation.hpp" />
